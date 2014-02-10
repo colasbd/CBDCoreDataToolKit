@@ -228,7 +228,7 @@
     
     for (Person * person in allPeople)
     {
-        DDLogVerbose(@"%@", person) ;
+        NSLog(@"%@", person) ;
     }
 }
 

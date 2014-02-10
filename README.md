@@ -1,10 +1,8 @@
 # CBDCoreDataToolKit
 
-[![Version](http://cocoapod-badges.herokuapp.com/v/CBDCoreDataToolKit/badge.png)](http://cocoadocs.org/docsets/CBDCoreDataToolKit)
-[![Platform](http://cocoapod-badges.herokuapp.com/p/CBDCoreDataToolKit/badge.png)](http://cocoadocs.org/docsets/CBDCoreDataToolKit)
 
 
-## CBDCoreDataToolKit : cloning, replacing & fetching easyly
+## CBDCoreDataToolKit : cloning, replacing & fetching easily
 
 You have three parts.
 

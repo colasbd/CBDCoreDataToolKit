@@ -50,7 +50,5 @@ Pod::Spec.new do |s|
   s.osx.platform   = :osx, '10.7'
 
   s.framework = 'CoreData'
-
-  s.dependency 'KCOrderedAccessorFix', '~>0.0.1'
-
+  
 end

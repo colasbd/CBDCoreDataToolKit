@@ -35,9 +35,9 @@
     [myInit initializeCocoaLumberjack] ;
     
     
-    DDLogInfo(@"Fixing the ordered relationships for CoreData") ;
+    NSLog(@"Fixing the ordered relationships for CoreData") ;
     [self.managedObjectModel kc_generateOrderedSetAccessors] ;
-    DDLogVerbose(@"Fixing the ordered relationships for CoreData : done") ;
+    NSLog(@"Fixing the ordered relationships for CoreData : done") ;
     
     /*
      Création de l'application helper

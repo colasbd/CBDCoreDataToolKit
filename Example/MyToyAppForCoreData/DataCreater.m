@@ -184,7 +184,7 @@
     NSArray * result  = [myContext executeFetchRequest:myRequest
                                                  error:&error] ;
     
-    DDLogVerbose(@"Anciennes données :\n%@", result) ;
+    NSLog(@"Anciennes données :\n%@", result) ;
     
     /*
      ********************************
@@ -192,7 +192,7 @@
      ********************************
      */
     
-    DDLogVerbose(@"Suppressions des anciennes données");
+    NSLog(@"Suppressions des anciennes données");
     for (NSManagedObject * obj in self.theMOC.registeredObjects)
     {
         [self.theMOC deleteObject:obj] ;
@@ -207,7 +207,7 @@
 {
     [self deleteOldData] ;
     
-    DDLogVerbose(@"Création des données");
+    NSLog(@"Création des données");
     
     /*
      Personnes
@@ -514,12 +514,12 @@
 
 
     
-    DDLogVerbose(@"Fetching des personnes");
+    NSLog(@"Fetching des personnes");
     
     NSArray * result = [Person allInMOC:self.theMOC
                          orderedBy_cbd_:@"name"] ;
     
-    DDLogVerbose(@"%@", result) ;
+    NSLog(@"%@", result) ;
     
 }
 
