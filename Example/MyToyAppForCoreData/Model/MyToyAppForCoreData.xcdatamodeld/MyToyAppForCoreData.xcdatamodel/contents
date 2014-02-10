@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="City" representedClassName="City" parentEntity="EntityWithName" syncable="YES">
+        <relationship name="companies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Company" inverseName="city" inverseEntity="Company" syncable="YES"/>
+        <relationship name="inhabitants" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="city" inverseEntity="Person" syncable="YES"/>
+        <relationship name="lovers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="preferedCities" inverseEntity="Person" syncable="YES"/>
+    </entity>
+    <entity name="Company" representedClassName="Company" parentEntity="EntityWithName" syncable="YES">
+        <relationship name="city" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="companies" inverseEntity="City" syncable="YES"/>
+        <relationship name="employees" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="company" inverseEntity="Person" syncable="YES"/>
+    </entity>
+    <entity name="EntityWithName" representedClassName="EntityWithName" isAbstract="YES" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Family" representedClassName="Family" parentEntity="EntityWithName" syncable="YES">
+        <relationship name="members" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Person" inverseName="family" inverseEntity="Person" syncable="YES"/>
+        <relationship name="pets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pet" inverseName="family" inverseEntity="Pet" syncable="YES"/>
+    </entity>
+    <entity name="Person" representedClassName="Person" parentEntity="EntityWithName" syncable="YES">
+        <attribute name="birthYear" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="isMale" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="city" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="inhabitants" inverseEntity="City" syncable="YES"/>
+        <relationship name="colleagues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="colleagues" inverseEntity="Person" syncable="YES"/>
+        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="employees" inverseEntity="Company" syncable="YES"/>
+        <relationship name="family" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Family" inverseName="members" inverseEntity="Family" syncable="YES"/>
+        <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Person" inverseName="peopleWhoHaveMeAsAFriend" inverseEntity="Person" syncable="YES"/>
+        <relationship name="peopleWhoHaveMeAsAFriend" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="friends" inverseEntity="Person" syncable="YES"/>
+        <relationship name="pets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pet" inverseName="owner" inverseEntity="Pet" syncable="YES"/>
+        <relationship name="preferedCities" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="City" inverseName="lovers" inverseEntity="City" syncable="YES"/>
+    </entity>
+    <entity name="Pet" representedClassName="Pet" parentEntity="EntityWithName" syncable="YES">
+        <relationship name="family" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Family" inverseName="pets" inverseEntity="Family" syncable="YES"/>
+        <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="pets" inverseEntity="Person" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="City" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Company" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EntityWithName" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Family" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Person" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Pet" positionX="0" positionY="0" width="0" height="0"/>
+    </elements>
+</model>

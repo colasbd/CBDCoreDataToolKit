@@ -1,0 +1,8 @@
+platform :osx, '10.7'
+
+xcodeproj 'MyToyAppForCoreData.xcodeproj'
+
+pod 'MyCBDLumberJack', '~>0.0.1'
+
+pod 'MyCBDCoreDataToolKit', :path => '/Users/colas/MyDeveloper/MyLibraries/MyCBDCoreDataToolKit/'
+#pod 'CBDCoreDataToolKit', '~>0.0.1'

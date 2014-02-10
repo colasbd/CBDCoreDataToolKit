@@ -1,0 +1,19 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+    // Cocoa Lumberjack
+    #import "DDLog.h"
+#endif
+
+
+#ifdef DEBUG
+    //static const int ddLogLevel = LOG_LEVEL_DEBUG;
+    static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+#else
+    static const int ddLogLevel = LOG_LEVEL_WARN;
+#endif

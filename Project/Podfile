@@ -1,7 +1,0 @@
-pod "CBDCoreDataToolKit", :path => "../CBDCoreDataToolKit.podspec"
-
-target "Demo" do
-end
-
-target "DemoTests" do
-end
