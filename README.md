@@ -4,7 +4,7 @@
 [![Platform](http://cocoapod-badges.herokuapp.com/p/CBDCoreDataToolKit/badge.png)](http://cocoadocs.org/docsets/CBDCoreDataToolKit)
 
 
-## What is it?
+## CBDCoreDataToolKit : cloning, replacing & fetching easyly
 
 You have three parts.
 
