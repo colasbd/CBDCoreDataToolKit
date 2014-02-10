@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 #import "NSManagedObjectModel+KCOrderedAccessorFix.h"
-#import "InitializationCocoaLumberjack.h"
 #import "MyApplicationHelper.h"
 
 @implementation AppDelegate
@@ -27,14 +26,7 @@
 
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-    /*
-     Mise en place de CocoaLumberjack.
-     */
-    InitializationCocoaLumberjack * myInit = [[InitializationCocoaLumberjack alloc] init] ;
-    [myInit initializeCocoaLumberjack] ;
-    
-    
+{    
     NSLog(@"Fixing the ordered relationships for CoreData") ;
     [self.managedObjectModel kc_generateOrderedSetAccessors] ;
     NSLog(@"Fixing the ordered relationships for CoreData : done") ;

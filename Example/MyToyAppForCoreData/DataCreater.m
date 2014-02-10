@@ -224,7 +224,7 @@
     
     self.ada = ada ;
     
-    Person * marion = [Person createPersonWithName:@"Marion"
+    Person * marion = [Person createPersonWithName:@"Marie"
                                     withBirthYear:1979
                                            isMale:NO
                                            forMOC:self.theMOC] ;
@@ -288,25 +288,25 @@
      Familles
      */
     
-    Family * bardavid = [Family createEntityWithName:@"Bardavid"
+    Family * bardavid = [Family createEntityWithName:@"Ben Daoud"
                                               forMOC:self.theMOC] ;
     
-    Family * chevillard = [Family createEntityWithName:@"Chevillard"
+    Family * chevillard = [Family createEntityWithName:@"Le Roi"
                                               forMOC:self.theMOC] ;
     
-    Family * ackerman = [Family createEntityWithName:@"Ackerman"
+    Family * ackerman = [Family createEntityWithName:@"Kellerman"
                                               forMOC:self.theMOC] ;
     
-    Family * martinou = [Family createEntityWithName:@"Martinou"
+    Family * martinou = [Family createEntityWithName:@"Ginseng"
                                               forMOC:self.theMOC] ;
     
-    Family * bruneton = [Family createEntityWithName:@"Bruneton"
+    Family * bruneton = [Family createEntityWithName:@"Martin"
                                               forMOC:self.theMOC] ;
     
-    Family * zecchini = [Family createEntityWithName:@"Zecchini"
+    Family * zecchini = [Family createEntityWithName:@"Tomato"
                                               forMOC:self.theMOC] ;
     
-    Family * paini = [Family createEntityWithName:@"Païni"
+    Family * paini = [Family createEntityWithName:@"Païen"
                                             forMOC:self.theMOC] ;
     
     
