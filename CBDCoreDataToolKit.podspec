@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => 'https://github.com/colasjojo/CBDCoreDataToolKit.git', 
                      :tag =>  "#{s.version}" }
 
+  s.source_file = 'Classes/CBDCoreDataToolKit.h'
 
   s.subspec 'Cloning' do |ss|
     ss.source_files = 'Classes/Cloning/**/*.{h,m}'
@@ -40,5 +41,6 @@ Pod::Spec.new do |s|
   s.osx.platform   = :osx, '10.7'
 
   s.framework = 'CoreData'
+  
   
 end

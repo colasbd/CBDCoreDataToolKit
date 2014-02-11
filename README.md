@@ -5,7 +5,7 @@
 * [Víctor Pena Placer](https://github.com/vicpenap/VPPCoreData)
 * [user353759](http://stackoverflow.com/users/353759/user353759)
 
-## CBDCoreDataToolKit : cloning, replacing & fetching easily
+## CBDCoreDataToolKit: cloning, replacing & fetching easily
 
 Three things now (more to come?):
 
@@ -43,12 +43,12 @@ Colas, colas.bardavid@gmail.com
 
 ## Changelog
 
-- 2012/03/14 (v0.0.2): Improved documentation.
-- 2012/02/15 (v0.0.1): First release.
+- 2014/02/11 (v0.0.2): Improved documentation.
+- 2014/02/10 (v0.0.1): First release.
 
 ## License 
 
-Copyright (c) 2012 Colas Bardavid
+Copyright (c) 2014 Colas Bardavid
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:

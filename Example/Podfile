@@ -2,5 +2,5 @@ platform :osx, '10.7'
 
 xcodeproj 'MyToyAppForCoreData.xcodeproj'
 
-pod 'CBDCoreDataToolKit', :path => "../"
+pod 'CBDCoreDataToolKit', :path => "../CBDCoreDataToolKit.podspec"
 pod 'KCOrderedAccessorFix', '~>0.0.1'
