@@ -99,7 +99,7 @@
 /**
  The first instance in the fetch
  */
-- (instancetype) firstInMOC:(NSManagedObjectContext *)theMOC
+- (id) firstInMOC:(NSManagedObjectContext *)theMOC
                        orderedBy:(NSString *)orderBy
               withPredicate_cbd_:(NSPredicate *)predicate ;
 
@@ -108,7 +108,7 @@
 
  @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
-- (instancetype) firstInMOC:(NSManagedObjectContext *)theMOC
+- (id) firstInMOC:(NSManagedObjectContext *)theMOC
                        orderedBy:(NSString *)orderBy
         withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4) ;
 
@@ -196,15 +196,14 @@
 
 
 /** Returns the total amount of the objects from the entity. */
-- (NSUInteger) countforMOC_cbd_:(NSManagedObjectContext *)theMOC ;
-;
+- (NSUInteger) countInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
 
 
 
 /** Returns the total amount of the objects from the entity.
  
  @param predicate the predicate to filter with. */
-- (NSUInteger) countForMOC:(NSManagedObjectContext *)theMOC
+- (NSUInteger) countInMOC:(NSManagedObjectContext *)theMOC
          forPredicate_cbd_:(NSPredicate *)predicate ;
 
 
@@ -212,7 +211,7 @@
  
  @param predicate the predicate to filter with. 
  @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
-- (NSUInteger)     countForMOC:(NSManagedObjectContext *)theMOC
+- (NSUInteger)     countInMOC:(NSManagedObjectContext *)theMOC
        forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3) ;
 
 
@@ -226,7 +225,7 @@
 
 
 /** Removes all objects from the entity. */
-- (void) removeAllforMOC_cbd_:(NSManagedObjectContext *)theMOC ;
+- (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
 ;
 
 

@@ -24,6 +24,9 @@
 @implementation NSManagedObjectContext (CBDActiveRecord)
 
 
+#pragma mark - Fetching all
+
+
 - (NSArray *)allObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel
 {
     NSMutableArray * result = [@[] mutableCopy] ;
@@ -37,7 +40,7 @@
 }
 
 
-#pragma mark - Removing
+#pragma mark - Removing all
 
 
 /** Removes all objects from the caller class. */
@@ -50,6 +53,8 @@
 }
 
 
+#pragma mark - Counting all
+
 
 /** Returns the total amount of the objects from the caller class. */
 - (NSUInteger)countAllObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel
@@ -58,11 +63,310 @@
     
     for (NSEntityDescription * entity in aManagedObjectModel.entities)
     {
-        result = result + [entity countforMOC_cbd_:self] ;
+        result = result + [entity countInMOC_cbd_:self] ;
     }
     
     return result ;
 }
+
+
+
+
+#pragma mark - Getting
+/// Getting objects
+
+/**
+ Fetches all the NSManagedObject of the entity with the given name in the MOC.
+ */
+- (NSArray *) allForEntityWithName_cbd_:(NSString *)nameOfTheEntity
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity allInMOC_cbd_:self] ;
+}
+
+
+
+
+- (NSArray *) allForEntityWithName:(NSString *)nameOfTheEntity
+                    orderedBy_cbd_:(NSString *)orderBy
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity allInMOC:self
+             orderedBy_cbd_:orderBy] ;
+}
+
+
+/**
+ The first instance in the fetch
+ */
+- (id) firstForEntityWithName:(NSString *)nameOfTheEntity
+                    orderedBy:(NSString *)orderBy
+           withPredicate_cbd_:(NSPredicate *)predicate
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity firstInMOC:self
+                    orderedBy:orderBy
+           withPredicate_cbd_:predicate] ;
+    
+}
+
+/**
+ The first instance in the fetch
+ 
+ @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ */
+- (id) firstForEntityWithName:(NSString *)nameOfTheEntity
+                    orderedBy:(NSString *)orderBy
+     withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4)
+{
+    NSPredicate * myPredicate ;
+    
+    va_list ap;
+    va_start(ap, formatString);
+    
+    myPredicate = [NSPredicate predicateWithFormat:formatString
+                                         arguments:ap] ;
+    va_end(ap);
+    
+    
+    return [self findForEntityWithName:nameOfTheEntity
+                             orderedBy:orderBy
+                    withPredicate_cbd_:myPredicate] ;
+}
+
+
+/**
+ Does a fetch.
+ */
+- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
+                 withPredicate_cbd_:(NSPredicate *)predicate
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity findInMOC:self
+          withPredicate_cbd_:predicate] ;
+    
+}
+
+
+/**
+ Does a fetch.
+ 
+ @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ */
+- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
+           withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3)
+{
+    NSPredicate * myPredicate ;
+    
+    va_list ap;
+    va_start(ap, formatString);
+    
+    myPredicate = [NSPredicate predicateWithFormat:formatString
+                                         arguments:ap] ;
+    va_end(ap);
+    
+    
+    return [self findForEntityWithName:nameOfTheEntity
+                    withPredicate_cbd_:myPredicate] ;
+}
+
+
+
+
+
+/** Returns objects from the entity with the given name.
+ 
+ @param predicate the predicate to filter with.
+ @param orderBy an SQL-like order by clause.
+ */
+
+- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
+                          orderedBy:(NSString *)orderBy
+                 withPredicate_cbd_:(NSPredicate *)predicate
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity findInMOC:self
+                   orderedBy:orderBy
+          withPredicate_cbd_:predicate] ;
+    
+}
+
+/** Returns objects from the entity with the given name.
+ 
+ @param predicate the predicate to filter with.
+ @param orderBy an SQL-like order by clause.
+ @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ */
+
+- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
+                          orderedBy:(NSString *)orderBy
+           withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4)
+{
+    NSPredicate * myPredicate ;
+    
+    va_list ap;
+    va_start(ap, formatString);
+    
+    myPredicate = [NSPredicate predicateWithFormat:formatString
+                                         arguments:ap] ;
+    va_end(ap);
+    
+    
+    return [self findForEntityWithName:nameOfTheEntity
+                             orderedBy:orderBy
+                    withPredicate_cbd_:myPredicate] ;
+}
+
+
+
+
+/** Returns objects from the entity with the given name.
+ 
+ @param predicate the predicate to filter with.
+ @param orderBy an SQL-like order by clause.
+ @param offset the index of the first element to retrieve.
+ @param limit the maximum amount of objects to retrieve.
+ */
+- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
+                          orderedBy:(NSString *)orderBy
+                             offset:(int)offset
+                              limit:(int)limit
+                 withPredicate_cbd_:(NSPredicate *)predicate
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity findInMOC:self
+                   orderedBy:orderBy
+                      offset:offset
+                       limit:limit
+          withPredicate_cbd_:predicate] ;
+    
+}
+
+
+/** Returns objects from the entity with the given name.
+ 
+ @param predicate the predicate to filter with.
+ @param orderBy an SQL-like order by clause.
+ @param offset the index of the first element to retrieve.
+ @param limit the maximum amount of objects to retrieve.
+ @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ 
+ */
+- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
+                          orderedBy:(NSString *)orderBy
+                             offset:(int)offset
+                              limit:(int)limit
+           withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(5, 6)
+{
+    NSPredicate * myPredicate ;
+    
+    va_list ap;
+    va_start(ap, formatString);
+    
+    myPredicate = [NSPredicate predicateWithFormat:formatString
+                                         arguments:ap] ;
+    va_end(ap);
+    
+    
+    return [self findForEntityWithName:nameOfTheEntity
+                             orderedBy:orderBy
+                                offset:offset
+                                 limit:limit
+                    withPredicate_cbd_:myPredicate] ;
+}
+
+
+
+
+
+
+#pragma mark - Counting
+/// Counting
+
+
+
+/** Returns the total amount of the objects from the entity with the given name. */
+- (NSUInteger) countAllForEntityWithName_cbd_:(NSString *)nameOfTheEntity
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity countInMOC_cbd_:self] ;
+    
+}
+
+
+
+
+/** Returns the total amount of the objects from the entity with the given name.
+ 
+ @param predicate the predicate to filter with. */
+- (NSUInteger) countForEntityWithName:(NSString *)nameOfTheEntity
+                    forPredicate_cbd_:(NSPredicate *)predicate
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity countInMOC:self forPredicate_cbd_:predicate] ;
+    
+}
+
+
+/** Returns the total amount of the objects from the entity with the given name.
+ 
+ @param predicate the predicate to filter with.
+ @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
+- (NSUInteger) countForEntityWithName:(NSString *)nameOfTheEntity
+              forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3)
+{
+    NSPredicate * myPredicate ;
+    
+    va_list ap;
+    va_start(ap, formatString);
+    
+    myPredicate = [NSPredicate predicateWithFormat:formatString
+                                         arguments:ap] ;
+    va_end(ap);
+
+    
+    return [self countForEntityWithName:nameOfTheEntity
+                      forPredicate_cbd_:myPredicate] ;
+}
+
+
+
+
+
+
+
+#pragma mark - Removing
+/// Removing
+
+
+/** Removes all objects from the entity with the given name. */
+- (void) removeAllForEntityWithName:(NSString *)nameOfTheEntity
+{
+    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                               inManagedObjectContext:self] ;
+    
+    return [entity removeAllInMOC_cbd_:self] ;
+    
+}
+
+
+
 
 
 

@@ -11,7 +11,7 @@
 
 #import "NSManagedObjectContext+CBDReplacingAnObject.h"
 #import "NSManagedObjectContext+CBDClone.h"
-#import "NSManagedObject+Clone.h"
+#import "NSManagedObject+CBDClone.h"
 #import "NSManagedObjectContext+CBDActiveRecord.h"
 #import "NSManagedObject+CBDActiveRecord.h"
 #import "NSEntityDescription+CBDActiveRecord.h"

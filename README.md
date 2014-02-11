@@ -43,6 +43,7 @@ Colas, colas.bardavid@gmail.com
 
 ## Changelog
 
+- 2014/02/11 (v1.0.0): New methods. Few changes in the names of the methods.
 - 2014/02/11 (v0.0.2): Improved documentation.
 - 2014/02/10 (v0.0.1): First release.
 

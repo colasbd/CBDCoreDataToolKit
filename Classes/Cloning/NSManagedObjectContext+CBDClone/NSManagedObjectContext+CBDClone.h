@@ -11,7 +11,7 @@
 /**
  Import a bunch of objects from a MOC to another MOC.
  */
-@interface NSManagedObjectContext (Clone)
+@interface NSManagedObjectContext (CBDClone)
 
 /**
  Imports objects from a MOC to another MOC.

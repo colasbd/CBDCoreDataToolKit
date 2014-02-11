@@ -283,9 +283,9 @@
 
 
 /** Returns the total amount of the objects from the caller class. */
-+ (NSUInteger) countforMOC_cbd_:(NSManagedObjectContext *)theMOC
++ (NSUInteger) countInMOC_cbd_:(NSManagedObjectContext *)theMOC
 {
-    return [self countForMOC:theMOC
+    return [self countInMOC:theMOC
            forPredicate_cbd_:nil] ;
 }
 
@@ -295,7 +295,7 @@
  
  @param predicate the predicate to filter with. */
 
-+ (NSUInteger)      countForMOC:(NSManagedObjectContext *)theMOC
++ (NSUInteger)      countInMOC:(NSManagedObjectContext *)theMOC
         forPredicateFormat_cbd_:(NSString *)formatString, ...
 {
     NSPredicate * myPredicate ;
@@ -307,18 +307,18 @@
                                          arguments:ap] ;
     va_end(ap);
 
-    return [self countForMOC:theMOC
+    return [self countInMOC:theMOC
            forPredicate_cbd_:myPredicate] ;
 }
 
 
 
-+ (NSUInteger)countForMOC:(NSManagedObjectContext *)theMOC
++ (NSUInteger)countInMOC:(NSManagedObjectContext *)theMOC
         forPredicate_cbd_:(NSPredicate *)predicate
 {
     NSEntityDescription * theEntity = [self entityInMOC_cbd_:theMOC] ;
 
-    return [theEntity countForMOC:theMOC
+    return [theEntity countInMOC:theMOC
                 forPredicate_cbd_:predicate] ;
 }
 
@@ -351,7 +351,7 @@
 
 
 /** Removes all objects from the caller class. */
-+ (void) removeAllforMOC_cbd_:(NSManagedObjectContext *)theMOC
++ (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC
 {
     for (NSManagedObject * managedObject in [self allInMOC_cbd_:theMOC])
     {
