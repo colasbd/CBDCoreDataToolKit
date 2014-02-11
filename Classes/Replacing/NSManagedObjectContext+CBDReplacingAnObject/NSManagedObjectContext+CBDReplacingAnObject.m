@@ -1,6 +1,6 @@
 //
 //  NSManagedObjectContext+ReplacingAnObject.m
-//  MyMaths
+//  CBDCoreDataToolKit
 //
 //  Created by Colas on 03/02/2014.
 //  Copyright (c) 2014 Colas. All rights reserved.

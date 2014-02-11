@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "CBDCoreDataToolKit"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "Clone, replace and search methods for CoreData"
 
   s.description  = <<-DESC
@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
                    DESC
 
   s.author        = { "Colas" => "colas.bardavid@gmail.com" }
-  s.homepage      = "https://www.facebook.com/colasjojo"
+  s.homepage      = "https://github.com/colasjojo/CBDCoreDataToolKit"
 
   s.license = { :type => 'MIT', 
                 :text =>  <<-LICENSE
@@ -43,6 +43,7 @@ Pod::Spec.new do |s|
                      :tag =>  "#{s.version}" }
 
   s.source_files  = 'Classes/**/*.{h,m}'
+  s.preserve_paths = 'Classes/**/*.{h,m}'
 
   s.requires_arc = true
 
