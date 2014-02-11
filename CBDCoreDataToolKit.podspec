@@ -21,7 +21,6 @@ Pod::Spec.new do |s|
   s.source       = { :git => 'https://github.com/colasjojo/CBDCoreDataToolKit.git', 
                      :tag =>  "#{s.version}" }
 
-  s.source_files  = 'Classes/**/*.{h,m}'
 
   s.subspec 'Cloning' do |ss|
     ss.source_files = 'Classes/Cloning/**/*.{h,m}'
