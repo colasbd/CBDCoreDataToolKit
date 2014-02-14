@@ -26,17 +26,17 @@
 
 
 
-/*
- *************************************
- ATTENTION !!!
- 
- Les méthodes de classe ne marchent que si la méthode de classe
- + (NSString*)nameEntity
- est implémentée.
- 
- C'est le cas pour les classes générées par mogenerator.
- **************************************
- */
+
+
+#pragma mark - Create
+/// Create an object
+
+/**
+Creates an NSManagedObject belonging to the current entity.
+*/
+- (id)createInMOC_cbd_:(NSManagedObjectContext *)aMOC ;
+
+
 
 
 

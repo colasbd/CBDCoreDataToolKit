@@ -27,11 +27,11 @@
 #pragma mark - Fetching all
 
 
-- (NSArray *)allObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel
+- (NSArray *)allObjects_cbd_
 {
     NSMutableArray * result = [@[] mutableCopy] ;
     
-    for (NSEntityDescription * entity in aManagedObjectModel.entities)
+    for (NSEntityDescription * entity in [self allEntities_cbd_])
     {
         [result addObjectsFromArray:[entity allInMOC_cbd_:self]] ;
     }
@@ -40,13 +40,20 @@
 }
 
 
+- (NSArray *)allEntities_cbd_
+{
+    return self.persistentStoreCoordinator.managedObjectModel.entities ;
+}
+
+
+
 #pragma mark - Removing all
 
 
 /** Removes all objects from the caller class. */
-- (void)removeAllObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel
+- (void)removeAllObjects_cbd_
 {
-    for (NSManagedObject* managedObject in [self allObjectsOfModel_cbd_:aManagedObjectModel])
+    for (NSManagedObject* managedObject in [self allObjects_cbd_])
     {
         [managedObject remove_cbd_] ;
     }
@@ -57,11 +64,11 @@
 
 
 /** Returns the total amount of the objects from the caller class. */
-- (NSUInteger)countAllObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel
+- (NSUInteger)countAllObjects_cbd_
 {
     NSUInteger result = 0 ;
     
-    for (NSEntityDescription * entity in aManagedObjectModel.entities)
+    for (NSEntityDescription * entity in [self allEntities_cbd_])
     {
         result = result + [entity countInMOC_cbd_:self] ;
     }

@@ -52,8 +52,6 @@
 + (NSEntityDescription *)entityInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
 
 
-
-
 #pragma mark - Getting
 /// Getting objects
 
@@ -250,12 +248,95 @@
 
 
 #pragma mark - Refetching
+/// Removing
 
 
 /** Refetches the object. */
 - (instancetype) refetch_cbd_;
 
 
+
+
+#pragma mark - Looking for similar objects
+/// Looking for similar objects
+
+
+/**
+ Finds objects similar to self, according to attributes and relationships given in the arguments.
+ You can specify additionnal constraints with dicoOfFixedAttributesOrRelationships
+ 
+ Example
+ 
+ ```
+ [me findSimilarObjectsForAttributes:@[@"age", @"city"]
+                    forRelationships:nil
+       withAttributesOrRelationships:@{@"isMale" : @NO}] ;
+ ```
+ will look for `Person`s who have the same `age` as me, who live in the same `city` and with `isMale` attribute equal to `@NO`.
+ */
+- (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                            forRelationships:(NSArray *)arrayOfNamesOfRelationships
+          withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships ;
+
+
+/**
+ Finds objects similar to self, according to attributes and relationships given in the arguments.
+ You can specify additionnal constraints with dicoOfFixedAttributesOrRelationships
+ 
+ Does the fetch in a MOC that you can specify.
+ */
+- (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
+          similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                     forRelationships:(NSArray *)arrayOfNamesOfRelationships
+   withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships ;
+
+/**
+ Finds objects similar to self, according to attributes and relationships given in the arguments.
+ You can specify additionnal constraints with additionalPredicate
+ 
+ Example
+ 
+ ```
+ [me findSimilarObjectsForAttributes:@[@"age", @"city"]
+ forRelationships:nil
+ withAdditionalPredicate_cbd_:[NSPredicate predicateWithFormat:@"isMale == NO"]] ;
+ ```
+ will look for `Person`s who have the same `age` as me, who live in the same `city` and with `isMale` attribute equal to `@NO`.
+ */
+- (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                            forRelationships:(NSArray *)arrayOfNamesOfRelationships
+                withAdditionalPredicate_cbd_:(NSPredicate *)additionalPredicate ;
+
+
+/**
+ Finds objects similar to self, according to attributes and relationships given in the arguments.
+ You can specify additionnal constraints with additionalPredicate in a format version.
+ */
+- (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                            forRelationships:(NSArray *)arrayOfNamesOfRelationships
+          withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4) ;
+
+/**
+ Finds objects similar to self, according to attributes and relationships given in the arguments.
+ You can specify additionnal constraints with additionalPredicate.
+ 
+ Does the fetch in a MOC that you can specify.
+ */
+- (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
+          similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                     forRelationships:(NSArray *)arrayOfNamesOfRelationships
+         withAdditionalPredicate_cbd_:(NSPredicate *)additionalPredicate ;
+
+/**
+ Finds objects similar to self, according to attributes and relationships given in the arguments.
+ You can specify additionnal constraints with additionalPredicate in a format version.
+ 
+ Does the fetch in a MOC that you can specify.
+ */
+- (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
+          similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                     forRelationships:(NSArray *)arrayOfNamesOfRelationships
+   withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(4, 5) ;
 
 
 @end

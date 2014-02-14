@@ -2,14 +2,15 @@ Pod::Spec.new do |s|
 
 
   s.name         = "CBDCoreDataToolKit"
-  s.version      = "1.0.0"
-  s.summary      = "Clone, replace and search methods for CoreData"
+  s.version      = "2.0.0"
+  s.summary      = "Clone, replace, import and fetch methods for CoreData"
 
   s.description  = <<-DESC
-                  Cool and powerful methods for CoreData
+                  Clone, replace, import and fetch methods for CoreData
 
                   * cloning a NSManagedObject from a NSManagedObjectContext (MOC) to another
                   * replacing a NSManagedObject by another
+                  * importing objects from a MOC to another MOC
                   * wrapping methods for fetching objects. These methods don't create the MOC, the NSManagedObjectModel, etc. So, they are fully working with NSPersistentDocument
                    DESC
 
@@ -22,6 +23,14 @@ Pod::Spec.new do |s|
                      :tag =>  "#{s.version}" }
 
   s.source_files = 'Classes/CBDCoreDataToolKit.h'
+
+  s.subspec 'Misc' do |ss|
+    ss.source_files = 'Classes/Misc/**/*.{h,m}'
+  end
+
+  s.subspec 'Importing' do |ss|
+    ss.source_files = 'Classes/Importing/**/*.{h,m}'
+  end
 
   s.subspec 'Cloning' do |ss|
     ss.source_files = 'Classes/Cloning/**/*.{h,m}'

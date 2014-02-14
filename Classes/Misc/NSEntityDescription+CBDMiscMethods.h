@@ -1,0 +1,54 @@
+//
+//  NSEntityDescription+CBDMiscMethods.h
+//  Pods
+//
+//  Created by Colas on 12/02/2014.
+//
+//
+
+#import <CoreData/CoreData.h>
+
+@interface NSEntityDescription (CBDMiscMethods)
+
+extern NSString* const CBDKeyDescriptionAttribute ;
+extern NSString* const CBDKeyDescriptionToOneRelationship ;
+extern NSString* const CBDKeyDescriptionToManyNonOrderedRelationship ;
+extern NSString* const CBDKeyDescriptionToManyOrderedRelationship ;
+extern NSString* const CBDKeyUnmatchedKey ;
+
+
+/**
+ This method takes an array of names and return a dictionnary.
+ 
+ The dictionnary returned has five keys:
+  - CBDKeyDescriptionAttribute ;
+  - CBDKeyDescriptionToOneRelationship ;
+  - CBDKeyDescriptionToManyNonOrderedRelationship ;
+  - CBDKeyDescriptionToManyOrderedRelationship ;
+  - CBDKeyUnmatchedKey ;
+ 
+ The names in the NSArray* argument namesOfAttributesOrRelationships are dispatched in these five keys. 
+ If the name does not correspond to any attribute or relationships, it will be in "excluded".
+ 
+ The object for each key is a NSArray.
+ */
+- (NSDictionary *)classifyAttributesAndRelationships_cbd_:(NSArray *)namesOfAttributesOrRelationships ;
+
+
+/**
+ Is the instance a subentity on the entity (in the same model) with the given name.
+ */
+- (BOOL)isKindOfEntityWithName_cbd_:(NSString *)nameEntity ;
+
+
+/**
+ Returns the entities whose the instance inherits
+ */
+- (NSSet *)parentEntitiesAmong_cbd_:(NSSet *)setOfEntities ;
+
+/**
+ Returns YES if any of the entities in the given set is a "parent-entity" of the instance
+ */
+- (BOOL)inheritsFromSomeEntityAmong_cbd_:(NSSet *)setOfEntities ;
+
+@end

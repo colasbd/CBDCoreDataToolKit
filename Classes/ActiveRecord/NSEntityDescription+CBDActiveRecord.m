@@ -32,6 +32,20 @@
 
 
 
+//
+//
+/**************************************/
+#pragma mark - Create
+/**************************************/
+
+
+- (id)createInMOC_cbd_:(NSManagedObjectContext *)aMOC
+{
+    return [[NSManagedObject alloc] initWithEntity:self
+                    insertIntoManagedObjectContext:aMOC] ;
+}
+
+
 
 
 #pragma mark - Getting

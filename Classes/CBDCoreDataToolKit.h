@@ -9,9 +9,22 @@
 
 #import <CoreData/CoreData.h>
 
-#import "NSManagedObjectContext+CBDReplacingAnObject.h"
+// Cloning
 #import "NSManagedObjectContext+CBDClone.h"
 #import "NSManagedObject+CBDClone.h"
+
+// Replacing
+#import "NSManagedObjectContext+CBDReplacingAnObject.h"
+
+// Importing
+#import "CBDCoreDataDiscriminatorUnit.h"
+#import "CBDCoreDataImporter.h"
+#import "CBDCoreDataDiscriminator.h"
+
+// Active Record
 #import "NSManagedObjectContext+CBDActiveRecord.h"
 #import "NSManagedObject+CBDActiveRecord.h"
 #import "NSEntityDescription+CBDActiveRecord.h"
+
+// Misc
+

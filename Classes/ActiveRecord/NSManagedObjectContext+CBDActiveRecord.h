@@ -219,24 +219,26 @@
 #pragma mark - Getting all
 /// Getting all
 
-/** Returns all the objects in the MOC for the given model. */
-- (NSArray *) allObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel ;
 
+/** Returns all the objects in the MOC for the associated model. */
+- (NSArray *) allObjects_cbd_ ;
 
+/** Returns all the entities associated to model associated to the MOC. */
+- (NSArray *) allEntities_cbd_ ;
 
 #pragma mark - Counting all
 /// Counting all
 
-/** Returns the total amount of the objects in the MOC for the given model. */
-- (NSUInteger) countAllObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel ;
+/** Returns the total amount of the objects in the MOC for the associated model. */
+- (NSUInteger) countAllObjects_cbd_ ;
 
 
 #pragma mark - Removing all
 /// Removing all
 
 
-/** Removes all objects in the MOC for the given model. */
-- (void) removeAllObjectsOfModel_cbd_:(NSManagedObjectModel *)aManagedObjectModel ;
+/** Removes all objects in the MOC for the associated model. */
+- (void) removeAllObjects_cbd_ ;
 
 
 

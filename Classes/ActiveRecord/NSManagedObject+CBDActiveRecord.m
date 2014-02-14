@@ -55,7 +55,6 @@
         return nameEntity ;
     }
     
-    
     if (aMOC)
     {
         NSString * potentialNameEntity = NSStringFromClass(self);
@@ -371,6 +370,149 @@
 {
     return [self.managedObjectContext objectWithID:self.objectID] ;
 }
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Finding similar objects
+/**************************************/
+
+
+
+- (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                            forRelationships:(NSArray *)arrayOfNamesOfRelationships
+          withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships
+{
+    return           [self findInMOC:self.managedObjectContext
+         similarObjectsForAttributes:arrayOfNamesOfAttributes
+                    forRelationships:arrayOfNamesOfAttributes
+  withAttributesOrRelationships_cbd_:dicoOfFixedAttributesOrRelationships];
+}
+
+
+
+- (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
+          similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                     forRelationships:(NSArray *)arrayOfNamesOfRelationships
+   withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships
+{
+    NSMutableArray * arrayOfPredicates = [@[] mutableCopy] ;
+    
+    [dicoOfFixedAttributesOrRelationships enumerateKeysAndObjectsUsingBlock:
+     ^(NSString * nameAttributeOrRel, id valueAttributeOrRel, BOOL *stop)
+     {
+         NSPredicate * myPred = [NSPredicate predicateWithFormat:@"%K == %@", nameAttributeOrRel, valueAttributeOrRel] ;
+         [arrayOfPredicates addObject:myPred] ;
+     }] ;
+    
+    
+    NSPredicate * globalPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:arrayOfPredicates] ;
+    
+    return           [self findInMOC:aDifferentMOC
+         similarObjectsForAttributes:arrayOfNamesOfAttributes
+                    forRelationships:arrayOfNamesOfRelationships
+        withAdditionalPredicate_cbd_:globalPredicate] ;
+
+}
+
+
+
+
+- (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                            forRelationships:(NSArray *)arrayOfNamesOfRelationships
+                withAdditionalPredicate_cbd_:(NSPredicate *)additionnaryPredicate
+{
+    return         [self findInMOC:self.managedObjectContext
+       similarObjectsForAttributes:arrayOfNamesOfAttributes
+                  forRelationships:arrayOfNamesOfRelationships
+      withAdditionalPredicate_cbd_:additionnaryPredicate] ;
+}
+
+
+
+
+- (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                            forRelationships:(NSArray *)arrayOfNamesOfRelationships
+          withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4)
+{
+    NSPredicate * myPredicate ;
+    
+    va_list ap;
+    va_start(ap, formatString);
+    
+    myPredicate = [NSPredicate predicateWithFormat:formatString
+                                         arguments:ap] ;
+    va_end(ap);
+
+    return [self findSimilarObjectsForAttributes:arrayOfNamesOfAttributes
+                                forRelationships:arrayOfNamesOfRelationships
+                    withAdditionalPredicate_cbd_:myPredicate] ;
+}
+
+
+
+
+- (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
+          similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                     forRelationships:(NSArray *)arrayOfNamesOfRelationships
+         withAdditionalPredicate_cbd_:(NSPredicate *)additionnaryPredicate
+{
+    /*
+     Computing the predicate
+     */
+    NSMutableArray * arrayOfPredicates = [@[] mutableCopy] ;
+    
+    for (NSString * nameAttribute in arrayOfNamesOfAttributes)
+    {
+        NSPredicate * myPredicate = [NSPredicate predicateWithFormat:@"%K == %@", nameAttribute, [self valueForKey:nameAttribute]] ;
+        [arrayOfPredicates addObject:myPredicate] ;
+    }
+    
+    for (NSString * nameRelationship in arrayOfNamesOfRelationships)
+    {
+        NSPredicate * myPredicate = [NSPredicate predicateWithFormat:@"%K == %@", nameRelationship, [self valueForKey:nameRelationship]] ;
+        [arrayOfPredicates addObject:myPredicate] ;
+    }
+    
+    [arrayOfPredicates addObject:additionnaryPredicate] ;
+    
+    
+    NSPredicate * globalPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:arrayOfPredicates] ;
+    
+    NSString * sortingString = [arrayOfNamesOfAttributes componentsJoinedByString:@", "] ;
+    
+    return [self.entity findInMOC:aDifferentMOC
+                        orderedBy:sortingString
+               withPredicate_cbd_:globalPredicate] ;
+}
+
+
+
+- (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
+          similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
+                     forRelationships:(NSArray *)arrayOfNamesOfRelationships
+   withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(4, 5) ;
+{
+    NSPredicate * myPredicate ;
+    
+    va_list ap;
+    va_start(ap, formatString);
+    
+    myPredicate = [NSPredicate predicateWithFormat:formatString
+                                         arguments:ap] ;
+    va_end(ap);
+
+    return        [self findInMOC:aDifferentMOC
+      similarObjectsForAttributes:arrayOfNamesOfAttributes
+                 forRelationships:arrayOfNamesOfRelationships
+     withAdditionalPredicate_cbd_:myPredicate] ;
+}
+
+
 
 
 
