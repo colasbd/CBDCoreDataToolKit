@@ -358,53 +358,174 @@
     
     [arrayOfStatus enumerateObjectsUsingBlock:^(NSNumber *objectStatus, NSUInteger idx, BOOL *stop)
      {
-         CBDCoreDataDiscriminatorSimilarityStatus status = [objectStatus integerValue] ;
-         
-         if (status == CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus)
-         {
-             result = CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
-             *stop = YES ;
-         }
-         
-             switch (result)
-             {
-                 case CBDCoreDataDiscriminatorSimilarityStatusNoStatus:
-                     result = status ;
-                     break;
-                     
-                 case CBDCoreDataDiscriminatorSimilarityStatusIsChecking:
-                 {
-                     if (status != CBDCoreDataDiscriminatorSimilarityStatusNoStatus)
-                     {
-                         result = status ;
-                     }
-                     break;
-                 }
-                     
-                 case CBDCoreDataDiscriminatorSimilarityStatusIsSimilar:
-                 {
-                     if (status == CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar)
-                     {
-                         result = CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
-                     }
-                     break;
-                 }
-                     
-                 case CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar:
-                 {
-                     if (status == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar)
-                     {
-                         result = CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
-                     }
-                     break;
-                 }
-                     
-                 default:
-                     break;
-             }
+         result = [CBDCoreDataDiscriminatorHintCatalog synthesisOfStatus:[objectStatus integerValue]
+                                                               andStatus:result] ;
      }];
     
     return result ;
+}
+
+
+
+
+//typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminatorSimilarityStatus)
+//{
+//    CBDCoreDataDiscriminatorSimilarityStatusNoStatus,
+//    CBDCoreDataDiscriminatorSimilarityStatusIsSimilar,
+//    CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar,
+//    CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar,
+//    CBDCoreDataDiscriminatorSimilarityStatusIsChecking,
+//    CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus,
+//    CBDCoreDataDiscriminatorSimilarityStatusCount
+//};
+
+
+
++ (CBDCoreDataDiscriminatorSimilarityStatus) synthesisOfStatus:(CBDCoreDataDiscriminatorSimilarityStatus)firstStatus
+                                                     andStatus:(CBDCoreDataDiscriminatorSimilarityStatus)secondStatus
+{
+    switch (firstStatus)
+    {
+            
+            /***
+             1
+             ***/
+        case CBDCoreDataDiscriminatorSimilarityStatusNoStatus:
+        {
+            return secondStatus ;
+            break;
+        }
+
+            
+            /***
+             2
+             ***/
+        case CBDCoreDataDiscriminatorSimilarityStatusIsSimilar:
+        {
+            switch (secondStatus)
+            {
+                case CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
+                    break;
+                }
+                    
+                case CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
+                    break;
+                }
+                    
+                default:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusIsSimilar ;
+                    break;
+                }
+            }
+            break;
+        }
+         
+            
+            /***
+             3
+             ***/
+        case CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar:
+        {
+            switch (secondStatus)
+            {
+                case CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
+                    break;
+                }
+                    
+                case CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar ;
+                    break;
+                }
+                    
+                case CBDCoreDataDiscriminatorSimilarityStatusIsSimilar:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusIsSimilar ;
+                    break;
+                }
+                    
+                default:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar ;
+                    break;
+                }
+            }
+            break;
+        }
+            
+            
+            /***
+             4
+             ***/
+        case CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar:
+        {
+            switch (secondStatus)
+            {
+                case CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
+                    break;
+                }
+                    
+                case CBDCoreDataDiscriminatorSimilarityStatusIsSimilar:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
+                    break;
+                }
+                    
+                default:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar ;
+                    break;
+                }
+            }
+            break;
+        }
+            
+            /***
+             5
+             ***/
+        case CBDCoreDataDiscriminatorSimilarityStatusIsChecking:
+        {
+            switch (secondStatus)
+            {
+                case CBDCoreDataDiscriminatorSimilarityStatusNoStatus:
+                {
+                    return CBDCoreDataDiscriminatorSimilarityStatusIsChecking ;
+                    break;
+                }
+                    
+                default:
+                {
+                    return secondStatus ;
+                    break;
+                }
+            }
+            break;
+        }
+
+            /***
+             6
+             ***/
+        case CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus:
+        {
+            return CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
+            break;
+        }
+            
+        default:
+        {
+            return CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
+            break;
+        }
+    }
 }
 
 
@@ -470,23 +591,16 @@
 {
     NSMutableSet * result = [[NSMutableSet alloc] init] ;
     
-    for (CBDCoreDataDiscriminatorHint * hint in self.hints)
+    for (CBDCoreDataDiscriminatorHint * hint in [self usefulHintsBetweenSourceObject:sourceObject
+                                                                     andTargetObject:targetObject])
     {
-        if (hint.type == CBDCoreDataDiscriminatorHintAboutRelationship
-            &&
-            hint.sourceObject == sourceObject
-            &&
-            hint.targetObject == targetObject)
+        if (hint.type == CBDCoreDataDiscriminatorHintAboutRelationship)
         {
             [result addObject:hint.relationship] ;
         }
         
         
         if (hint.type == CBDCoreDataDiscriminatorHintAboutSimilarity
-            &&
-            hint.sourceObject == sourceObject
-            &&
-            hint.targetObject == targetObject
             &&
             hint.relationship != nil
             &&

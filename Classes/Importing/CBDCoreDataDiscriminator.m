@@ -12,7 +12,7 @@
 #import "CBDCoreDataDiscriminatorHintCatalog.h"
 #import "NSEntityDescription+CBDMiscMethods.h"
 #import "NSManagedObject+CBDMiscMethods.h"
-
+#import "CBDCoreDataDiscriminator+UsingPredicateAndFetching.h"
 
 
 /**
@@ -56,6 +56,11 @@ const BOOL optionYESIfChecking = NO ;
 const BOOL ignoreWinsOverInclude = YES ;
 
 
+/*
+ If safeMode == YES, there is less chance of NSException, 
+ but I didn't prove that the algorithm is exact (but I don't have any counter-example)
+ */
+const BOOL safeMode = NO ;
 
 
 
@@ -63,8 +68,7 @@ const BOOL ignoreWinsOverInclude = YES ;
 
 @property (nonatomic)BOOL shouldLog ;
 
-//@property (nonatomic, strong, readwrite)NSMutableSet * mutableDiscriminatorUnits ;
-//@property (nonatomic, strong, readwrite)NSMutableSet * mutableRegisteredEntities ;
+
 @property (nonatomic, strong, readwrite)NSMutableDictionary * discriminatorUnitByEntity ;
 
 @property (nonatomic, readwrite) CBDCoreDataDiscriminationType discriminationType ;
@@ -110,8 +114,6 @@ const BOOL ignoreWinsOverInclude = YES ;
     if (self)
     {
         self.shouldLog = NO ;
-        //self.mutableDiscriminatorUnits = [[NSMutableSet alloc] init] ;
-        //self.mutableRegisteredEntities = [[NSMutableSet alloc] init] ;
         self.globalHintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
         self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
         [self chooseFacilitatingType] ;
@@ -129,11 +131,6 @@ const BOOL ignoreWinsOverInclude = YES ;
     
     newDiscriminator.discriminationType = self.discriminationType ;
     newDiscriminator.shouldLog = self.shouldLog ;
-    
-//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in self.discriminatorUnits)
-//    {
-//        [newDiscriminator addDiscriminatorUnit:discriminatorUnit] ;
-//    }
     
     newDiscriminator.discriminatorUnitByEntity = [self.discriminatorUnitByEntity copy];
     
@@ -174,13 +171,12 @@ const BOOL ignoreWinsOverInclude = YES ;
 //
 //
 /**************************************/
-#pragma mark - Managing Units and entities
+#pragma mark - Managing discriminatorUnits and entities
 /**************************************/
 
 
 - (NSArray *)discriminatorUnits
 {
-    //return [self.mutableDiscriminatorUnits copy] ;
     return [self.discriminatorUnitByEntity allValues] ;
 }
 
@@ -197,9 +193,6 @@ const BOOL ignoreWinsOverInclude = YES ;
     
     if (![[self.discriminatorUnitByEntity allKeys] containsObject:entity.name])
     {
-        //[self.mutableDiscriminatorUnits addObject:aDiscriminatorUnit] ;
-        //[self.mutableRegisteredEntities addObject:aDiscriminatorUnit.entity] ;
-        
         self.discriminatorUnitByEntity[entity.name] = aDiscriminatorUnit ;
     }
     else
@@ -211,15 +204,9 @@ const BOOL ignoreWinsOverInclude = YES ;
 }
 
 
-//
-//- (CBDCoreDataDiscriminatorUnit *)discriminatorUnitForEntity:(NSEntityDescription *)entity
-//{
-//    if ([self.registeredEntities containsObject:entity])
-//    {
-//        return self.discriminatorUnitByEntity[entity.name] ;
-//    }
-//    else
-//    {
+
+
+
 - (CBDCoreDataDiscriminatorUnit *)defaultDiscriminationUnitFor:(NSEntityDescription *)entity
 {
     switch (self.discriminationType)
@@ -247,30 +234,9 @@ const BOOL ignoreWinsOverInclude = YES ;
             break;
     }
 }
-//    }
-//}
 
 
-//
-//- (NSSet *)discriminatorUnitsForEntityAndItsParents:(NSEntityDescription *)entity ;
-//{
-//    NSMutableSet * result = [[NSMutableSet alloc] init] ;
-//    
-//    for (NSEntityDescription * registeredEntity in self.registeredEntities)
-//    {
-//        if ([entity isKindOfEntity:registeredEntity])
-//        {
-//            [result addObject:[self discriminatorUnitForEntity:registeredEntity]] ;
-//        }
-//    }
-//    
-//    if ([result count] == 0)
-//    {
-//        return [NSSet setWithObject:[self discriminatorUnitForEntity:entity]] ;
-//    }
-//    
-//    return result ;
-//}
+
 
 
 
@@ -278,8 +244,6 @@ const BOOL ignoreWinsOverInclude = YES ;
 
 - (void)removeAllDiscriminatorUnits
 {
-    //self.mutableDiscriminatorUnits = [[NSMutableArray alloc] init] ;
-    //self.mutableRegisteredEntities = [[NSMutableSet alloc] init] ;
     self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
     
     [self flushTheCache] ;
@@ -289,10 +253,21 @@ const BOOL ignoreWinsOverInclude = YES ;
 
 - (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity
 {
-    //[self.mutableRegisteredEntities removeObject:entity] ;
-    //[self.mutableDiscriminatorUnits removeObject:self.discriminatorUnitByEntity[entity.name]] ;
     [self.discriminatorUnitByEntity removeObjectForKey:entity.name] ;
 }
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - the DiscriminatorUnits : how they impact the entities
+/**************************************/
+
+
+
 
 
 
@@ -317,6 +292,10 @@ NSString * const   CBDCoreDataDiscriminatorGetExplicitelyIncluded = @"CBDCoreDat
 NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscriminatorGetInfoCount" ;
 
 
+
+/*
+ This method gets the infos recursively on entity.superentity
+ */
 - (NSDictionary *)getInfosFor:(NSEntityDescription *)entity
 {
     /*
@@ -469,6 +448,37 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 
 
+
+
+
+- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity
+{
+    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
+}
+
+
+- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
+{
+    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] ;
+}
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - DiscriminatingUnits
+/**************************************/
+/// @name <#argument#>
+
+
+
+
+
+
+
 //
 //
 /**************************************/
@@ -517,7 +527,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     
     NSEntityDescription * entity = sourceObject.entity ;
     
-    NSSet *setOfAttributesToCheck = [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
+    NSSet *setOfAttributesToCheck = [self attributesToCheckFor:entity] ;
     
     
     
@@ -550,6 +560,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
             NSString * message = [NSString stringWithFormat:@"The fail comes from the attribute %@", nameAttribute] ;
             
             return [self registerAndReturnThisAnswer:NO
+                                             trueYES:NO
                                      forSourceObject:sourceObject
                                      andTargetObject:targetObject
                                          withMessage:message
@@ -652,6 +663,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 - (BOOL)     isThisSourceObject:(NSManagedObject *)sourceObject
           similarToTargetObject:(NSManagedObject *)targetObject
 {
+    i = 0 ;
     /*
      I don't know if putting YES to this option make the algorithm not correct.
      I don't know if putting NO to this option make the algorithm falling in infinite loops.
@@ -673,9 +685,8 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 
 
-
-
 int i = 0 ;
+
 //
 //
 /**************************************/
@@ -689,8 +700,9 @@ int i = 0 ;
             assumeYESifChecking:(BOOL)assumeYESIfChecking
                   numberOfCalls:(NSInteger)numberOfCalls
 {
-    i = i +1 ;
-    NSLog(@"%d", i);
+    i = i + 1 ;
+    NSLog(@"%d", i) ;
+    
     if (self.shouldLog)
     {
         NSLog(@"Checking similarity of %@ and %@", sourceObject, targetObject) ;
@@ -750,6 +762,7 @@ int i = 0 ;
         //return NO ;
         
         return [self registerAndReturnThisAnswer:NO
+                                         trueYES:NO
                                  forSourceObject:sourceObject
                                  andTargetObject:targetObject
                                      withMessage:@"Entities are not the same."
@@ -767,6 +780,7 @@ int i = 0 ;
     if ([self shouldIgnore:entity])
     {
         return [self registerAndReturnThisAnswer:YES
+                                         trueYES:YES
                                  forSourceObject:sourceObject
                                  andTargetObject:targetObject
                                      withMessage:@"The entity is in the black list."
@@ -794,6 +808,7 @@ int i = 0 ;
         case CBDCoreDataDiscriminatorSimilarityStatusIsSimilar:
             //return YES ;
             return [self registerAndReturnThisAnswer:YES
+                                             trueYES:YES
                                      forSourceObject:sourceObject
                                      andTargetObject:targetObject
                                          withMessage:@"We used the cache."
@@ -804,6 +819,7 @@ int i = 0 ;
         case CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar:
             //return NO ;
             return [self registerAndReturnThisAnswer:NO
+                                             trueYES:NO
                                      forSourceObject:sourceObject
                                      andTargetObject:targetObject
                                          withMessage:@"We used the cache."
@@ -816,6 +832,7 @@ int i = 0 ;
             {
                 //return YES ;
                 return [self registerAndReturnThisAnswer:YES
+                                                 trueYES:NO
                                          forSourceObject:sourceObject
                                          andTargetObject:targetObject
                                              withMessage:@"We used the cache + the status was \"checking\" but the option \"assumeYESIfChecking\" was on."
@@ -823,17 +840,41 @@ int i = 0 ;
             }
             break ;
         }
+         
+        case CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar:
+        {
+            //if (assumeYESIfChecking)
+            //{
+                //return YES ;
+                return [self registerAndReturnThisAnswer:YES
+                                                 trueYES:NO
+                                         forSourceObject:sourceObject
+                                         andTargetObject:targetObject
+                                             withMessage:@"We used the cache + it is a quasi-similar."
+                                                 logging:YES] ;
+            //}
+            break ;
+        }
             
         case CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus:
         {
-//            return [self registerAndReturnThisAnswer:NO
-//                                     forSourceObject:sourceObject
-//                                     andTargetObject:targetObject
-//                                         withMessage:@"INVALID STATUS turned to NO."
-//                                             logging:YES] ;
-            
-            [NSException raise:@"Uncompatible hints are being used"
-                        format:@"The hints of %@ for %@ and %@ are uncompatible.", catalog, sourceObject, targetObject] ;
+            if (safeMode)
+            {
+                NSLog(@"INVALID STATUS turned to NO.") ;
+                
+                return [self registerAndReturnThisAnswer:NO
+                                                 trueYES:NO
+                                         forSourceObject:sourceObject
+                                         andTargetObject:targetObject
+                                             withMessage:@"INVALID STATUS turned to NO."
+                                                 logging:YES] ;
+            }
+            else
+            {
+                [NSException raise:@"Uncompatible hints are being used"
+                            format:@"The hints of %@ for %@ and %@ are uncompatible.", catalog, sourceObject, targetObject] ;
+            }
+
             break ;
         }
             
@@ -857,20 +898,16 @@ int i = 0 ;
      ********
      */
     
-//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
-//    {
-//        if (![discriminatorUnit doesObject:sourceObject
-//              haveTheSameAttributeValuesAs:targetObject])
+
     if (![self doesObject:sourceObject haveTheSameAttributeValuesAs:targetObject])
         {
-            //return NO ;
             return [self registerAndReturnThisAnswer:NO
+                                             trueYES:NO
                                      forSourceObject:sourceObject
                                      andTargetObject:targetObject
                                          withMessage:@"By checking the attributes."
                                              logging:YES] ;
         }
-//    }
     
     
     
@@ -885,23 +922,17 @@ int i = 0 ;
   
     
 
-    
-    
-    
-    
-    
-    
-    /*
-     *********
-     INTERMEDE : we gather the relationships we are going to use
-     *********
-     */
+    /********
+     *****************
+     *       INTERMEDE : we gather the relationships we are going to use
+     *****************
+     *********/
 
     
     /*
      We get the relations to consider
      */
-    NSMutableSet * relationsToCheck = [[self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] mutableCopy];
+    NSMutableSet * relationsToCheck = [[self relationshipsToCheckFor:entity] mutableCopy];
     
     
     
@@ -952,52 +983,16 @@ int i = 0 ;
     
     
     
-
-    
-    
-    
-    
-    
-//    /*
-//     Adding new hints to the catalog
-//     */
-//    for (NSRelationshipDescription * relationship in relationsToCheck)
-//    {
-//        [self           addNewHintsToCatalog:newCatalog
-//                     whenChekingRelationship:relationship
-//                         betweenSourceObject:sourceObject
-//                             andTargetObject:targetObject] ;
-//    }
-    
     
     
     /*
+     ********
      Second - 1
+     ********
      
      We check the to-one relationships
      */
     
-    
-    
-//    NSMutableSet * toOneRelationsToCheck = [[NSMutableSet alloc] init] ;
-//    
-//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
-//    {
-//        NSSet *toOneRelationships = discriminatorUnit.toOneRelationshipDescriptions ;
-//        
-//        for (NSRelationshipDescription * relationDescr in toOneRelationships)
-//        {
-//            if (![relationshipsNotToCheck containsObject:relationDescr])
-//            {
-//                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
-//                
-//                if (![self shouldIgnore:destinationEntity])
-//                {
-//                    [toOneRelationsToCheck addObject:relationDescr] ;
-//                }
-//            }
-//        }
-//    }
     
     
     /*
@@ -1058,6 +1053,7 @@ int i = 0 ;
             NSString * message = [NSString stringWithFormat:@"By checking the relationship %@", toOneRelationship.name] ;
             
             return [self registerAndReturnThisAnswer:NO
+                                             trueYES:NO
                                      forSourceObject:sourceObject
                                      andTargetObject:targetObject
                                          withMessage:message
@@ -1067,31 +1063,16 @@ int i = 0 ;
     
     
     
+    
+    
     /*
+     ********
      Second - 2
+     ********
      
      We check the to-many non-ordered relationships
      */
     
-//    NSMutableSet * toManyNonOrderedRelationsToCheck = [[NSMutableSet alloc] init] ;
-//    
-//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
-//    {
-//        NSSet *toManyNonOrderedRelationships = discriminatorUnit.nonOrderedToManyRelationshipDescriptions ;
-//        
-//        for (NSRelationshipDescription * relationDescr in toManyNonOrderedRelationships)
-//        {
-//            if (![relationshipsNotToCheck containsObject:relationDescr])
-//            {
-//                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
-//                
-//                if (![self shouldIgnore:destinationEntity])
-//                {
-//                    [toManyNonOrderedRelationsToCheck addObject:relationDescr] ;
-//                }
-//            }
-//        }
-//    }
     
     
     newCatalog = [catalog copy] ;
@@ -1147,6 +1128,7 @@ int i = 0 ;
         {
             //return NO ;
             return [self  registerAndReturnThisAnswer:NO
+                                              trueYES:NO
                                       forSourceObject:sourceSet
                                       andTargetObject:targetSet
                                           withMessage:nil
@@ -1159,30 +1141,12 @@ int i = 0 ;
     
     
     /*
+     ********
      Second - 3
+     ********
      
      We check the to-many ordered relationships
      */
-    
-//    NSMutableSet * toManyOrderedRelationsToCheck = [[NSMutableSet alloc] init] ;
-//    
-//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
-//    {
-//        NSSet *toManyOrderedRelationships = discriminatorUnit.orderedToManyRelationshipDescriptions ;
-//        
-//        for (NSRelationshipDescription * relationDescr in toManyOrderedRelationships)
-//        {
-//            if (![relationshipsNotToCheck containsObject:relationDescr])
-//            {
-//                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
-//                
-//                if (![self shouldIgnore:destinationEntity])
-//                {
-//                    [toManyOrderedRelationsToCheck addObject:relationDescr] ;
-//                }
-//            }
-//        }
-//    }
     
     
     
@@ -1238,6 +1202,7 @@ int i = 0 ;
         {
             //return NO ;
             return [self  registerAndReturnThisAnswer:NO
+                                              trueYES:NO
                                       forSourceObject:sourceOrderedSet
                                       andTargetObject:targetOrderedSet
                                           withMessage:nil
@@ -1245,8 +1210,11 @@ int i = 0 ;
         }
     }
     
+    
+    FIXME(essayer avec trueYES a NO)
     //return YES ;
     return [self registerAndReturnThisAnswer:YES
+                                     trueYES:YES
                              forSourceObject:sourceObject
                              andTargetObject:targetObject
                                  withMessage:@"This YES comes from the bottom of the core method"
@@ -1332,6 +1300,7 @@ int i = 0 ;
     {
         //return NO ;
         return [self registerAndReturnThisAnswer:NO
+                                         trueYES:NO
                                  forSourceObject:sourceOrderedSet
                                  andTargetObject:targetOrderedSet
                                      withMessage:@"The two ordered sets don't have the same cardinality"
@@ -1344,6 +1313,7 @@ int i = 0 ;
     {
         //return YES ;
         return [self registerAndReturnThisAnswer:YES
+                                         trueYES:YES
                                  forSourceObject:sourceOrderedSet
                                  andTargetObject:targetOrderedSet
                                      withMessage:@"The two ordered sets are empty"
@@ -1414,6 +1384,7 @@ int i = 0 ;
     {
         //return NO ;
         return [self registerAndReturnThisAnswer:NO
+                                         trueYES:NO
                                  forSourceObject:sourceSet
                                  andTargetObject:targetSet
                                      withMessage:@"The two sets don't have the same cardinality"
@@ -1427,33 +1398,37 @@ int i = 0 ;
     {
         //return YES ;
         return [self registerAndReturnThisAnswer:YES
+                                         trueYES:YES
                                  forSourceObject:sourceSet
                                  andTargetObject:targetSet
                                      withMessage:@"The two sets are empty"
                                          logging:NO];
         
     }
-    
-    NSSet * setOfGoodHints = [self hintsOfPositiveSimilarityTypeFrom:hintCalalog
-                                               whoseSourceObjectIsIn:sourceSet
-                                                 assumeYESifChecking:assumeYESIfChecking] ;
-    
-    for (CBDCoreDataDiscriminatorHint * hint in setOfGoodHints)
-    {
-        NSManagedObject * chosenSourceObject = hint.sourceObject ;
-        NSManagedObject * testedTargetObject = hint.targetObject ;
-        
-        if ([targetSet containsObject:testedTargetObject])
-        {
-            return [self isSourceSet:sourceSet
-                  similarToTargetSet:targetSet
-                    withSourceObject:chosenSourceObject
-                           similarTo:testedTargetObject
-                    usingHintCataLog:hintCalalog
-                 assumeYESifChecking:assumeYESIfChecking
-                       numberOfCalls:numberOfCalls + 1] ;
-        }
-    }
+
+    TODO(decommenter  --> plus de bug)
+    TODO(commenter  --> plus long)
+
+//    NSSet * setOfGoodHints = [self hintsOfPositiveSimilarityTypeFrom:hintCalalog
+//                                               whoseSourceObjectIsIn:sourceSet
+//                                                 assumeYESifChecking:assumeYESIfChecking] ;
+//    
+//    for (CBDCoreDataDiscriminatorHint * hint in setOfGoodHints)
+//    {
+//        NSManagedObject * chosenSourceObject = hint.sourceObject ;
+//        NSManagedObject * testedTargetObject = hint.targetObject ;
+//        
+//        if ([targetSet containsObject:testedTargetObject])
+//        {
+//            return [self isSourceSet:sourceSet
+//                  similarToTargetSet:targetSet
+//                    withSourceObject:chosenSourceObject
+//                           similarTo:testedTargetObject
+//                    usingHintCataLog:hintCalalog
+//                 assumeYESifChecking:assumeYESIfChecking
+//                       numberOfCalls:numberOfCalls + 1] ;
+//        }
+//    }
     
     
     /*
@@ -1464,19 +1439,24 @@ int i = 0 ;
     {
         for (NSManagedObject * targetObject in targetSet)
         {
-            if ([self isThisSourceObject:sourceObject
-                   similarToTargetObject:targetObject
-                        usingHintCatalog:hintCalalog
-                     assumeYESifChecking:assumeYESIfChecking
-                           numberOfCalls:numberOfCalls + 1])
+            TODO(Ici : l ajout core data)
+            if ([self           isThisSourceObject:sourceObject
+                    virtuallySimilarToTargetObject:targetObject])
             {
-                return [self isSourceSet:sourceSet
-                      similarToTargetSet:targetSet
-                        withSourceObject:sourceObject
-                               similarTo:targetObject
-                        usingHintCataLog:hintCalalog
-                     assumeYESifChecking:assumeYESIfChecking
-                           numberOfCalls:numberOfCalls + 1] ;
+                if ([self isThisSourceObject:sourceObject
+                       similarToTargetObject:targetObject
+                            usingHintCatalog:hintCalalog
+                         assumeYESifChecking:assumeYESIfChecking
+                               numberOfCalls:numberOfCalls + 1])
+                {
+                    return [self isSourceSet:sourceSet
+                          similarToTargetSet:targetSet
+                            withSourceObject:sourceObject
+                                   similarTo:targetObject
+                            usingHintCataLog:hintCalalog
+                         assumeYESifChecking:assumeYESIfChecking
+                               numberOfCalls:numberOfCalls + 1] ;
+                }
             }
         }
     }
@@ -1514,17 +1494,24 @@ int i = 0 ;
                         whoseSourceObjectIsIn:(NSSet *)sourceSet
                           assumeYESifChecking:(BOOL)assumeYESIfChecking
 {
+    TODO(on renforce les controle)
+    assumeYESIfChecking = NO ;
+    
     NSMutableSet * result = [[NSMutableSet alloc] init] ;
     
     for (CBDCoreDataDiscriminatorHint * hint in hintCalalog.hints)
     {
         if ([sourceSet containsObject:hint.sourceObject]
-            && hint.type == CBDCoreDataDiscriminatorHintAboutSimilarity
-            && (hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar
-                ||
-                (hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsChecking
-                 &&
-                 assumeYESIfChecking)))
+            &&
+            (hint.type == CBDCoreDataDiscriminatorHintAboutSimilarity
+             &&
+             hint.relationship == nil)
+            &&
+            (hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar
+             ||
+             (hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsChecking
+              &&
+              assumeYESIfChecking)))
         {
             [result addObject:hint] ;
         }
@@ -1548,15 +1535,34 @@ int i = 0 ;
 
 
 - (BOOL)registerAndReturnThisAnswer:(BOOL)theBOOLReturn
+                            trueYES:(BOOL)isATrueYES
                     forSourceObject:(id)sourceObject
                     andTargetObject:(id)targetObject
                         withMessage:(NSString *)message
                             logging:(BOOL)logging
 {
+    TODO(a enlever)
+    if ([sourceObject respondsToSelector:@selector(name)]
+        &&
+        [[sourceObject valueForKey:@"name"] isEqualToString:[targetObject valueForKey:@"name"]]
+         &&
+         theBOOLReturn == NO)
+         {
+             NSLog(@"PB");
+         }
+    
+    
     CBDCoreDataDiscriminatorSimilarityStatus status ;
     if (theBOOLReturn)
     {
-        status = CBDCoreDataDiscriminatorSimilarityStatusIsSimilar ;
+        if (isATrueYES)
+        {
+            status = CBDCoreDataDiscriminatorSimilarityStatusIsSimilar ;
+        }
+        else
+        {
+            status = CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar ;
+        }
     }
     else
     {

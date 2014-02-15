@@ -14,9 +14,8 @@
 #pragma mark - IMPORTS
 /**************************************/
 #import "CBDCoreDataImporter.h"
-#import "CBDCoreDataDiscriminator.h"
-#import "NSEntityDescription+CBDActiveRecord.h"
-#import "NSManagedObject+CBDClone.h"
+
+
 
 /*
  Classes modèle
@@ -26,6 +25,7 @@
 /*
  Moteur
  */
+#import "CBDCoreDataDiscriminator.h"
 
 
 /*
@@ -41,7 +41,9 @@
 /*
  Catégories
  */
-
+#import "NSEntityDescription+CBDActiveRecord.h"
+#import "NSManagedObject+CBDClone.h"
+#import "NSManagedObjectContext+CBDActiveRecord.h"
 
 /*
  Pods
@@ -214,12 +216,50 @@
 /**************************************/
 
 
+/**
+ Performs an import.
+ 
+ @argument namesOfAttribuesToExclude This is names of attributes for the objectToImport. Theses attibutes won't be copied to the new object resulting from the import.
+ 
+ @warning Plus, these attributes will be removed from the list of attributes to be checked for discrimination. (If no discrimination unit is explicitely given
+ 
+ @argument namesOfRelationshipsToExclude This is names of relationships for the objectToImport. Theses relationships won't be copied to the new object resulting from the import.
+ 
+ @warning Plus, these relationships will be removed from the list of relationships to be checked for discrimination.
+ */
 - (NSManagedObject *) import:(NSManagedObject *)objectToImport
            excludeAttributes:(NSArray *)namesOfAttributesToExclude
         excludeRelationships:(NSArray *)namesOfRelationshipsToExclude
              excludeEntities:(NSArray *)namesOfTheEntitesToExclude
 {
     NSEntityDescription * entity = objectToImport.entity ;
+    
+    
+    
+    /*
+     Creating a new DiscriminatorUnit, so that we won't damage the default one by adding our constraints
+     */
+    CBDCoreDataDiscriminator * newDiscriminator = [self.discriminator copy];
+    
+    CBDCoreDataDiscriminatorUnit * unit1 ;
+    unit1 = [[CBDCoreDataDiscriminatorUnit alloc] initDiscriminatorUnitForEntity:entity
+                                                              ignoringAttributes:namesOfAttributesToExclude
+                                                                andRelationships:namesOfRelationshipsToExclude] ;
+    [newDiscriminator addDiscriminatorUnit:unit1] ;
+    
+    CBDCoreDataDiscriminatorUnit * unit2 ;
+    for (NSString * nameEntity in namesOfTheEntitesToExclude)
+    {
+        NSEntityDescription * entityToExclude = [self.sourceMOC entityWithName_cbd_:nameEntity] ;
+        
+        unit2 = [[CBDCoreDataDiscriminatorUnit alloc] initIgnoringDiscriminatorUnitForEntity:entityToExclude] ;
+        
+        [newDiscriminator addDiscriminatorUnit:unit2] ;
+    }
+        
+    [newDiscriminator flushTheCache] ;
+    
+    
     
     
     /*

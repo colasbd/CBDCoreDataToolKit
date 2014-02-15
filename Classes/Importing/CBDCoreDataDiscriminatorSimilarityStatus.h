@@ -12,6 +12,7 @@ typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminatorSimilarityStatus)
 {
     CBDCoreDataDiscriminatorSimilarityStatusNoStatus,
     CBDCoreDataDiscriminatorSimilarityStatusIsSimilar,
+    CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar,
     CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar,
     CBDCoreDataDiscriminatorSimilarityStatusIsChecking,
     CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus,

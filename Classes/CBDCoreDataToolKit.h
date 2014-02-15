@@ -20,6 +20,7 @@
 #import "CBDCoreDataDiscriminatorUnit.h"
 #import "CBDCoreDataImporter.h"
 #import "CBDCoreDataDiscriminator.h"
+#import "CBDCoreDataDiscriminator+UsingPredicateAndFetching.h"
 
 // Active Record
 #import "NSManagedObjectContext+CBDActiveRecord.h"

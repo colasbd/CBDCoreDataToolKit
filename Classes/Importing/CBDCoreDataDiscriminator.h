@@ -25,6 +25,14 @@ const BOOL optionYESIfChecking ;
 const BOOL ignoreWinsOverInclude ;
 
 
+/*
+ If safeMode == YES, there is less chance of NSException,
+ but I didn't prove that the algorithm is exact (but I don't have any counter-example)
+ */
+const BOOL safeMode ;
+
+
+
 /**
  CBDCoreDataDiscriminator is a helper class for CBDCoreDataDiscriminator.
  
@@ -129,41 +137,13 @@ const BOOL ignoreWinsOverInclude ;
 
 
 
-#pragma mark - Managing and using the discrimination units
+#pragma mark - Managing the discrimination units
 /// @name Managing the discrimination units
 
 /**
  The discriminatorUnits composing the instance
  */
 @property (nonatomic, readonly)NSArray * discriminatorUnits ;
-
-
-
-
-/**
- Returns the attributes to check for the entity.
- 
- It uses the entity but also the parent entity (the superentity).
- @warning If there is a conflict, it the entity wins over the superentity
- @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
- */
-- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity ;
-
-/**
- Returns the attributes to check for the entity.
- 
- It uses the entity but also the parent entity (the superentity).
- @warning If there is a conflict, it the entity wins over the superentity
- @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
- */
-- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
-
-
-/**
- Reply YES if the entity should be ignored in the discrimination
- */
-- (BOOL)shouldIgnore:(NSEntityDescription *)entity ;
-
 
 
 /**
@@ -192,6 +172,47 @@ const BOOL ignoreWinsOverInclude ;
  Remove the DiscriminatorUnit for entity
 */
 - (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity ;
+
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Using the discriminatorUnits
+/**************************************/
+/// @name Using the discriminatorUnits
+
+
+
+
+
+/**
+ Returns the attributes to check for the entity.
+ 
+ It uses the entity but also the parent entity (the superentity).
+ @warning If there is a conflict, it the entity wins over the superentity
+ @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
+ */
+- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity ;
+
+/**
+ Returns the attributes to check for the entity.
+ 
+ It uses the entity but also the parent entity (the superentity).
+ @warning If there is a conflict, it the entity wins over the superentity
+ @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
+ */
+- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
+
+
+/**
+ Reply YES if the entity should be ignored in the discrimination
+ */
+- (BOOL)shouldIgnore:(NSEntityDescription *)entity ;
+
 
 
 

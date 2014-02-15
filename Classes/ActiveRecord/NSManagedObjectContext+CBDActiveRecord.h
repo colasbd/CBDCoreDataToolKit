@@ -242,6 +242,12 @@
 
 
 
+#pragma mark - Getting an entity
+/// @name Getting an entity
+
+
+/** Get the entity with the given name. */
+- (NSEntityDescription*) entityWithName_cbd_:(NSString *)nameOfTheEntity ;
 
 
 

@@ -178,6 +178,10 @@
                     similarityStatus = @"similar" ;
                     break;
                     
+                case CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar:
+                    similarityStatus = @"quasi similar" ;
+                    break;
+                    
                 case CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar:
                     similarityStatus = @"not similar" ;
                     break;
