@@ -342,8 +342,23 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     /*
      The info of the parent
      */
-    NSDictionary * infoOfSuperentity = [self getInfosFor:entity.superentity] ;
-    BOOL parentEntityExplicitelyIncluded = [infoOfSuperentity[CBDCoreDataDiscriminatorGetExplicitelyIncluded] boolValue] ;
+    NSDictionary * infoOfSuperentity ;
+    BOOL parentEntityExplicitelyIncluded ;
+    NSNumber * shouldIgnoreForParent ;
+    
+    if (entity.superentity)
+    {
+        infoOfSuperentity = [self getInfosFor:entity.superentity] ;
+        parentEntityExplicitelyIncluded = [infoOfSuperentity[CBDCoreDataDiscriminatorGetExplicitelyIncluded] boolValue] ;
+        shouldIgnoreForParent = infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] ;
+    }
+    else
+    {
+        infoOfSuperentity = nil ;
+        parentEntityExplicitelyIncluded = NO ;
+        shouldIgnoreForParent = @NO ;
+    }
+    
     
     
     
@@ -424,7 +439,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     }
     else
     {
-        shouldIgnore = infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] ;
+        shouldIgnore = shouldIgnoreForParent ;
     }
     
     
@@ -441,7 +456,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     }
     
     
-    return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : resultSetRelationshipsToInclude,
+    return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : resultSetAttributesToInclude,
              CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude : resultSetRelationshipsToInclude,
              CBDCoreDataDiscriminatorGetInfoAttributesToIgnore : resultSetAttributesToIgnore,
              CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : resultSetRelationshipsToIgnore,
@@ -679,6 +694,12 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
         NSLog(@"Checking similarity of %@ and %@", sourceObject, targetObject) ;
     }
     
+    if ([sourceObject respondsToSelector:@selector(name)]
+        &&
+        [[sourceObject valueForKey:@"name"] isEqualToString:@"Colas"])
+    {
+        NSLog(@"here") ;
+    }
     
     /*
      We start by clearing off the trivial cases when one of the objets is nil
@@ -803,6 +824,12 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
             
         case CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus:
         {
+//            return [self registerAndReturnThisAnswer:NO
+//                                     forSourceObject:sourceObject
+//                                     andTargetObject:targetObject
+//                                         withMessage:@"INVALID STATUS turned to NO."
+//                                             logging:YES] ;
+            
             [NSException raise:@"Uncompatible hints are being used"
                         format:@"The hints of %@ for %@ and %@ are uncompatible.", catalog, sourceObject, targetObject] ;
             break ;
@@ -923,29 +950,22 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     
     
     
-    /*
-     We create a new catalog
-     */
-    CBDCoreDataDiscriminatorHintCatalog * newCatalog = [catalog copy] ;
-    
-    [newCatalog addHintOfSimilarityBetwenSourceObject:sourceObject
-                                      andTargetObject:targetObject
-                                            hasStatus:CBDCoreDataDiscriminatorSimilarityStatusIsChecking] ;
+
     
     
     
     
     
-    /*
-     Adding new hints to the catalog
-     */
-    for (NSRelationshipDescription * relationship in relationsToCheck)
-    {
-        [self           addNewHintsToCatalog:newCatalog
-                     whenChekingRelationship:relationship
-                         betweenSourceObject:sourceObject
-                             andTargetObject:targetObject] ;
-    }
+//    /*
+//     Adding new hints to the catalog
+//     */
+//    for (NSRelationshipDescription * relationship in relationsToCheck)
+//    {
+//        [self           addNewHintsToCatalog:newCatalog
+//                     whenChekingRelationship:relationship
+//                         betweenSourceObject:sourceObject
+//                             andTargetObject:targetObject] ;
+//    }
     
     
     
@@ -978,16 +998,26 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 //    }
     
     
-//    /*
-//     Adding new hints to the catalog
-//     */
-//    for (NSRelationshipDescription * toOneRelationship in toOneRelationsToCheck)
-//    {
-//        [self           addNewHintsToCatalog:newCatalog
-//                     whenChekingRelationship:toOneRelationship
-//                         betweenSourceObject:sourceObject
-//                             andTargetObject:targetObject] ;
-//    }
+    /*
+     We create a new catalog
+     */
+    CBDCoreDataDiscriminatorHintCatalog * newCatalog = [catalog copy] ;
+    
+    [newCatalog addHintOfSimilarityBetwenSourceObject:sourceObject
+                                      andTargetObject:targetObject
+                                            hasStatus:CBDCoreDataDiscriminatorSimilarityStatusIsChecking] ;
+    
+    
+    /*
+     Adding new hints to the catalog
+     */
+    for (NSRelationshipDescription * toOneRelationship in toOneRelationsToCheck)
+    {
+        [self           addNewHintsToCatalog:newCatalog
+                     whenChekingRelationship:toOneRelationship
+                         betweenSourceObject:sourceObject
+                             andTargetObject:targetObject] ;
+    }
     
     
     
@@ -1062,17 +1092,23 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 //    }
     
     
+    newCatalog = [catalog copy] ;
     
-//    /*
-//     Adding new hints to the catalog
-//     */
-//    for (NSRelationshipDescription * toManyNonOrderedRelationship in toManyNonOrderedRelationsToCheck)
-//    {
-//        [self           addNewHintsToCatalog:newCatalog
-//                     whenChekingRelationship:toManyNonOrderedRelationship
-//                         betweenSourceObject:sourceObject
-//                             andTargetObject:targetObject] ;
-//    }
+    [newCatalog addHintOfSimilarityBetwenSourceObject:sourceObject
+                                      andTargetObject:targetObject
+                                            hasStatus:CBDCoreDataDiscriminatorSimilarityStatusIsChecking] ;
+    
+    
+    /*
+     Adding new hints to the catalog
+     */
+    for (NSRelationshipDescription * toManyNonOrderedRelationship in toManyNonOrderedRelationsToCheck)
+    {
+        [self           addNewHintsToCatalog:newCatalog
+                     whenChekingRelationship:toManyNonOrderedRelationship
+                         betweenSourceObject:sourceObject
+                             andTargetObject:targetObject] ;
+    }
     
 
     
@@ -1089,7 +1125,6 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
         
         NSSet * sourceSet = [sourceObject valueForKey:toManyNonOrderedRelationship.name] ;
         NSSet * targetSet = [targetObject valueForKey:toManyNonOrderedRelationship.name] ;
-        
         
         isRelationSetSimilar = [self isThisSet:sourceSet
                               similarToThisSet:targetSet
@@ -1149,18 +1184,23 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     
     
     
+    newCatalog = [catalog copy] ;
+    
+    [newCatalog addHintOfSimilarityBetwenSourceObject:sourceObject
+                                      andTargetObject:targetObject
+                                            hasStatus:CBDCoreDataDiscriminatorSimilarityStatusIsChecking] ;
     
     
-//    /*
-//     Adding new hints to the catalog
-//     */
-//    for (NSRelationshipDescription * toManyOrderedRelationship in toManyOrderedRelationsToCheck)
-//    {
-//        [self           addNewHintsToCatalog:newCatalog
-//                     whenChekingRelationship:toManyOrderedRelationship
-//                         betweenSourceObject:sourceObject
-//                             andTargetObject:targetObject] ;
-//    }
+    /*
+     Adding new hints to the catalog
+     */
+    for (NSRelationshipDescription * toManyOrderedRelationship in toManyOrderedRelationsToCheck)
+    {
+        [self           addNewHintsToCatalog:newCatalog
+                     whenChekingRelationship:toManyOrderedRelationship
+                         betweenSourceObject:sourceObject
+                             andTargetObject:targetObject] ;
+    }
     
     
     for (NSRelationshipDescription * toManyOrderedRelationship in toManyOrderedRelationsToCheck)
@@ -1174,7 +1214,6 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
         
         NSOrderedSet * sourceOrderedSet = [sourceObject valueForKey:toManyOrderedRelationship.name] ;
         NSOrderedSet * targetOrderedSet = [targetObject valueForKey:toManyOrderedRelationship.name] ;
-        
         
         
         isRelationOrderedSetSimilar = [self  isThisOrderedSet:sourceOrderedSet
