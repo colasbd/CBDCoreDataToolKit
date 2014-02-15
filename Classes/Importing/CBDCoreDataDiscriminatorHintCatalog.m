@@ -240,6 +240,29 @@
                                     hasStatus:(CBDCoreDataDiscriminatorSimilarityStatus)similarityStatus
 {
     CBDCoreDataDiscriminatorHint * hint ;
+    
+    /*
+     If we get a positive status, we remove the uncertain status
+     */
+    if (similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar
+        ||
+        similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar)
+    {
+        for (CBDCoreDataDiscriminatorHint * varHint in self.hints)
+        {
+            if ((varHint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsChecking
+                 ||
+                 varHint.relationship != nil)
+                &&
+                (varHint.sourceObject == sourceObject
+                &&
+                varHint.targetObject == targetObject))
+            {
+                [self.mutableHints removeObject:varHint] ;
+            }
+        }
+    }
+    
     hint = [[CBDCoreDataDiscriminatorHint alloc] initWithSimilarityBetwenSourceObject:sourceObject
                                                                       andTargetObject:targetObject
                                                                             hasStatus:similarityStatus] ;

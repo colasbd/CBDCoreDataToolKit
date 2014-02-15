@@ -675,7 +675,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 
 
-
+int i = 0 ;
 //
 //
 /**************************************/
@@ -689,6 +689,8 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
             assumeYESifChecking:(BOOL)assumeYESIfChecking
                   numberOfCalls:(NSInteger)numberOfCalls
 {
+    i = i +1 ;
+    NSLog(@"%d", i);
     if (self.shouldLog)
     {
         NSLog(@"Checking similarity of %@ and %@", sourceObject, targetObject) ;

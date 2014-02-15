@@ -332,13 +332,13 @@
 {
     return (self.type == hint.type
             &&
-            self.sourceObject == hint.targetObject
+            self.sourceObject == hint.sourceObject
             &&
             self.targetObject == hint.targetObject
             &&
             self.relationship == hint.relationship
             &&
-            self.similarityStatus == self.similarityStatus) ;
+            self.similarityStatus == hint.similarityStatus) ;
 }
 
 
