@@ -9,6 +9,22 @@
 #import <Foundation/Foundation.h>
 #import "CBDCoreDataDiscriminatorUnit.h"
 
+
+
+/*
+ This boolean sets the method with use.
+ If YES: the method is more likely to end, but I didn't prove that the algorithm is exact (but I don't have any counter-example)
+ If NO: the method is exact
+ */
+const BOOL optionYESIfChecking ;
+
+
+/*
+ If there is a conflict (a key is asked to be included and ignored), ignore wins in this BOOL is YES
+ */
+const BOOL ignoreWinsOverInclude ;
+
+
 /**
  CBDCoreDataDiscriminator is a helper class for CBDCoreDataDiscriminator.
  
@@ -26,66 +42,32 @@
 
 
 
-/**
- The following options deal with the case when an entity has no DiscriminatorUnit associated.
- 
- Let's recall that a DiscriminatorUnit is meant to declare upon which attributes/relationships
- the objects of a given entity are compared.
-
- So, if an entity has no associated CBDCoreDataDiscriminatorResearchType, what to do ?
- 
- We define three options :
- 
- - CBDCoreDataDiscriminatorResearchFacilitating: all the objects of such entities will be declared equal. It
- is equivalent to ignoring this entity
- 
- - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we only consider their attributes. This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
- 
- - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we only consider both all the attributes and all the relationships.
- */
-typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminatorResearchType)
-{
-    CBDCoreDataDiscriminatorResearchFacilitating,
-    CBDCoreDataDiscriminatorResearchSemiFacilitating,
-    CBDCoreDataDiscriminatorResearchDemanding,
-    CBDCoreDataDiscriminatorResearchTypeCount
-};
-
-
-/**
- The discriminatorUnits composing the instance
- */
-@property (nonatomic, readonly)NSArray * discriminatorUnits ;
-
-/**
- The entities checked by the instance when discriminating
- */
-@property (nonatomic, readonly)NSSet * entitiesRegistered ;
 
 
 
-/// Initialisation
+
+#pragma mark - Initialisation
+/// @name Initialisation
 /**
  The usual `init` method.
  */
 - (id)init ;
 
-/**
- To perform a discrimination, one should tell the CBDCoreDataDiscriminator upon which criteria the discrimination will be done.
- 
- So, you should DiscriminatorUnits if you want to precise to the engine upon which criteria you want the discrimination to be done.
- */
-TODO(fusionner les unit de meme entité. Du coup modifier la structure de je-sais-plus-quoi)
-- (void)addDiscrimintorUnit:(CBDCoreDataDiscriminatorUnit *)aDiscriminatorUnit ;
-
 
 /**
- Remove all the DiscriminatorUnits.
+ A copy method.
  */
-- (void)removeAllDiscriminatorUnits ;
+- (id)copy ;
 
 
-/// Managing the cache
+
+
+
+
+
+
+#pragma mark - Managing the cache
+/// @name Managing the cache
 
 /**
  Removes all the entries of the cache
@@ -103,7 +85,142 @@ TODO(fusionner les unit de meme entité. Du coup modifier la structure de je-sai
 - (void)logTheCache ;
 
 
-///Discriminate
+
+
+
+#pragma mark - Choosing the mode of discrimination
+/// @name Choosing the mode of discrimination
+
+/**
+ Chooses the facilitating type. This is the default type. When you change types, the cache is flushed.
+ 
+ When an entity has no DiscriminatorUnit explicitely associated,
+ all the objects of such entities will be declared equal. It
+ is equivalent to ignoring this entity.
+ 
+ The relationships to objects with this entity will also be ignored.
+ */
+- (void)chooseFacilitatingType ;
+
+/**
+ Chooses the semi-facilitating type. This is the default type. When you change types, the cache is flushed.
+ 
+ When an entity has no DiscriminatorUnit explicitely associated,
+ to compare two object of this entity, we only consider their attributes.
+ 
+ This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
+ */
+- (void)chooseSemiFacilitatingType ;
+
+/**
+ Chooses the demanding type. This is the default type. When you change types, the cache is flushed.
+ 
+ When an entity has no DiscriminatorUnit explicitely associated,
+ to compare two object of this entity,
+ we consider both all the attributes and all the relationships.
+ 
+ */
+- (void)chooseDemandingType ;
+
+
+
+
+
+
+
+
+#pragma mark - Managing and using the discrimination units
+/// @name Managing the discrimination units
+
+/**
+ The discriminatorUnits composing the instance
+ */
+@property (nonatomic, readonly)NSArray * discriminatorUnits ;
+
+
+
+
+/**
+ Returns the attributes to check for the entity.
+ 
+ It uses the entity but also the parent entity (the superentity).
+ @warning If there is a conflict, it the entity wins over the superentity
+ @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
+ */
+- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity ;
+
+/**
+ Returns the attributes to check for the entity.
+ 
+ It uses the entity but also the parent entity (the superentity).
+ @warning If there is a conflict, it the entity wins over the superentity
+ @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
+ */
+- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
+
+
+/**
+ Reply YES if the entity should be ignored in the discrimination
+ */
+- (BOOL)shouldIgnore:(NSEntityDescription *)entity ;
+
+
+
+/**
+ The entities explicitely registered by the instance for discriminating
+ */
+@property (nonatomic, readonly)NSArray * registeredEntities ;
+
+
+/**
+ To perform a discrimination, one should tell the CBDCoreDataDiscriminator upon which criteria the discrimination will be done.
+ 
+ So, you should DiscriminatorUnits if you want to precise to the engine upon which criteria you want the discrimination to be done.
+ */
+- (void)addDiscriminatorUnit:(CBDCoreDataDiscriminatorUnit *)aDiscriminatorUnit ;
+
+
+
+/**
+ Remove all the DiscriminatorUnits.
+ */
+- (void)removeAllDiscriminatorUnits ;
+
+
+
+/**
+ Remove the DiscriminatorUnit for entity
+*/
+- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity ;
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Discriminate with attributes
+/**************************************/
+/// @name Discriminate with attributes
+
+
+/**
+ Using the attribute to check and not those to ignore, 
+ considering also the information given about the parent entities,
+ determine if the two objects are similar.
+ 
+ The core method isThisSourceObject:similarToTargetObject: use this method and 
+ also cheks the relationships
+ */
+- (BOOL)            doesObject:(NSManagedObject *)sourceObject
+  haveTheSameAttributeValuesAs:(NSManagedObject *)targetObject ;
+
+
+
+
+#pragma mark - Discriminate
+/// @name Discriminate
 
 /**
  The core and convenient method that compare two objects.
@@ -133,11 +250,19 @@ TODO(fusionner les unit de meme entité. Du coup modifier la structure de je-sai
  If the sourceObject and targetObject have different NSEntityDescription, returns NO.
 
  */
-- (BOOL)     isThisSourceObject:(NSManagedObject *)sourceObject
-          similarToTargetObject:(NSManagedObject *)targetObject
-         excludingRelationships:(NSSet *)relationshipsNotToCheck
-              excludingEntities:(NSSet *)entitiesToExclude
-              usingResearchType:(CBDCoreDataDiscriminatorResearchType)researchType  ;
+//- (BOOL)     isThisSourceObject:(NSManagedObject *)sourceObject
+//          similarToTargetObject:(NSManagedObject *)targetObject
+//         excludingRelationships:(NSSet *)relationshipsNotToCheck
+//              usingResearchType:(CBDCoreDataDiscriminationType)researchType  ;
+
+
+
+
+#pragma mark - Managing the log
+/// @name Managing the cache
+
+- (void)shouldLog:(BOOL)shouldLog ;
+
 
 
 @end

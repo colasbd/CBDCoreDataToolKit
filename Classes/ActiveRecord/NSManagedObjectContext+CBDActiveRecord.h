@@ -26,7 +26,7 @@
 
 
 #pragma mark - Getting
-/// Getting objects
+/// @name Getting objects
 
 /**
  Fetches all the NSManagedObject of the entity with the given name in the MOC.
@@ -176,7 +176,7 @@
 
 
 #pragma mark - Counting
-/// Counting
+/// @name Counting
 
 
 
@@ -207,7 +207,7 @@
 
 
 #pragma mark - Removing
-/// Removing
+/// @name Removing
 
 
 /** Removes all objects from the entity with the given name. */
@@ -217,7 +217,7 @@
 
 
 #pragma mark - Getting all
-/// Getting all
+/// @name Getting all
 
 
 /** Returns all the objects in the MOC for the associated model. */
@@ -227,14 +227,14 @@
 - (NSArray *) allEntities_cbd_ ;
 
 #pragma mark - Counting all
-/// Counting all
+/// @name Counting all
 
 /** Returns the total amount of the objects in the MOC for the associated model. */
 - (NSUInteger) countAllObjects_cbd_ ;
 
 
 #pragma mark - Removing all
-/// Removing all
+/// @name Removing all
 
 
 /** Removes all objects in the MOC for the associated model. */

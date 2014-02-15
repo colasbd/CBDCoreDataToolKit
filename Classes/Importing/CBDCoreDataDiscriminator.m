@@ -14,20 +14,86 @@
 #import "NSManagedObject+CBDMiscMethods.h"
 
 
+
+/**
+ The following options deal with the case when an entity has no DiscriminatorUnit associated.
+ 
+ Let's recall that a DiscriminatorUnit is meant to declare upon which attributes/relationships
+ the objects of a given entity are compared.
+ 
+ So, if an entity has no associated CBDCoreDataDiscriminationType, what to do ?
+ 
+ We define three options :
+ 
+ - CBDCoreDataDiscriminatorResearchFacilitating: all the objects of such entities will be declared equal. It
+ is equivalent to ignoring this entity
+ 
+ - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we only consider their attributes. This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
+ 
+ - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we  consider both all the attributes and all the relationships.
+ */
+typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminationType)
+{
+    CBDCoreDataDiscriminationTypeFacilitating,
+    CBDCoreDataDiscriminationTypeSemiFacilitating,
+    CBDCoreDataDiscriminationTypeDemanding,
+    CBDCoreDataDiscriminationTypeCount
+};
+
+
+
+/*
+ This boolean sets the method with use.
+ If YES: the method is more likely to end, but I didn't prove that the algorithm is exact (but I don't have any counter-example)
+ If NO: the method is exact
+ */
+const BOOL optionYESIfChecking = NO ;
+
+
+/*
+ If there is a conflict (a key is asked to be included and ignored), ignore wins in this BOOL is YES
+ */
+const BOOL ignoreWinsOverInclude = YES ;
+
+
+
+
+
 @interface CBDCoreDataDiscriminator ()
 
-@property (nonatomic, strong, readwrite)NSMutableArray * mutableDiscriminatorUnits ;
-@property (nonatomic, strong, readwrite)NSMutableSet * mutableEntitiesRegistered ;
-@property (nonatomic, strong, readwrite)NSMutableDictionary * discriminatorUnitsByEntity ;
+@property (nonatomic)BOOL shouldLog ;
+
+//@property (nonatomic, strong, readwrite)NSMutableSet * mutableDiscriminatorUnits ;
+//@property (nonatomic, strong, readwrite)NSMutableSet * mutableRegisteredEntities ;
+@property (nonatomic, strong, readwrite)NSMutableDictionary * discriminatorUnitByEntity ;
+
+@property (nonatomic, readwrite) CBDCoreDataDiscriminationType discriminationType ;
 
 @property (nonatomic, strong, readwrite)CBDCoreDataDiscriminatorHintCatalog * globalHintCatalog ;
+
+
+/**
+ Return the registered CBDCoreDataDiscriminatorUnit corresponding to the entity
+ 
+ Returns nil if there are not
+ */
+- (CBDCoreDataDiscriminatorUnit *)discriminatorUnitForEntity:(NSEntityDescription *)entity ;
+
 
 - (CBDCoreDataDiscriminatorHintCatalog *)globalHintCatalogEnhancedWith:(CBDCoreDataDiscriminatorHintCatalog *)otherCatalog ;
 
 @end
 
 
+
+
+
+
+
+
+
 @implementation CBDCoreDataDiscriminator
+
 
 
 
@@ -43,14 +109,65 @@
     
     if (self)
     {
-        self.mutableDiscriminatorUnits = [[NSMutableArray alloc] init] ;
-        self.mutableEntitiesRegistered = [[NSMutableSet alloc] init] ;
+        self.shouldLog = NO ;
+        //self.mutableDiscriminatorUnits = [[NSMutableSet alloc] init] ;
+        //self.mutableRegisteredEntities = [[NSMutableSet alloc] init] ;
         self.globalHintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
-        self.discriminatorUnitsByEntity = [[NSMutableDictionary alloc] init] ;
+        self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
+        [self chooseFacilitatingType] ;
     }
     
     return self ;
 }
+
+
+
+
+- (id)copy
+{
+    CBDCoreDataDiscriminator * newDiscriminator = [[CBDCoreDataDiscriminator alloc] init] ;
+    
+    newDiscriminator.discriminationType = self.discriminationType ;
+    newDiscriminator.shouldLog = self.shouldLog ;
+    
+//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in self.discriminatorUnits)
+//    {
+//        [newDiscriminator addDiscriminatorUnit:discriminatorUnit] ;
+//    }
+    
+    newDiscriminator.discriminatorUnitByEntity = [self.discriminatorUnitByEntity copy];
+    
+    return newDiscriminator ;
+}
+
+
+
+
+#pragma mark - Choosing the mode of discrimination
+
+
+- (void)chooseFacilitatingType
+{
+    self.discriminationType = CBDCoreDataDiscriminationTypeFacilitating ;
+    [self flushTheCache] ;
+}
+
+
+
+- (void)chooseSemiFacilitatingType ;
+{
+    self.discriminationType = CBDCoreDataDiscriminationTypeSemiFacilitating ;
+    [self flushTheCache] ;
+}
+
+
+- (void)chooseDemandingType ;
+{
+    self.discriminationType = CBDCoreDataDiscriminationTypeDemanding ;
+    [self flushTheCache] ;
+}
+
+
 
 
 
@@ -63,64 +180,391 @@
 
 - (NSArray *)discriminatorUnits
 {
-    return [self.mutableDiscriminatorUnits copy] ;
+    //return [self.mutableDiscriminatorUnits copy] ;
+    return [self.discriminatorUnitByEntity allValues] ;
 }
 
 
-- (NSSet *)entitiesRegistered
+- (NSArray *)registeredEntities
 {
-    return [self.mutableEntitiesRegistered copy] ;
+    return [self.discriminatorUnits valueForKey:@"entity"] ;
 }
 
 
-- (void)addDiscrimintorUnit:(CBDCoreDataDiscriminatorUnit *)aDiscriminatorUnit
+- (void)addDiscriminatorUnit:(CBDCoreDataDiscriminatorUnit *)aDiscriminatorUnit
 {
-    if (![self.discriminatorUnits containsObject:aDiscriminatorUnit])
+    NSEntityDescription * entity = aDiscriminatorUnit.entity ;
+    
+    if (![[self.discriminatorUnitByEntity allKeys] containsObject:entity.name])
     {
-        [self.mutableDiscriminatorUnits addObject:aDiscriminatorUnit] ;
-        [self.mutableEntitiesRegistered addObject:aDiscriminatorUnit.entity] ;
+        //[self.mutableDiscriminatorUnits addObject:aDiscriminatorUnit] ;
+        //[self.mutableRegisteredEntities addObject:aDiscriminatorUnit.entity] ;
         
-        [self updateDiscriminatorUnitsByEntityFor:aDiscriminatorUnit] ;
+        self.discriminatorUnitByEntity[entity.name] = aDiscriminatorUnit ;
+    }
+    else
+    {
+        CBDCoreDataDiscriminatorUnit * theExistingUnit = self.discriminatorUnitByEntity[entity.name] ;
+        
+        [theExistingUnit mergeWith:aDiscriminatorUnit] ;
     }
 }
 
 
-- (void)updateDiscriminatorUnitsByEntityFor:(CBDCoreDataDiscriminatorUnit *)aDiscriminatorUnit
+//
+//- (CBDCoreDataDiscriminatorUnit *)discriminatorUnitForEntity:(NSEntityDescription *)entity
+//{
+//    if ([self.registeredEntities containsObject:entity])
+//    {
+//        return self.discriminatorUnitByEntity[entity.name] ;
+//    }
+//    else
+//    {
+- (CBDCoreDataDiscriminatorUnit *)defaultDiscriminationUnitFor:(NSEntityDescription *)entity
 {
-    if (!self.discriminatorUnitsByEntity[aDiscriminatorUnit.entity.name])
+    switch (self.discriminationType)
     {
-        self.discriminatorUnitsByEntity[aDiscriminatorUnit.entity.name] = [[NSMutableArray alloc] init] ;
-    }
-    
-    [self.discriminatorUnitsByEntity[aDiscriminatorUnit.entity.name] addObject:aDiscriminatorUnit] ;
-}
-
-
-- (NSArray *)discriminatorUnitsForEntity:(NSEntityDescription *)entity
-{
-    NSMutableArray * result = [[NSMutableArray alloc] init] ;
-    
-    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in self.discriminatorUnits)
-    {
-        if (discriminatorUnit.entity == entity)
+        case CBDCoreDataDiscriminationTypeFacilitating:
         {
-            [result addObject:discriminatorUnit] ;
+            return [[CBDCoreDataDiscriminatorUnit alloc] initIgnoringDiscriminatorUnitForEntity:entity] ;
+            break;
         }
+            
+        case CBDCoreDataDiscriminationTypeSemiFacilitating:
+        {
+            return [[CBDCoreDataDiscriminatorUnit alloc] initSemiExhaustiveDiscriminationUnitFor:entity] ;
+            break;
+        }
+            
+        case CBDCoreDataDiscriminationTypeDemanding:
+        {
+            return [[CBDCoreDataDiscriminatorUnit alloc] initExhaustiveDiscriminationUnitFor:entity] ;
+            break;
+        }
+            
+        default:
+            return nil ;
+            break;
     }
-    
-    return result ;
 }
+//    }
+//}
+
+
+//
+//- (NSSet *)discriminatorUnitsForEntityAndItsParents:(NSEntityDescription *)entity ;
+//{
+//    NSMutableSet * result = [[NSMutableSet alloc] init] ;
+//    
+//    for (NSEntityDescription * registeredEntity in self.registeredEntities)
+//    {
+//        if ([entity isKindOfEntity:registeredEntity])
+//        {
+//            [result addObject:[self discriminatorUnitForEntity:registeredEntity]] ;
+//        }
+//    }
+//    
+//    if ([result count] == 0)
+//    {
+//        return [NSSet setWithObject:[self discriminatorUnitForEntity:entity]] ;
+//    }
+//    
+//    return result ;
+//}
+
+
 
 
 
 - (void)removeAllDiscriminatorUnits
 {
-    self.mutableDiscriminatorUnits = [[NSMutableArray alloc] init] ;
-    self.mutableEntitiesRegistered = [[NSMutableSet alloc] init] ;
-    self.discriminatorUnitsByEntity = [[NSMutableDictionary alloc] init] ;
+    //self.mutableDiscriminatorUnits = [[NSMutableArray alloc] init] ;
+    //self.mutableRegisteredEntities = [[NSMutableSet alloc] init] ;
+    self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
     
     [self flushTheCache] ;
 }
+
+
+
+- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity
+{
+    //[self.mutableRegisteredEntities removeObject:entity] ;
+    //[self.mutableDiscriminatorUnits removeObject:self.discriminatorUnitByEntity[entity.name]] ;
+    [self.discriminatorUnitByEntity removeObjectForKey:entity.name] ;
+}
+
+
+
+
+- (BOOL)shouldIgnore:(NSEntityDescription *)entity
+{
+    return [[self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
+}
+
+
+
+
+/*
+ The keys use for the dictionnary
+ */
+NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToInclude = @"CBDCoreDataDiscriminatorGetInfoAttributesToInclude" ;
+NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude" ;
+NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore" ;
+NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore" ;
+NSString * const   CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore" ;
+NSString * const   CBDCoreDataDiscriminatorGetExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetExplicitelyIncluded" ;
+NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscriminatorGetInfoCount" ;
+
+
+- (NSDictionary *)getInfosFor:(NSEntityDescription *)entity
+{
+    /*
+     The current discriminationUnit
+     */
+    CBDCoreDataDiscriminatorUnit * discriminationUnit ;
+    
+    NSNumber * explicitelyIncluded ;
+    
+    if ([self.registeredEntities containsObject:entity])
+    {
+        explicitelyIncluded = @YES ;
+        discriminationUnit = self.discriminatorUnitByEntity[entity.name] ;
+    }
+    else
+    {
+        explicitelyIncluded = @NO ;
+        discriminationUnit = [self defaultDiscriminationUnitFor:entity] ;
+    }
+    
+    
+    
+    /*
+     The info of the parent
+     */
+    NSDictionary * infoOfSuperentity = [self getInfosFor:entity.superentity] ;
+    BOOL parentEntityExplicitelyIncluded = [infoOfSuperentity[CBDCoreDataDiscriminatorGetExplicitelyIncluded] boolValue] ;
+    
+    
+    
+    /*
+     Merging the info
+     */
+    NSMutableSet * resultSetAttributesToInclude = [[NSMutableSet alloc] init] ;
+    NSMutableSet * resultSetRelationshipsToInclude = [[NSMutableSet alloc] init] ;
+    NSMutableSet * resultSetAttributesToIgnore = [[NSMutableSet alloc] init] ;
+    NSMutableSet * resultSetRelationshipsToIgnore = [[NSMutableSet alloc] init] ;
+    NSNumber * shouldIgnore ;
+
+    
+    // AttributesToInclude
+    [resultSetAttributesToInclude unionSet:discriminationUnit.nameAttributesToUse] ;
+    
+    if (parentEntityExplicitelyIncluded)
+    {
+        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToInclude])
+        {
+            if (![discriminationUnit.nameAttributesToIgnore containsObject:key])
+            {
+                [resultSetAttributesToInclude addObject:key] ;
+            }
+        }
+    }
+    
+    
+    // AttributesToIgnore
+    [resultSetAttributesToIgnore unionSet:discriminationUnit.nameAttributesToIgnore] ;
+    
+    if (parentEntityExplicitelyIncluded)
+    {
+        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore])
+        {
+            if (![discriminationUnit.nameAttributesToUse containsObject:key])
+            {
+                [resultSetAttributesToIgnore addObject:key] ;
+            }
+        }
+    }
+    
+    
+    // RelatioshipsToInclude
+    [resultSetRelationshipsToInclude unionSet:discriminationUnit.relationshipDescriptionsToUse] ;
+    
+    if (parentEntityExplicitelyIncluded)
+    {
+        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude])
+        {
+            if (![discriminationUnit.relationshipDescriptionsToIgnore containsObject:key])
+            {
+                [resultSetRelationshipsToInclude addObject:key] ;
+            }
+        }
+    }
+    
+    
+    // RelatioshipsToIgnore
+    [resultSetRelationshipsToIgnore unionSet:discriminationUnit.relationshipDescriptionsToIgnore] ;
+    
+    if (parentEntityExplicitelyIncluded)
+    {
+        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore])
+        {
+            if (![discriminationUnit.relationshipDescriptionsToUse containsObject:key])
+            {
+                [resultSetRelationshipsToIgnore addObject:key] ;
+            }
+        }
+    }
+    
+    
+    // ShouldIgnore
+    if (discriminationUnit.shouldBeIgnored)
+    {
+        shouldIgnore = @YES ;
+    }
+    else
+    {
+        shouldIgnore = infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] ;
+    }
+    
+    
+    // Removing doublons : elements that are both in ToInclude and ToIgnore
+    if (ignoreWinsOverInclude)
+    {
+        [resultSetAttributesToInclude minusSet:resultSetAttributesToIgnore] ;
+        [resultSetRelationshipsToInclude minusSet:resultSetRelationshipsToIgnore] ;
+    }
+    else
+    {
+        [resultSetAttributesToIgnore minusSet:resultSetAttributesToInclude] ;
+        [resultSetRelationshipsToIgnore minusSet:resultSetRelationshipsToInclude] ;
+    }
+    
+    
+    return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : resultSetRelationshipsToInclude,
+             CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude : resultSetRelationshipsToInclude,
+             CBDCoreDataDiscriminatorGetInfoAttributesToIgnore : resultSetAttributesToIgnore,
+             CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : resultSetRelationshipsToIgnore,
+             CBDCoreDataDiscriminatorGetInfoShouldIgnore : shouldIgnore,
+             CBDCoreDataDiscriminatorGetExplicitelyIncluded : explicitelyIncluded} ;
+    
+}
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Discriminate with attributes
+/**************************************/
+
+
+
+- (BOOL)            doesObject:(NSManagedObject *)sourceObject
+  haveTheSameAttributeValuesAs:(NSManagedObject *)targetObject
+{
+    /*
+     Case of different entities
+     */
+    if (sourceObject.entity != targetObject.entity)
+    {
+        return NO ;
+    }
+    
+    
+    /*
+     We start by clearing off the trivial cases when one of the objets is nil
+     */
+    
+    if (!sourceObject
+        &&
+        !targetObject)
+    {
+        return YES ;
+    }
+    
+    if (!sourceObject
+        &&
+        targetObject)
+    {
+        return NO ;
+    }
+    
+    if (sourceObject
+        &&
+        !targetObject)
+    {
+        return NO ;
+    }
+    
+    
+    NSEntityDescription * entity = sourceObject.entity ;
+    
+    NSSet *setOfAttributesToCheck = [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
+    
+    
+    
+    for (NSString * nameAttribute in setOfAttributesToCheck)
+    {
+        id valueSourceObject = [sourceObject valueForKey:nameAttribute] ;
+        id valueTargetObject = [targetObject valueForKey:nameAttribute] ;
+        
+        
+        /*
+         We have to deal with the case nil-nil separately
+         */
+        if (!valueSourceObject
+            &&
+            !valueTargetObject)
+        {
+            //return YES ;
+//            return [self returnTheValue:YES
+//                        forSourceObject:sourceObject
+//                        andTargetObject:targetObject
+//                            withMessage:@"Both attributes are nil."
+//                                logging:NO] ;
+            
+            return YES ;
+        }
+        
+        if (![valueSourceObject isEqual:valueTargetObject])
+        {
+            //return NO ;
+            NSString * message = [NSString stringWithFormat:@"The fail comes from the attribute %@", nameAttribute] ;
+            
+            return [self registerAndReturnThisAnswer:NO
+                                     forSourceObject:sourceObject
+                                     andTargetObject:targetObject
+                                         withMessage:message
+                                             logging:YES] ;
+        }
+    }
+    
+    //return YES ;
+//    return [self returnTheValue:YES
+//                forSourceObject:sourceObject
+//                andTargetObject:targetObject
+//                    withMessage:nil
+//                        logging:NO] ;
+    return YES ;
+}
+
+
+
+
+
+
+
+#pragma mark - Managing the log
+/// @name Managing the cache
+
+- (void)shouldLog:(BOOL)shouldLog
+{
+    self.shouldLog = shouldLog ;
+}
+
 
 
 
@@ -187,50 +631,21 @@
 #pragma mark - Discriminate : convenience methods
 /**************************************/
 
-TODO(class à reprendre)
-/*
- Idée : ne pas renvoyer un BOOL mais un objet qui parle du résultat (genre : échec...)
- Reprendre aussi l'algo avec Fred.
- 
- Plusieurs modes de recherches (borne sur la profondeur récursive plus ou moins grande)
- 
- Au lieu de usingResearchType : mettre des méthodes sur CBDCoreDataDiscriminator, du genre : setResearchFacilitating, etc. Quand on change de mode, faire un flush.
- */
-- (BOOL)isThisSourceObject:(NSManagedObject *)sourceObject
-     similarToTargetObject:(NSManagedObject *)targetObject
-{
-    return [self isThisSourceObject:sourceObject
-              similarToTargetObject:targetObject
-             excludingRelationships:nil
-                  excludingEntities:nil
-                  usingResearchType:CBDCoreDataDiscriminatorResearchSemiFacilitating] ;
-}
-
-
-
 
 
 
 - (BOOL)     isThisSourceObject:(NSManagedObject *)sourceObject
           similarToTargetObject:(NSManagedObject *)targetObject
-         excludingRelationships:(NSSet *)relationshipsNotToCheck
-              excludingEntities:(NSSet *)entitiesToExclude
-              usingResearchType:(CBDCoreDataDiscriminatorResearchType)researchType
 {
     /*
      I don't know if putting YES to this option make the algorithm not correct.
      I don't know if putting NO to this option make the algorithm falling in infinite loops.
      */
     
-    BOOL optionYESIfChecking = YES ;
-    
     BOOL result =  [self isThisSourceObject:sourceObject
                       similarToTargetObject:targetObject
-                     excludingRelationships:relationshipsNotToCheck
-                          excludingEntities:entitiesToExclude
                            usingHintCatalog:self.globalHintCatalog
                         assumeYESifChecking:optionYESIfChecking
-                          usingResearchType:researchType
                               numberOfCalls:1] ;
 
     
@@ -255,14 +670,16 @@ TODO(class à reprendre)
 
 - (BOOL)     isThisSourceObject:(NSManagedObject *)sourceObject
           similarToTargetObject:(NSManagedObject *)targetObject
-         excludingRelationships:(NSSet *)relationshipsNotToCheck
-              excludingEntities:(NSSet *)entitiesToExclude
                usingHintCatalog:(CBDCoreDataDiscriminatorHintCatalog *)hintCatalog
             assumeYESifChecking:(BOOL)assumeYESIfChecking
-              usingResearchType:(CBDCoreDataDiscriminatorResearchType) researchType
                   numberOfCalls:(NSInteger)numberOfCalls
 {
-    //DDLogVerbose(@"Checking similarity of %@ and %@", sourceObject, targetObject) ;
+    if (self.shouldLog)
+    {
+        NSLog(@"Checking similarity of %@ and %@", sourceObject, targetObject) ;
+    }
+    
+    
     /*
      We start by clearing off the trivial cases when one of the objets is nil
      */
@@ -289,19 +706,6 @@ TODO(class à reprendre)
     }
     
     
-    // pour le debug
-    //
-    //
-//    if ([sourceObject respondsToSelector:@selector(name)]
-//        &&
-//        [[sourceObject valueForKey:@"name"] isEqualToString:[targetObject valueForKey:@"name"]]
-//        &&
-//        [sourceObject.entity.name isEqualToString:@"Company"])
-//    {
-//        //NSLog( @"here" );
-//    }
-    
-    
     
     
     /*
@@ -311,21 +715,14 @@ TODO(class à reprendre)
     {
         hintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
     }
-    if (!relationshipsNotToCheck)
-    {
-        relationshipsNotToCheck = [[NSSet alloc] init] ;
-    }
-    if (!entitiesToExclude)
-    {
-        entitiesToExclude = [[NSSet alloc] init] ;
-    }
-    
+
+
     
     
     /*
      We check if the entities are the same
      */
-    if (![sourceObject.entity isEqual:targetObject.entity])
+    if (sourceObject.entity != targetObject.entity)
     {
         //return NO ;
         
@@ -337,22 +734,23 @@ TODO(class à reprendre)
     }
     
     
+    NSEntityDescription * entity = sourceObject.entity ;
+    
+    
+    
     /*
-     If the entity of the objects to check is in the list of entities to omit
+     We check if the entity is excluded
      */
-    if ([sourceObject.entity inheritsFromSomeEntityAmong_cbd_:entitiesToExclude])
+    if ([self shouldIgnore:entity])
     {
-        //        [NSException raise:NSInvalidArgumentException
-        //                    format:@"You want to know if %@ is similar to %@ but you have asked to exclude from the check the following entities %@", sourceObject, targetObject, entitiesToExclude];
-        
-        //return YES ;
-        
         return [self registerAndReturnThisAnswer:YES
                                  forSourceObject:sourceObject
                                  andTargetObject:targetObject
                                      withMessage:@"The entity is in the black list."
                                          logging:NO] ;
     }
+    
+    
     
     
     /*
@@ -367,7 +765,7 @@ TODO(class à reprendre)
     statusSimilarity = [catalog similarityStatusBetweenSourceObject:sourceObject
                                                     andTargetObject:targetObject] ;
     
-    
+
     switch (statusSimilarity)
     {
         case CBDCoreDataDiscriminatorSimilarityStatusIsSimilar:
@@ -418,64 +816,10 @@ TODO(class à reprendre)
     
     
     /*
+     ************************
      We go in the core method
+     ************************
      */
-    
-    
-    /*
-     We gather the discriminatorUnits that we are going to use
-     */
-    NSMutableArray * usedDiscriminatorUnits = [[NSMutableArray alloc] init] ;
-    
-    NSEntityDescription * entity = sourceObject.entity ;
-    
-    for (NSString * nameEntity in [self.discriminatorUnitsByEntity allKeys])
-    {
-        if ([entity isKindOfEntityWithName_cbd_:nameEntity])
-        {
-            [usedDiscriminatorUnits addObjectsFromArray:self.discriminatorUnitsByEntity[nameEntity]] ;
-        }
-    }
-    
-    
-    
-    /*
-     Case where this is no discriminationUnit for this entity !!
-     */
-    if ([usedDiscriminatorUnits count] == 0)
-    {
-        switch (researchType)
-        {
-            case CBDCoreDataDiscriminatorResearchFacilitating:
-            {
-                // do nothing
-                break;
-            }
-                
-            case CBDCoreDataDiscriminatorResearchSemiFacilitating:
-            {
-                CBDCoreDataDiscriminatorUnit * defaultUnit ;
-                defaultUnit = [[CBDCoreDataDiscriminatorUnit alloc] initSemiExhaustiveDiscriminationUnitFor:entity] ;
-                
-                [usedDiscriminatorUnits addObject:defaultUnit] ;
-                break;
-            }
-                
-            case CBDCoreDataDiscriminatorResearchDemanding:
-            {
-                CBDCoreDataDiscriminatorUnit * defaultUnit ;
-                defaultUnit = [[CBDCoreDataDiscriminatorUnit alloc] initExhaustiveDiscriminationUnitFor:entity] ;
-                
-                [usedDiscriminatorUnits addObject:defaultUnit] ;
-                break;
-            }
-                
-            default:
-                break;
-        }
-        
-    }
-    
     
     
     /*
@@ -484,20 +828,20 @@ TODO(class à reprendre)
      ********
      */
     
-    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in usedDiscriminatorUnits)
-    {
-        if (![discriminatorUnit doesObject:sourceObject
-              haveTheSameAttributeValuesAs:targetObject])
+//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
+//    {
+//        if (![discriminatorUnit doesObject:sourceObject
+//              haveTheSameAttributeValuesAs:targetObject])
+    if (![self doesObject:sourceObject haveTheSameAttributeValuesAs:targetObject])
         {
             //return NO ;
-            
             return [self registerAndReturnThisAnswer:NO
                                      forSourceObject:sourceObject
                                      andTargetObject:targetObject
                                          withMessage:@"By checking the attributes."
                                              logging:YES] ;
         }
-    }
+//    }
     
     
     
@@ -509,11 +853,73 @@ TODO(class à reprendre)
      SECOND : we propagate the checking trough relationships
      *********
      */
+  
+    
+
+    
+    
+    
+    
+    
+    
+    /*
+     *********
+     INTERMEDE : we gather the relationships we are going to use
+     *********
+     */
+
+    
+    /*
+     We get the relations to consider
+     */
+    NSMutableSet * relationsToCheck = [[self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] mutableCopy];
+    
+    
+    
+    /*
+     We exclude the relations not to be considered, thanks to the hints
+     */
     catalog = [self globalHintCatalogEnhancedWith:hintCatalog] ;
     
-    NSMutableSet * totalRelationshipsNotToCheck = [relationshipsNotToCheck mutableCopy] ;
-    [totalRelationshipsNotToCheck unionSet:[catalog relationshipsToOmitForSourceObject:sourceObject
-                                                                       andTargetObject:targetObject]] ;
+    NSSet * relationshipsNotToCheck = [catalog relationshipsToOmitForSourceObject:sourceObject
+                                                                  andTargetObject:targetObject] ;
+    
+    [relationsToCheck minusSet:relationshipsNotToCheck] ;
+    
+    
+    /*
+     We exclude the relations not to be considered, thanks to the entities that should not be considered
+     */
+    NSMutableSet * result = [relationsToCheck mutableCopy] ;
+    
+    for (NSRelationshipDescription * relation in relationsToCheck)
+    {
+        if ([self shouldIgnore:relation.entity])
+        {
+            [result removeObject:relation] ;
+        }
+    }
+    
+    
+    /*
+     We set the found result
+     */
+    relationsToCheck = result ;
+    
+    
+    
+    /*
+     We dispatch the relationships between toOne, ordered and non-ordered
+     */
+    NSDictionary * dispatchedRelations = [entity dispatchedRelationshipsFrom_cbd_:relationsToCheck] ;
+    
+    NSMutableSet * toOneRelationsToCheck = dispatchedRelations[CBDKeyDescriptionToOneRelationship] ;
+    NSMutableSet * toManyNonOrderedRelationsToCheck = dispatchedRelations[CBDKeyDescriptionToManyNonOrderedRelationship] ;
+    NSMutableSet * toManyOrderedRelationsToCheck = dispatchedRelations[CBDKeyDescriptionToManyOrderedRelationship] ;
+
+    
+    
+    
     
     
     
@@ -528,62 +934,90 @@ TODO(class à reprendre)
     
     
     
-    /*
-     Second - 1
-     
-     We check the to-one relationships
-     */
-    
-    NSMutableSet * toOneRelationsToCheck = [[NSMutableSet alloc] init] ;
-    
-    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in usedDiscriminatorUnits)
-    {
-        NSSet *toOneRelationships = discriminatorUnit.toOneRelationshipDescriptions ;
-        
-        for (NSRelationshipDescription * relationDescr in toOneRelationships)
-        {
-            if (![totalRelationshipsNotToCheck containsObject:relationDescr])
-            {
-                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
-                
-                if (![destinationEntity inheritsFromSomeEntityAmong_cbd_:entitiesToExclude])
-                {
-                    [toOneRelationsToCheck addObject:relationDescr] ;
-                }
-            }
-        }
-    }
     
     
     /*
      Adding new hints to the catalog
      */
-    for (NSRelationshipDescription * toOneRelationship in toOneRelationsToCheck)
+    for (NSRelationshipDescription * relationship in relationsToCheck)
     {
         [self           addNewHintsToCatalog:newCatalog
-                     whenChekingRelationship:toOneRelationship
+                     whenChekingRelationship:relationship
                          betweenSourceObject:sourceObject
                              andTargetObject:targetObject] ;
     }
     
     
     
+    /*
+     Second - 1
+     
+     We check the to-one relationships
+     */
+    
+    
+    
+//    NSMutableSet * toOneRelationsToCheck = [[NSMutableSet alloc] init] ;
+//    
+//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
+//    {
+//        NSSet *toOneRelationships = discriminatorUnit.toOneRelationshipDescriptions ;
+//        
+//        for (NSRelationshipDescription * relationDescr in toOneRelationships)
+//        {
+//            if (![relationshipsNotToCheck containsObject:relationDescr])
+//            {
+//                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
+//                
+//                if (![self shouldIgnore:destinationEntity])
+//                {
+//                    [toOneRelationsToCheck addObject:relationDescr] ;
+//                }
+//            }
+//        }
+//    }
+    
+    
+//    /*
+//     Adding new hints to the catalog
+//     */
+//    for (NSRelationshipDescription * toOneRelationship in toOneRelationsToCheck)
+//    {
+//        [self           addNewHintsToCatalog:newCatalog
+//                     whenChekingRelationship:toOneRelationship
+//                         betweenSourceObject:sourceObject
+//                             andTargetObject:targetObject] ;
+//    }
+    
+    
+    
+    
     for (NSRelationshipDescription * toOneRelationship in toOneRelationsToCheck)
     {
+        if (self.shouldLog)
+        {
+            NSLog(@"Checking the relationship %@", toOneRelationship.name) ;
+        }
+        
         BOOL isRelationSimilar ;
         
         NSManagedObject * newSourceObject = [sourceObject valueForKey:toOneRelationship.name] ;
         NSManagedObject * newTargetObject = [targetObject valueForKey:toOneRelationship.name] ;
         
+        isRelationSimilar =  [self isThisSourceObject:newSourceObject
+                                similarToTargetObject:newTargetObject
+                                     usingHintCatalog:newCatalog
+                                  assumeYESifChecking:assumeYESIfChecking
+                                        numberOfCalls:numberOfCalls+1] ;
+
         
-        isRelationSimilar = [self isThisSourceObject:newSourceObject
-                               similarToTargetObject:newTargetObject
-                              excludingRelationships:relationshipsNotToCheck
-                                   excludingEntities:entitiesToExclude
-                                    usingHintCatalog:newCatalog
-                                 assumeYESifChecking:assumeYESIfChecking
-                                   usingResearchType:researchType
-                                       numberOfCalls:numberOfCalls+1] ;
+        if (isRelationSimilar)
+        {
+            [self.globalHintCatalog addHintOfSimilarityForRelationship:toOneRelationship
+                                                       forSourceObject:sourceObject
+                                                       andTargetObject:targetObject
+                                                             hasStatus:CBDCoreDataDiscriminatorSimilarityStatusIsSimilar] ;
+        }
         
         if (!isRelationSimilar)
         {
@@ -607,38 +1041,38 @@ TODO(class à reprendre)
      We check the to-many non-ordered relationships
      */
     
-    NSMutableSet * toManyNonOrderedRelationsToCheck = [[NSMutableSet alloc] init] ;
+//    NSMutableSet * toManyNonOrderedRelationsToCheck = [[NSMutableSet alloc] init] ;
+//    
+//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
+//    {
+//        NSSet *toManyNonOrderedRelationships = discriminatorUnit.nonOrderedToManyRelationshipDescriptions ;
+//        
+//        for (NSRelationshipDescription * relationDescr in toManyNonOrderedRelationships)
+//        {
+//            if (![relationshipsNotToCheck containsObject:relationDescr])
+//            {
+//                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
+//                
+//                if (![self shouldIgnore:destinationEntity])
+//                {
+//                    [toManyNonOrderedRelationsToCheck addObject:relationDescr] ;
+//                }
+//            }
+//        }
+//    }
     
-    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in usedDiscriminatorUnits)
-    {
-        NSSet *toManyNonOrderedRelationships = discriminatorUnit.nonOrderedToManyRelationshipDescriptions ;
-        
-        for (NSRelationshipDescription * relationDescr in toManyNonOrderedRelationships)
-        {
-            if (![totalRelationshipsNotToCheck containsObject:relationDescr])
-            {
-                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
-                
-                if (![destinationEntity inheritsFromSomeEntityAmong_cbd_:entitiesToExclude])
-                {
-                    [toManyNonOrderedRelationsToCheck addObject:relationDescr] ;
-                }
-            }
-        }
-    }
     
     
-    
-    /*
-     Adding new hints to the catalog
-     */
-    for (NSRelationshipDescription * toManyNonOrderedRelationship in toManyNonOrderedRelationsToCheck)
-    {
-        [self           addNewHintsToCatalog:newCatalog
-                     whenChekingRelationship:toManyNonOrderedRelationship
-                         betweenSourceObject:sourceObject
-                             andTargetObject:targetObject] ;
-    }
+//    /*
+//     Adding new hints to the catalog
+//     */
+//    for (NSRelationshipDescription * toManyNonOrderedRelationship in toManyNonOrderedRelationsToCheck)
+//    {
+//        [self           addNewHintsToCatalog:newCatalog
+//                     whenChekingRelationship:toManyNonOrderedRelationship
+//                         betweenSourceObject:sourceObject
+//                             andTargetObject:targetObject] ;
+//    }
     
 
     
@@ -646,6 +1080,11 @@ TODO(class à reprendre)
     
     for (NSRelationshipDescription * toManyNonOrderedRelationship in toManyNonOrderedRelationsToCheck)
     {
+        if (self.shouldLog)
+        {
+            NSLog(@"Checking the relationship %@", toManyNonOrderedRelationship.name) ;
+        }
+        
         BOOL isRelationSetSimilar ;
         
         NSSet * sourceSet = [sourceObject valueForKey:toManyNonOrderedRelationship.name] ;
@@ -654,13 +1093,18 @@ TODO(class à reprendre)
         
         isRelationSetSimilar = [self isThisSet:sourceSet
                               similarToThisSet:targetSet
-                        excludingRelationships:relationshipsNotToCheck
-                             excludingEntities:entitiesToExclude
                               usingHintCataLog:newCatalog
                            assumeYESifChecking:YES
-                             usingResearchType:researchType
                                  numberOfCalls:numberOfCalls + 1] ;
-        
+    
+
+        if (isRelationSetSimilar)
+        {
+            [self.globalHintCatalog addHintOfSimilarityForRelationship:toManyNonOrderedRelationship
+                                                       forSourceObject:sourceObject
+                                                       andTargetObject:targetObject
+                                                             hasStatus:CBDCoreDataDiscriminatorSimilarityStatusIsSimilar] ;
+        }
         
         if (!isRelationSetSimilar)
         {
@@ -683,44 +1127,49 @@ TODO(class à reprendre)
      We check the to-many ordered relationships
      */
     
-    NSMutableSet * toManyOrderedRelationsToCheck = [[NSMutableSet alloc] init] ;
+//    NSMutableSet * toManyOrderedRelationsToCheck = [[NSMutableSet alloc] init] ;
+//    
+//    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in toBeUsedDiscriminatorUnits)
+//    {
+//        NSSet *toManyOrderedRelationships = discriminatorUnit.orderedToManyRelationshipDescriptions ;
+//        
+//        for (NSRelationshipDescription * relationDescr in toManyOrderedRelationships)
+//        {
+//            if (![relationshipsNotToCheck containsObject:relationDescr])
+//            {
+//                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
+//                
+//                if (![self shouldIgnore:destinationEntity])
+//                {
+//                    [toManyOrderedRelationsToCheck addObject:relationDescr] ;
+//                }
+//            }
+//        }
+//    }
     
-    for (CBDCoreDataDiscriminatorUnit * discriminatorUnit in usedDiscriminatorUnits)
+    
+    
+    
+    
+//    /*
+//     Adding new hints to the catalog
+//     */
+//    for (NSRelationshipDescription * toManyOrderedRelationship in toManyOrderedRelationsToCheck)
+//    {
+//        [self           addNewHintsToCatalog:newCatalog
+//                     whenChekingRelationship:toManyOrderedRelationship
+//                         betweenSourceObject:sourceObject
+//                             andTargetObject:targetObject] ;
+//    }
+    
+    
+    for (NSRelationshipDescription * toManyOrderedRelationship in toManyOrderedRelationsToCheck)
     {
-        NSSet *toManyOrderedRelationships = discriminatorUnit.orderedToManyRelationshipDescriptions ;
-        
-        for (NSRelationshipDescription * relationDescr in toManyOrderedRelationships)
+        if (self.shouldLog)
         {
-            if (![totalRelationshipsNotToCheck containsObject:relationDescr])
-            {
-                NSEntityDescription * destinationEntity = relationDescr.destinationEntity ;
-                
-                if (![destinationEntity inheritsFromSomeEntityAmong_cbd_:entitiesToExclude])
-                {
-                    [toManyOrderedRelationsToCheck addObject:relationDescr] ;
-                }
-            }
+            NSLog(@"Checking the relationship %@", toManyOrderedRelationship.name) ;
         }
-    }
-    
-    
-    
-    
-    
-    /*
-     Adding new hints to the catalog
-     */
-    for (NSRelationshipDescription * toManyOrderedRelationship in toManyOrderedRelationsToCheck)
-    {
-        [self           addNewHintsToCatalog:newCatalog
-                     whenChekingRelationship:toManyOrderedRelationship
-                         betweenSourceObject:sourceObject
-                             andTargetObject:targetObject] ;
-    }
-    
-    
-    for (NSRelationshipDescription * toManyOrderedRelationship in toManyOrderedRelationsToCheck)
-    {
+        
         BOOL isRelationOrderedSetSimilar ;
         
         NSOrderedSet * sourceOrderedSet = [sourceObject valueForKey:toManyOrderedRelationship.name] ;
@@ -730,13 +1179,18 @@ TODO(class à reprendre)
         
         isRelationOrderedSetSimilar = [self  isThisOrderedSet:sourceOrderedSet
                                       similarToThisOrderedSet:targetOrderedSet
-                                       excludingRelationships:relationshipsNotToCheck
-                                            excludingEntities:entitiesToExclude
                                              usingHintCataLog:newCatalog
                                           assumeYESifChecking:YES
-                                            usingResearchType:researchType
                                                 numberOfCalls:numberOfCalls + 1] ;
         
+        
+        if (isRelationOrderedSetSimilar)
+        {
+            [self.globalHintCatalog addHintOfSimilarityForRelationship:toManyOrderedRelationship
+                                                       forSourceObject:sourceObject
+                                                       andTargetObject:targetObject
+                                                             hasStatus:CBDCoreDataDiscriminatorSimilarityStatusIsSimilar] ;
+        }
         
         
         if (!isRelationOrderedSetSimilar)
@@ -757,6 +1211,10 @@ TODO(class à reprendre)
                                  withMessage:@"This YES comes from the bottom of the core method"
                                      logging:YES];
 }
+
+
+
+
 
 
 
@@ -825,11 +1283,8 @@ TODO(class à reprendre)
 
 - (BOOL)           isThisOrderedSet:(NSOrderedSet *)sourceOrderedSet
             similarToThisOrderedSet:(NSOrderedSet *)targetOrderedSet
-             excludingRelationships:(NSSet *)relationshipsNotToCheck
-                  excludingEntities:(NSSet *)entitiesToExclude
                    usingHintCataLog:(CBDCoreDataDiscriminatorHintCatalog *)hintCalalog
                 assumeYESifChecking:(BOOL)assumeYESIfChecking
-                  usingResearchType:(CBDCoreDataDiscriminatorResearchType)researchType
                       numberOfCalls:(NSInteger)numberOfCalls
 {
     if ([sourceOrderedSet count] != [targetOrderedSet count])
@@ -859,11 +1314,8 @@ TODO(class à reprendre)
     
     if (![self isThisSourceObject:firstSourceObject
             similarToTargetObject:firstTargetObject
-           excludingRelationships:relationshipsNotToCheck
-                excludingEntities:entitiesToExclude
                  usingHintCatalog:hintCalalog
               assumeYESifChecking:YES
-                usingResearchType:researchType
                     numberOfCalls:numberOfCalls + 1])
     {
         return NO ;
@@ -872,7 +1324,7 @@ TODO(class à reprendre)
     /*
      Recursive step
      */
-    NSRange newRange = NSMakeRange(1, sourceOrderedSet.count) ;
+    NSRange newRange = NSMakeRange(1, sourceOrderedSet.count-1) ;
     
     NSOrderedSet * newSourceOrderedSet ;
     newSourceOrderedSet = [[NSOrderedSet alloc] initWithOrderedSet:sourceOrderedSet
@@ -886,11 +1338,8 @@ TODO(class à reprendre)
     
     return           [self isThisOrderedSet:newSourceOrderedSet
                     similarToThisOrderedSet:newTargeOrderedSet
-                     excludingRelationships:relationshipsNotToCheck
-                          excludingEntities:entitiesToExclude
                            usingHintCataLog:hintCalalog
                         assumeYESifChecking:assumeYESIfChecking
-                          usingResearchType:researchType
                               numberOfCalls:numberOfCalls + 1
                       ] ;
     
@@ -916,11 +1365,8 @@ TODO(class à reprendre)
 
 - (BOOL)           isThisSet:(NSSet *)sourceSet
             similarToThisSet:(NSSet *)targetSet
-      excludingRelationships:(NSSet *)relationshipsNotToCheck
-           excludingEntities:(NSSet *)entitiesToExclude
             usingHintCataLog:(CBDCoreDataDiscriminatorHintCatalog *)hintCalalog
          assumeYESifChecking:(BOOL)assumeYESIfChecking
-           usingResearchType:(CBDCoreDataDiscriminatorResearchType)researchType
                numberOfCalls:(NSInteger)numberOfCalls
 {
     if ([sourceSet count] != [targetSet count])
@@ -949,8 +1395,7 @@ TODO(class à reprendre)
     
     NSSet * setOfGoodHints = [self hintsOfPositiveSimilarityTypeFrom:hintCalalog
                                                whoseSourceObjectIsIn:sourceSet
-                                                 assumeYESifChecking:assumeYESIfChecking
-                              ] ;
+                                                 assumeYESifChecking:assumeYESIfChecking] ;
     
     for (CBDCoreDataDiscriminatorHint * hint in setOfGoodHints)
     {
@@ -963,11 +1408,8 @@ TODO(class à reprendre)
                   similarToTargetSet:targetSet
                     withSourceObject:chosenSourceObject
                            similarTo:testedTargetObject
-              excludingRelationships:relationshipsNotToCheck
-                   excludingEntities:entitiesToExclude
                     usingHintCataLog:hintCalalog
                  assumeYESifChecking:assumeYESIfChecking
-                   usingResearchType:researchType
                        numberOfCalls:numberOfCalls + 1] ;
         }
     }
@@ -983,22 +1425,16 @@ TODO(class à reprendre)
         {
             if ([self isThisSourceObject:sourceObject
                    similarToTargetObject:targetObject
-                  excludingRelationships:relationshipsNotToCheck
-                       excludingEntities:entitiesToExclude
                         usingHintCatalog:hintCalalog
                      assumeYESifChecking:assumeYESIfChecking
-                       usingResearchType:researchType
                            numberOfCalls:numberOfCalls + 1])
             {
                 return [self isSourceSet:sourceSet
                       similarToTargetSet:targetSet
                         withSourceObject:sourceObject
                                similarTo:targetObject
-                  excludingRelationships:relationshipsNotToCheck
-                       excludingEntities:entitiesToExclude
                         usingHintCataLog:hintCalalog
                      assumeYESifChecking:assumeYESIfChecking
-                       usingResearchType:researchType
                            numberOfCalls:numberOfCalls + 1] ;
             }
         }
@@ -1013,11 +1449,8 @@ TODO(class à reprendre)
        similarToTargetSet:(NSSet *)targetSet
          withSourceObject:(NSManagedObject *)sourceObject
                 similarTo:(NSManagedObject *)targetObject
-   excludingRelationships:(NSSet *)relationshipsNotToCheck
-        excludingEntities:(NSSet *)entitiesToExclude
          usingHintCataLog:(CBDCoreDataDiscriminatorHintCatalog *)hintCalalog
       assumeYESifChecking:(BOOL)assumeYESIfChecking
-        usingResearchType:(CBDCoreDataDiscriminatorResearchType)researchType
             numberOfCalls:(NSInteger)numberOfCalls
 {
     NSMutableSet * newSourceSet = [sourceSet mutableCopy] ;
@@ -1027,11 +1460,8 @@ TODO(class à reprendre)
     
     return        [self isThisSet:newSourceSet
                  similarToThisSet:newTargetSet
-           excludingRelationships:(NSSet *)relationshipsNotToCheck
-                excludingEntities:(NSSet *)entitiesToExclude
                  usingHintCataLog:hintCalalog
               assumeYESifChecking:assumeYESIfChecking
-                usingResearchType:researchType
                     numberOfCalls:numberOfCalls + 1] ;
     
 }
@@ -1093,9 +1523,8 @@ TODO(class à reprendre)
     }
     
     
-    TODO(nettoyer le catalog)
     /*
-     We had it to the global catalog !!!
+     We add it to the global catalog !!!
      If sourceObject and targetObject are NSManagedObjects
      */
     if ([sourceObject isKindOfClass:[NSManagedObject class]])
@@ -1109,9 +1538,11 @@ TODO(class à reprendre)
     /*
      We log
      */
-    if (logging)
+    if (logging
+        &&
+        self.shouldLog)
     {
-     //   NSLog(@"Similarity of %@ and %@ : %@. \n Remark: %@", sourceObject, targetObject, theBOOLReturn?@"YES":@"***NO***", message?message:@"");
+        NSLog(@"Similarity of %@ and %@ : %@. \n Remark: %@", sourceObject, targetObject, theBOOLReturn?@"YES":@"***NO***", message?message:@"");
     }
     
     

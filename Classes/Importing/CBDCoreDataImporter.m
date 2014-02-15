@@ -214,9 +214,6 @@
 /**************************************/
 
 
-TODO(GARDER les arguments namesOfRelationshipsToExclude (à mettre dans le discriminator))
-TODO(enlever excludeEntities ou plutot le mettre dans le discriminator)
-
 - (NSManagedObject *) import:(NSManagedObject *)objectToImport
            excludeAttributes:(NSArray *)namesOfAttributesToExclude
         excludeRelationships:(NSArray *)namesOfRelationshipsToExclude

@@ -120,9 +120,20 @@
                                    hasStatus:(CBDCoreDataDiscriminatorSimilarityStatus)similarityStatus ;
 
 
+- (id)  initWithSimilarityForRelationship:(NSRelationshipDescription *)relationship
+                          forSourceObject:(NSManagedObject *)sourceObject
+                          andTargetObject:(NSManagedObject *)targetObject
+                                hasStatus:(CBDCoreDataDiscriminatorSimilarityStatus)similarityStatus ;
+
+
 - (id)  initWithSimilarityOfSourceObject:(NSManagedObject *)sourceObject
                          andTargetObject:(NSManagedObject *)targetObject
                    shouldNotBeCheckedFor:(NSRelationshipDescription *)relation ;
 
+
+
+
+
+- (BOOL)isEqual:(id)object ;
 
 @end

@@ -17,6 +17,14 @@ extern NSString* const CBDKeyDescriptionToManyOrderedRelationship ;
 extern NSString* const CBDKeyUnmatchedKey ;
 
 
+
+//
+//
+/**************************************/
+#pragma mark - Getting the relationships and attributes
+/**************************************/
+/// @name Getting the relationships and attributes
+
 /**
  This method takes an array of names and return a dictionnary.
  
@@ -32,7 +40,46 @@ extern NSString* const CBDKeyUnmatchedKey ;
  
  The object for each key is a NSArray.
  */
-- (NSDictionary *)classifyAttributesAndRelationships_cbd_:(NSArray *)namesOfAttributesOrRelationships ;
+- (NSDictionary *)dispatchedAttributesAndRelationshipsFrom_cbd_:(NSArray *)namesOfAttributesOrRelationships ;
+
+
+
+
+/**
+ This method takes an set of RelationshipDescription and return a dictionnary.
+ 
+ The dictionnary returned has four keys:
+ - CBDKeyDescriptionToOneRelationship ;
+ - CBDKeyDescriptionToManyNonOrderedRelationship ;
+ - CBDKeyDescriptionToManyOrderedRelationship ;
+ - CBDKeyUnmatchedKey ;
+ 
+ The relationships in the NSSet* argument setOfRelationshipDescriptions are dispatched in these four keys.
+ If the relationships does not correspond to any relationships, it will be associated to the CBDKeyUnmatchedKey.
+ 
+ The object for each key is a NSSet.
+ */
+- (NSDictionary *)dispatchedRelationshipsFrom_cbd_:(NSSet *)setOfRelationshipDescriptions ;
+
+
+
+/**
+ This method returns a dictionnary with the relationships dispatched, with the same pattern as before.
+ 
+ The object for each key is a NSSet.
+ */
+- (NSDictionary *)dispatchedRelationships_cbd_ ;
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Managing parent entities
+/**************************************/
+/// @name Getting the relationships and attributes
+
 
 
 /**

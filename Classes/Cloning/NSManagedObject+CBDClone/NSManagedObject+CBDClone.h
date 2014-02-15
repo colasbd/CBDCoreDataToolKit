@@ -14,7 +14,7 @@
 @interface NSManagedObject (CBDClone)
 
 #pragma mark - Cloning
-/// Cloning
+/// @name Cloning
 
 /**
  Copy the given object to another MOC, but with omitting certains objects.
@@ -62,7 +62,7 @@
 
 
 #pragma mark - Copying the attributes
-/// Copying the attributes
+/// @name Copying the attributes
 
 /**
  Given two existing `NSManagedObject`, you want to copy the attributes of one to another one.

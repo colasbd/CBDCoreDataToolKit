@@ -29,7 +29,7 @@
 
 
 #pragma mark - Create
-/// Create an object
+/// @name Create an object
 
 /**
 Creates an NSManagedObject belonging to the current entity.
@@ -41,7 +41,7 @@ Creates an NSManagedObject belonging to the current entity.
 
 
 #pragma mark - Getting
-/// Getting objects
+/// @name Getting objects
 
 /**
  Fetches all the NSManagedObject of a given entity in the MOC.
@@ -191,7 +191,7 @@ Creates an NSManagedObject belonging to the current entity.
 
 
 #pragma mark - Counting
-/// Counting
+/// @name Counting
 
 
 
@@ -221,7 +221,7 @@ Creates an NSManagedObject belonging to the current entity.
 
 
 #pragma mark - Removing
-/// Removing
+/// @name Removing
 
 
 /** Removes all objects from the entity. */

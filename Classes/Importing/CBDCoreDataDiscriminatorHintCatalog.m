@@ -248,6 +248,21 @@
 }
 
 
+- (void)addHintOfSimilarityForRelationship:(NSRelationshipDescription *)relationship
+                           forSourceObject:(NSManagedObject *)sourceObject
+                           andTargetObject:(NSManagedObject *)targetObject
+                                 hasStatus:(CBDCoreDataDiscriminatorSimilarityStatus)similarityStatus
+{
+    CBDCoreDataDiscriminatorHint * hint ;
+    hint = [[CBDCoreDataDiscriminatorHint alloc] initWithSimilarityForRelationship:relationship
+                                                                   forSourceObject:sourceObject
+                                                                   andTargetObject:targetObject
+                                                                         hasStatus:similarityStatus] ;
+        
+    [self addHint:hint] ;
+
+}
+
 
 - (void)addHintBetweenSourceObject:(NSManagedObject *)sourceObject
                    andTargetObject:(NSManagedObject *)targetObject
@@ -265,12 +280,7 @@
 
 - (void)addHint:(CBDCoreDataDiscriminatorHint *)hint
 {
-    //    Since it is a set, it is not nessary to check
-    //
-    //    if (![self.hints containsObject:hint])
-    //    {
     [self.mutableHints addObject:hint] ;
-    //    }
 }
 
 
@@ -327,13 +337,12 @@
      {
          CBDCoreDataDiscriminatorSimilarityStatus status = [objectStatus integerValue] ;
          
-         if (status == CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus
-             ||
-             result == CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus)
+         if (status == CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus)
          {
              result = CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
              *stop = YES ;
-             
+         }
+         
              switch (result)
              {
                  case CBDCoreDataDiscriminatorSimilarityStatusNoStatus:
@@ -355,10 +364,6 @@
                      {
                          result = CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
                      }
-                     else
-                     {
-                         result = CBDCoreDataDiscriminatorSimilarityStatusIsSimilar ;
-                     }
                      break;
                  }
                      
@@ -368,17 +373,12 @@
                      {
                          result = CBDCoreDataDiscriminatorSimilarityStatusInvalidStatus ;
                      }
-                     else
-                     {
-                         result = CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar ;
-                     }
                      break;
                  }
                      
                  default:
                      break;
              }
-         }
      }];
     
     return result ;
@@ -401,7 +401,9 @@
     
     for (CBDCoreDataDiscriminatorHint * hint in usefulHints)
     {
-        if (hint.type == CBDCoreDataDiscriminatorHintAboutSimilarity)
+        if (hint.type == CBDCoreDataDiscriminatorHintAboutSimilarity
+            &&
+            hint.relationship == nil)
         {
             [arrayOfStatus addObject:[NSNumber numberWithInteger:hint.similarityStatus]] ;
         }
@@ -452,6 +454,20 @@
             hint.sourceObject == sourceObject
             &&
             hint.targetObject == targetObject)
+        {
+            [result addObject:hint.relationship] ;
+        }
+        
+        
+        if (hint.type == CBDCoreDataDiscriminatorHintAboutSimilarity
+            &&
+            hint.sourceObject == sourceObject
+            &&
+            hint.targetObject == targetObject
+            &&
+            hint.relationship != nil
+            &&
+            hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar)
         {
             [result addObject:hint.relationship] ;
         }

@@ -110,7 +110,7 @@
 /**************************************/
 
 
-/// Initialisation and setting
+/// @name Initialisation and setting
 
 // This method is private
 //+ (CBDCoreDataDiscriminatorSimilarityStatus)statusFromArrayOfStatus:(NSArray *)arrayOfStatus ;
@@ -129,7 +129,7 @@
 //- (void)addHint:(CBDCoreDataDiscriminatorHint *)hint ;
 
 /**
- Gives a hint about similarity.
+ Add a hint about similarity for two objects.
  */
 - (void)addHintOfSimilarityBetwenSourceObject:(NSManagedObject *)sourceObject
                               andTargetObject:(NSManagedObject *)targetObject
@@ -137,7 +137,19 @@
 
 
 /**
- Gives a hint that a relationship should not be checked (to avoid infinite loops).
+ Add a hint about similarity for a relationship.
+ */
+- (void)addHintOfSimilarityForRelationship:(NSRelationshipDescription *)relationship
+                           forSourceObject:(NSManagedObject *)sourceObject
+                           andTargetObject:(NSManagedObject *)targetObject
+                                 hasStatus:(CBDCoreDataDiscriminatorSimilarityStatus)similarityStatus ;
+
+
+
+
+
+/**
+ Add a hint that a relationship should not be checked (to avoid infinite loops).
  */
 - (void)addHintBetweenSourceObject:(NSManagedObject *)sourceObject
                    andTargetObject:(NSManagedObject *)targetObject
@@ -152,7 +164,7 @@
 
 
 
-/// Flushing the catalog
+/// @name Flushing the catalog
 
 /**
  Removes all the hints from the hintCatalog.
@@ -166,7 +178,7 @@
 
 
 
-/// Using the HintCatalog
+/// @name Using the HintCatalog
 
 /**
  Decides, depending of the HintCatalog, what can be said about the similary between sourceObject and targetObject
@@ -180,6 +192,6 @@
  This set depends of the HintCatalog
  */
 - (NSSet *)relationshipsToOmitForSourceObject:(NSManagedObject *)sourceObject
-                               andTargetObject:(NSManagedObject *)targetObject ;
+                              andTargetObject:(NSManagedObject *)targetObject ;
 
 @end

@@ -36,7 +36,7 @@
 
 
 #pragma mark - Entité associée
-/// Associated caller class
+/// @name Associated caller class
 
 /**
  BEWARE !!!
@@ -53,7 +53,7 @@
 
 
 #pragma mark - Getting
-/// Getting objects
+/// @name Getting objects
 
 /**
  Fetches all the NSManagedObject of a given caller class in the MOC.
@@ -204,7 +204,7 @@
 
 
 #pragma mark - Counting
-/// Counting
+/// @name Counting
 
 
 
@@ -232,7 +232,7 @@
 
 
 #pragma mark - Removing
-/// Removing
+/// @name Removing
 
 
 
@@ -248,7 +248,7 @@
 
 
 #pragma mark - Refetching
-/// Removing
+/// @name Removing
 
 
 /** Refetches the object. */
@@ -258,7 +258,7 @@
 
 
 #pragma mark - Looking for similar objects
-/// Looking for similar objects
+/// @name Looking for similar objects
 
 
 /**

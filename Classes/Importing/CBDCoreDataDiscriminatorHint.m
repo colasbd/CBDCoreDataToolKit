@@ -198,7 +198,14 @@
                     break;
             }
             
-            return [NSString stringWithFormat:@"The similarity status between %@ and %@ is %@", self.sourceObject, self.targetObject, similarityStatus] ;
+            
+            NSString * auxString =@"" ;
+            if (self.relationship)
+            {
+                auxString = [NSString stringWithFormat:@" for the relationship %@", self.relationship.name] ;
+            }
+            
+            return [NSString stringWithFormat:@"The similarity status between %@ and %@ is %@%@", self.sourceObject, self.targetObject, similarityStatus, auxString] ;
             break;
         }
             
@@ -244,6 +251,23 @@
     return self ;
 }
 
+
+
+- (id)  initWithSimilarityForRelationship:(NSRelationshipDescription *)relationship
+                          forSourceObject:(NSManagedObject *)sourceObject
+                          andTargetObject:(NSManagedObject *)targetObject
+                                hasStatus:(CBDCoreDataDiscriminatorSimilarityStatus)similarityStatus
+{
+    return [self initWithType:CBDCoreDataDiscriminatorHintAboutSimilarity
+                 sourceObject:sourceObject
+                 targetObject:targetObject
+                 relationship:relationship
+          statusForSimilarity:similarityStatus] ;
+}
+
+
+
+
 - (id)initWithSimilarityBetwenSourceObject:(NSManagedObject *)sourceObject
                            andTargetObject:(NSManagedObject *)targetObject
                                  hasStatus:(CBDCoreDataDiscriminatorSimilarityStatus)similarityStatus
@@ -255,6 +279,9 @@
           statusForSimilarity:similarityStatus] ;
 }
 
+
+
+
 - (id)  initWithSimilarityOfSourceObject:(NSManagedObject *)sourceObject
                          andTargetObject:(NSManagedObject *)targetObject
                    shouldNotBeCheckedFor:(NSRelationshipDescription *)relation
@@ -265,5 +292,54 @@
                  relationship:relation
           statusForSimilarity:0] ;
 }
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Overwritting of isEqual
+/**************************************/
+
+- (BOOL)isEqual:(id)other
+{
+    if (other == self)
+    {
+        return YES ;
+    }
+    
+    if (!other
+        || ![other isKindOfClass:[self class]])
+    {
+        return NO;
+    }
+    
+    return [self isEqualToHint_cbd_:other];
+}
+
+
+
+/*
+ self.type = typeOfTheHint ;
+ self.sourceObject = sourceObject ;
+ self.targetObject = targetObject ;
+ self.relationship = relationship ;
+ self.similarityStatus = similarityStatus ;
+ */
+- (BOOL)isEqualToHint_cbd_:(CBDCoreDataDiscriminatorHint *)hint
+{
+    return (self.type == hint.type
+            &&
+            self.sourceObject == hint.targetObject
+            &&
+            self.targetObject == hint.targetObject
+            &&
+            self.relationship == hint.relationship
+            &&
+            self.similarityStatus == self.similarityStatus) ;
+}
+
 
 @end

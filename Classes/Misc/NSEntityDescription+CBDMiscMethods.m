@@ -9,11 +9,15 @@
 #import "NSEntityDescription+CBDMiscMethods.h"
 
 
-NSString* const CBDKeyDescriptionAttribute = @"attributes";
-NSString* const CBDKeyDescriptionToOneRelationship = @"toOneRelationships";
-NSString* const CBDKeyDescriptionToManyNonOrderedRelationship = @"toManyNonOrderedRelationships";
-NSString* const CBDKeyDescriptionToManyOrderedRelationship = @"toManyOrderedRelationship" ;
-NSString* const CBDKeyUnmatchedKey = @"unmatchedKey" ;
+NSString* const CBDKeyDescriptionAttribute = @"CBDKeyDescriptionAttribute";
+NSString* const CBDKeyDescriptionToOneRelationship = @"CBDKeyDescriptionToOneRelationship";
+NSString* const CBDKeyDescriptionToManyNonOrderedRelationship = @"CBDKeyDescriptionToManyNonOrderedRelationship";
+NSString* const CBDKeyDescriptionToManyOrderedRelationship = @"CBDKeyDescriptionToManyOrderedRelationship" ;
+NSString* const CBDKeyUnmatchedKey = @"CBDKeyUnmatchedKey" ;
+
+
+
+
 
 @implementation NSEntityDescription (CBDMiscMethods)
 
@@ -24,7 +28,7 @@ NSString* const CBDKeyUnmatchedKey = @"unmatchedKey" ;
 #pragma mark - Classifying properties
 /**************************************/
 
-- (NSDictionary *)classifyAttributesAndRelationships_cbd_:(NSArray *)namesOfAttributesOrRelationships
+- (NSDictionary *)dispatchedAttributesAndRelationshipsFrom_cbd_:(NSArray *)namesOfAttributesOrRelationships
 {
     NSMutableArray * arrayAttributes = [@[] mutableCopy] ;
     NSMutableArray * arrayToOneRelationships = [@[] mutableCopy] ;
@@ -85,6 +89,47 @@ NSString* const CBDKeyUnmatchedKey = @"unmatchedKey" ;
 
 
 
+
+- (NSDictionary *)dispatchedRelationshipsFrom_cbd_:(NSSet *)setOfRelationshipDescriptions
+{
+    NSDictionary * dico = [self dispatchedAttributesAndRelationshipsFrom_cbd_:[[setOfRelationshipDescriptions allObjects] valueForKey:@"name" ]] ;
+    
+    return @{CBDKeyDescriptionToOneRelationship :
+                 [self __relationshipsFromTheirNames_cbd_:dico[CBDKeyDescriptionToOneRelationship]],
+             
+             CBDKeyDescriptionToManyNonOrderedRelationship :
+                 [self __relationshipsFromTheirNames_cbd_:dico[CBDKeyDescriptionToManyNonOrderedRelationship]],
+             
+             CBDKeyDescriptionToManyOrderedRelationship :
+                 [self __relationshipsFromTheirNames_cbd_:dico[CBDKeyDescriptionToManyOrderedRelationship]],
+             
+             CBDKeyUnmatchedKey :
+                 dico[CBDKeyUnmatchedKey]} ;
+}
+
+
+- (NSSet *)__relationshipsFromTheirNames_cbd_:(NSArray *)arrayOfNames
+{
+    NSMutableArray * result = [[NSMutableArray alloc] init] ;
+    
+    for (NSString * name in arrayOfNames)
+    {
+        NSRelationshipDescription * relation = self.relationshipsByName[name] ;
+        
+        if (relation)
+        {
+            [result addObject:self.relationshipsByName[name]] ;
+        }
+    }
+    
+    return [NSSet setWithArray:result] ;
+}
+
+
+- (NSDictionary *)dispatchedRelationships_cbd_
+{
+    return [self dispatchedRelationshipsFrom_cbd_:[NSSet setWithArray:[self.relationshipsByName allKeys]]] ;
+}
 
 
 //
