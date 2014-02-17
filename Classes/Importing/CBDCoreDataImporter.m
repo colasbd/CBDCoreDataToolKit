@@ -212,7 +212,35 @@
 //
 //
 /**************************************/
-#pragma mark - Import
+#pragma mark - Import : convenience methods
+/**************************************/
+
+
+- (NSManagedObject *)import:(NSManagedObject *)objectToImport
+{
+    return [self import:objectToImport
+     copyAlsoAttributes:nil
+  copyAlsoRelationships:nil] ;
+}
+
+
+- (NSManagedObject *)import:(NSManagedObject *)objectToImport
+         copyAlsoAttributes:(NSArray *)namesOfAttribuesToExclude
+      copyAlsoRelationships:(NSArray *)namesOfRelationshipsToExclude
+{
+    return [self import:objectToImport
+     copyAlsoAttributes:(NSArray *)namesOfAttribuesToExclude
+  copyAlsoRelationships:(NSArray *)namesOfRelationshipsToExclude
+        excludeEntities:nil] ;
+}
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Import : core method
 /**************************************/
 
 
@@ -228,36 +256,65 @@
  @warning Plus, these relationships will be removed from the list of relationships to be checked for discrimination.
  */
 - (NSManagedObject *) import:(NSManagedObject *)objectToImport
-           excludeAttributes:(NSArray *)namesOfAttributesToExclude
-        excludeRelationships:(NSArray *)namesOfRelationshipsToExclude
+          copyAlsoAttributes:(NSArray *)namesOfAttribuesToInclude
+       copyAlsoRelationships:(NSArray *)namesOfRelationshipsToInclude
              excludeEntities:(NSArray *)namesOfTheEntitesToExclude
 {
-    NSEntityDescription * entity = objectToImport.entity ;
+    /*
+     We exclude the nil case
+     */
+    if (!objectToImport)
+    {
+        return nil ;
+    }
     
     
     
     /*
-     Creating a new DiscriminatorUnit, so that we won't damage the default one by adding our constraints
+     First : we look in the cache
      */
-    CBDCoreDataDiscriminator * newDiscriminator = [self.discriminator copy];
     
-    CBDCoreDataDiscriminatorUnit * unit1 ;
-    unit1 = [[CBDCoreDataDiscriminatorUnit alloc] initDiscriminatorUnitForEntity:entity
-                                                              ignoringAttributes:namesOfAttributesToExclude
-                                                                andRelationships:namesOfRelationshipsToExclude] ;
-    [newDiscriminator addDiscriminatorUnit:unit1] ;
-    
-    CBDCoreDataDiscriminatorUnit * unit2 ;
-    for (NSString * nameEntity in namesOfTheEntitesToExclude)
+    if ([[self.cache allKeys] containsObject:objectToImport.objectID])
     {
-        NSEntityDescription * entityToExclude = [self.sourceMOC entityWithName_cbd_:nameEntity] ;
-        
-        unit2 = [[CBDCoreDataDiscriminatorUnit alloc] initIgnoringDiscriminatorUnitForEntity:entityToExclude] ;
-        
-        [newDiscriminator addDiscriminatorUnit:unit2] ;
+        return self.cache[objectToImport.objectID] ;
     }
-        
-    [newDiscriminator flushTheCache] ;
+    
+    
+    
+    NSEntityDescription * entity = objectToImport.entity ;
+    
+    
+    
+    
+    /*
+     Creating a new DiscriminatorUnit, so that we won't damage the default one by adding our operations
+     */
+    //    CBDCoreDataDiscriminator * newDiscriminator = [self.discriminator copy];
+    //
+    //    if (namesOfRelationshipsToExclude
+    //        ||
+    //        namesOfAttributesToExclude
+    //        ||
+    //        namesOfTheEntitesToExclude)
+    //    {
+    //        CBDCoreDataDiscriminatorUnit * unit1 ;
+    //        unit1 = [[CBDCoreDataDiscriminatorUnit alloc] initDiscriminatorUnitForEntity:entity
+    //                                                                  ignoringAttributes:namesOfAttributesToExclude
+    //                                                                    andRelationships:namesOfRelationshipsToExclude] ;
+    //        [newDiscriminator addDiscriminatorUnit:unit1] ;
+    //
+    //        CBDCoreDataDiscriminatorUnit * unit2 ;
+    //        for (NSString * nameEntity in namesOfTheEntitesToExclude)
+    //        {
+    //            NSEntityDescription * entityToExclude = [self.sourceMOC entityWithName_cbd_:nameEntity] ;
+    //
+    //            unit2 = [[CBDCoreDataDiscriminatorUnit alloc] initIgnoringDiscriminatorUnitForEntity:entityToExclude] ;
+    //
+    //            [newDiscriminator addDiscriminatorUnit:unit2] ;
+    //        }
+    //    }
+    //
+    //    [newDiscriminator flushTheCache] ;
     
     
     
@@ -266,45 +323,107 @@
      We test if the object is already in the targetMOC
      (modulo similarity)
      */
-    NSArray * objectsToTest = [entity allInMOC_cbd_:self.targetMOC] ;
+    NSManagedObject * firstSimilarObject = [self.discriminator firstSimilarObjectTo:objectToImport
+                                                                              inMOC:self.targetMOC] ;
     
-    __block NSManagedObject * result ;
-
-    
-    [objectsToTest enumerateObjectsUsingBlock:^(NSManagedObject * targetObj, NSUInteger idx, BOOL *stop)
+    if (firstSimilarObject)
     {
-//        if ([self.discriminator isThisSourceObject:objectToImport
-//                             similarToTargetObject:targetObj
-//                            excludingRelationships:<#(NSSet *)#>
-//                                 excludingEntities:<#(NSSet *)#>
-//                                 usingResearchType:C ])
-//        {
-//            result = targetObj ;
-//            *stop = YES ;
-//        }
-    }] ;
-    
-    return result ;
-    
+        return firstSimilarObject ;
+    }
     
     /*
      Else : we create it
+     and we had it to the cache
      */
     NSManagedObject * objectImported = [entity createInMOC_cbd_:self.targetMOC] ;
+    self.cache[objectToImport.objectID] = objectImported ;
+    
+    
+    
+    NSMutableArray * attributesToInclude = [[[self.discriminator attributesToCheckFor:entity] allObjects] mutableCopy] ;
+    [attributesToInclude addObjectsFromArray:namesOfAttribuesToInclude] ;
     
     
     /*
      First : we deal with the attributes
      */
     [objectImported fillInAttributesFrom:objectToImport
-                   exludeAttributes_cbd_:namesOfAttributesToExclude] ;
+                     onlyAttributes_cbd_:attributesToInclude] ;
+    
+    
     
     
     /*
      Second, we deal with Relationships
      */
+    for (NSRelationshipDescription * relation in [objectToImport.entity.relationshipsByName allValues])
+    {
+        if ([namesOfRelationshipsToInclude containsObject:relation.name]
+            ||
+            [[self.discriminator relationshipsToCheckFor:entity] containsObject:relation])
+        {
+            NSArray * attributesToInclude ;
+            NSArray * relationshipsToInclude ;
+            
+            if (relation.destinationEntity == entity)
+            {
+                attributesToInclude = namesOfAttribuesToInclude ;
+                relationshipsToInclude = namesOfRelationshipsToInclude ;
+            }
+            
+            if (!relation.isToMany)
+            {
+                /*
+                 To-one relationships
+                 */
+                [objectImported setValue:[self import:[objectToImport valueForKey:relation.name]
+                                   copyAlsoAttributes:attributesToInclude
+                                copyAlsoRelationships:relationshipsToInclude
+                                      excludeEntities:namesOfTheEntitesToExclude]
+                                  forKey:relation.name] ;
+            }
+            else if (!relation.isOrdered)
+            {
+                /*
+                 To-many non-ordered relationships
+                 */
+                NSMutableSet * newSet = [[NSMutableSet alloc] init] ;
+                
+                for (NSManagedObject * obj in [objectToImport valueForKey:relation.name])
+                {
+                    [newSet addObject:[self import:obj
+                                copyAlsoAttributes:attributesToInclude
+                             copyAlsoRelationships:relationshipsToInclude
+                                   excludeEntities:namesOfTheEntitesToExclude]];
+                }
+                
+                [objectImported setValue:newSet
+                                  forKey:relation.name] ;
+                
+            }
+            else
+            {
+                /*
+                 To-many ordered relationships
+                 */
+                
+                NSMutableOrderedSet * newSet = [[NSMutableOrderedSet alloc] init] ;
+                
+                for (NSManagedObject * obj in [objectToImport valueForKey:relation.name])
+                {
+                    [newSet addObject:[self import:obj
+                                copyAlsoAttributes:attributesToInclude
+                             copyAlsoRelationships:relationshipsToInclude
+                                   excludeEntities:namesOfTheEntitesToExclude]];
+                }
+                
+                [objectImported setValue:newSet
+                                  forKey:relation.name] ;
+            }
+        }
+    }
     
-    
+    return objectImported ;
 }
 
 

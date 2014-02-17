@@ -153,14 +153,14 @@
  @warning Plus, these relationships will be removed from the list of relationships to be checked for discrimination.
  */
 - (NSManagedObject *)import:(NSManagedObject *)objectToImport
-          excludeAttributes:(NSArray *)namesOfAttribuesToExclude
-       excludeRelationships:(NSArray *)namesOfRelationshipsToExclude ;
+         copyAlsoAttributes:(NSArray *)namesOfAttribuesToInclude
+      copyAlsoRelationships:(NSArray *)namesOfRelationshipsToInclude ;
 
-
+FIXME(projet à reprendre je veux pouvoir distinguer les critère de recherche et les critères de copie)
 
 - (NSManagedObject *)import:(NSManagedObject *)objectToImport
-          excludeAttributes:(NSArray *)namesOfAttribuesToExclude
-       excludeRelationships:(NSArray *)namesOfRelationshipsToExclude
+         copyAlsoAttributes:(NSArray *)namesOfAttribuesToInclude
+      copyAlsoRelationships:(NSArray *)namesOfRelationshipsToInclude
             excludeEntities:(NSArray *)namesOfTheEntitesToExclude ;
 
 

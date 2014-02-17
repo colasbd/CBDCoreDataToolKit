@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CBDCoreDataDiscriminatorUnit.h"
+#import "CBDCoreDataDecisionUnit.h"
 
 
 
@@ -115,43 +115,43 @@
 
 
 
-
-#pragma mark - Managing the discrimination units
-/// @name Managing the discrimination units
-
-/**
- The discriminatorUnits composing the instance
- */
-@property (nonatomic, readonly)NSArray * discriminatorUnits ;
-
-
-/**
- The entities explicitely registered by the instance for discriminating
- */
-@property (nonatomic, readonly)NSArray * registeredEntities ;
-
-
-/**
- To perform a discrimination, one should tell the CBDCoreDataDiscriminator upon which criteria the discrimination will be done.
- 
- So, you should DiscriminatorUnits if you want to precise to the engine upon which criteria you want the discrimination to be done.
- */
-- (void)addDiscriminatorUnit:(CBDCoreDataDiscriminatorUnit *)aDiscriminatorUnit ;
-
-
-
-/**
- Remove all the DiscriminatorUnits.
- */
-- (void)removeAllDiscriminatorUnits ;
-
-
-
-/**
- Remove the DiscriminatorUnit for entity
-*/
-- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity ;
-
+//
+//#pragma mark - Managing the discrimination units
+///// @name Managing the discrimination units
+//
+///**
+// The discriminatorUnits composing the instance
+// */
+//@property (nonatomic, readonly)NSArray * discriminatorUnits ;
+//
+//
+///**
+// The entities explicitely registered by the instance for discriminating
+// */
+//@property (nonatomic, readonly)NSArray * registeredEntities ;
+//
+//
+///**
+// To perform a discrimination, one should tell the CBDCoreDataDiscriminator upon which criteria the discrimination will be done.
+// 
+// So, you should DiscriminatorUnits if you want to precise to the engine upon which criteria you want the discrimination to be done.
+// */
+//- (void)addDiscriminatorUnit:(CBDCoreDataDecisionUnit *)aDiscriminatorUnit ;
+//
+//
+//
+///**
+// Remove all the DiscriminatorUnits.
+// */
+//- (void)removeAllDiscriminatorUnits ;
+//
+//
+//
+///**
+// Remove the DiscriminatorUnit for entity
+//*/
+//- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity ;
+//
 
 
 
@@ -234,28 +234,16 @@
 
 
 /**
- The core method that compare two objects.
- 
- @argument relationshipsNotToCheck The NSSet argument is composed of NSRelationshipDescription. Theses relationships will be ignored.
- 
- @argument entitiesToExclude The NSSet argument is composed of NSEntityDescription. Theses entities will be ignored. 
- If the sourceObject's (and targetObject's) entity is in this list (or inherits from an entity of this list), returns YES.
- 
- @argument researchType Facilitating, SemiFacilitating or Demanding
- 
- @argument researchType Facilitating (`CBDCoreDataDiscriminatorResearchFacilitating`), SemiFacilitating (`CBDCoreDataDiscriminatorResearchSemiFacilitating`) or Demanding (`CBDCoreDataDiscriminatorResearchDemanding`)
-
- @argument cachingTheResult If set to YES, the result will be stored in a cache, to accelerate next checks.
- 
- If the sourceObject and targetObject have different NSEntityDescription, returns NO.
-
+ Finding similar objects
  */
-//- (BOOL)     isThisSourceObject:(NSManagedObject *)sourceObject
-//          similarToTargetObject:(NSManagedObject *)targetObject
-//         excludingRelationships:(NSSet *)relationshipsNotToCheck
-//              usingResearchType:(CBDCoreDataDiscriminationType)researchType  ;
+- (NSArray *)similarObjectTo:(NSManagedObject *)sourceObject
+                       inMOC:(NSManagedObjectContext *)MOC ;
 
-
+/**
+ First similar objects
+ */
+- (NSManagedObject *)firstSimilarObjectTo:(NSManagedObject *)sourceObject
+                                    inMOC:(NSManagedObjectContext *)MOC ;
 
 
 #pragma mark - Managing the log

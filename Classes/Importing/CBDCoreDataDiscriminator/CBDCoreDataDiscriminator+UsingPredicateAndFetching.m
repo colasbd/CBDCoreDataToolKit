@@ -32,15 +32,23 @@ const int depthForDefaultMethods_cbd_ = 0 ;
 
 - (NSPredicate *)predicateToFindObjectsVirtuallySimilarTo:(NSManagedObject *)sourceObject
                                        withPredicateDepth:(NSUInteger)depth
-{
-    NSPredicate * returnedResult = [self _cleverPredicateToFindObjectsVirtuallySimilarTo:sourceObject
-                                                                      withRecursiveDepth:depth] ;
+{    
+    NSExpression * expr = [NSExpression expressionForKeyPath:@"self"] ;
     
-    NSPredicate * result =  [returnedResult predicateWithSubstitutionVariables:@{@"my_var": [NSExpression expressionForKeyPath:@"self"]}];
     
-    NSLog(@"%@", result) ;
-    
-    return result ;
+    /*
+     Weird HACK
+     
+     I don't know why it is not working without ie
+     
+     return [self _predicateToFindObjectsVirtuallySimilarTo:sourceObject
+     withInitialPath:expr
+     withRecursiveDepth:depth] ;
+     */
+     
+    return [NSPredicate predicateWithFormat:[self _predicateToFindObjectsVirtuallySimilarTo:sourceObject
+                                           withInitialPath:expr
+                                        withRecursiveDepth:depth].predicateFormat] ;
 }
 
 
@@ -115,9 +123,18 @@ const int depthForDefaultMethods_cbd_ = 0 ;
 /**************************************/
 
 
-- (NSPredicate *)_cleverPredicateToFindObjectsVirtuallySimilarTo:(NSManagedObject *)sourceObject
-                                              withRecursiveDepth:(NSUInteger)depth
+- (NSPredicate *)_predicateToFindObjectsVirtuallySimilarTo:(NSManagedObject *)sourceObject
+                                           withInitialPath:(NSExpression *)initialPath
+                                        withRecursiveDepth:(NSUInteger)depth
 {
+    /*
+     See also:
+     http://stackoverflow.com/questions/21802728/replacing-a-variable-in-an-nspredicate
+     
+     but it is not working:
+     http://stackoverflow.com/questions/21823339/chaining-replacements-dont-work-in-nspredicate
+     */
+    
     if (depth == 3)
     {
         NSLog(@"here") ;
@@ -134,7 +151,8 @@ const int depthForDefaultMethods_cbd_ = 0 ;
     for (NSString * nameAttribute in [self attributesToCheckFor:entity])
     {
         NSPredicate * predicate ;
-        predicate = [NSPredicate predicateWithFormat:@"$my_var.%K == %@",
+        predicate = [NSPredicate predicateWithFormat:@"%K.%K == %@",
+                     initialPath.keyPath,
                      nameAttribute,
                      [sourceObject valueForKey:nameAttribute]] ;
         
@@ -165,20 +183,15 @@ const int depthForDefaultMethods_cbd_ = 0 ;
         {
             NSManagedObject * newSourceObject = [sourceObject valueForKey:toOneRelationship.name] ;
             
-            
-            NSPredicate * predForThisRelationship = [self _cleverPredicateToFindObjectsVirtuallySimilarTo:newSourceObject
-                                                                                       withRecursiveDepth:depth - 1] ;
-            
-            NSString * keyPath = [NSString stringWithFormat:@"$my_var.%@", toOneRelationship.name] ;
-            
-            /*
-             Thank you SO !!
-             http://stackoverflow.com/questions/21802728/replacing-a-variable-in-an-nspredicate
-             */
-            NSPredicate * newPred = [predForThisRelationship predicateWithSubstitutionVariables:@{@"my_var": [NSExpression expressionForKeyPath:keyPath]}];
+            NSString * keyPath = [NSString stringWithFormat:@"%@.%@", initialPath.keyPath, toOneRelationship.name] ;
+            NSExpression * newInitialPath = [NSExpression expressionForKeyPath:keyPath] ;
             
             
-            [predicatesForSubPredicate addObject:newPred] ;
+            NSPredicate * predForThisRelationship = [self _predicateToFindObjectsVirtuallySimilarTo:newSourceObject
+                                                                                    withInitialPath:newInitialPath
+                                                                                 withRecursiveDepth:depth - 1] ;
+            
+            [predicatesForSubPredicate addObject:predForThisRelationship] ;
         }
         
         if ([predicatesForSubPredicate count] > 0)
@@ -202,7 +215,8 @@ const int depthForDefaultMethods_cbd_ = 0 ;
         
         NSString * keyPath = [NSString stringWithFormat:@"%@.@count", relationship.name] ;
         
-        predicate = [NSPredicate predicateWithFormat:@"$my_var.%K.@count == %@",
+        predicate = [NSPredicate predicateWithFormat:@"%K.%K.@count == %@",
+                     initialPath.keyPath,
                      relationship.name,
                      [sourceObject valueForKeyPath:keyPath]] ;
         
@@ -232,7 +246,8 @@ const int depthForDefaultMethods_cbd_ = 0 ;
         
         NSNumber * lengthSet = [sourceObject valueForKeyPath:keyPath] ;
         
-        predicate = [NSPredicate predicateWithFormat:@"$my_var.%K.@count == %@",
+        predicate = [NSPredicate predicateWithFormat:@"%K.%K.@count == %@",
+                     initialPath.keyPath,
                      relationship.name,
                      lengthSet] ;
         
@@ -256,14 +271,15 @@ const int depthForDefaultMethods_cbd_ = 0 ;
                 NSManagedObject * newSourceObject = [sourceObject valueForKey:relationship.name][i] ;
                 
                 
-                NSPredicate * predForThisRelationship = [self _cleverPredicateToFindObjectsVirtuallySimilarTo:newSourceObject
-                                                                                           withRecursiveDepth:depth - 1] ;
+                NSString * keyPath = [NSString stringWithFormat:@"((%@.%@)[%d])", initialPath.keyPath, relationship.name, i] ;
+                NSExpression * newInitialPath = [NSExpression expressionForKeyPath:keyPath] ;
                 
-                NSString * keyPath = [NSString stringWithFormat:@"$my_var.%@[%d]", relationship.name, i] ;
                 
-                NSPredicate * newPred = [predForThisRelationship predicateWithSubstitutionVariables:@{@"my_var": [NSExpression expressionForKeyPath:keyPath]}];
+                NSPredicate * predForThisRelationship = [self _predicateToFindObjectsVirtuallySimilarTo:newSourceObject
+                                                                                        withInitialPath:newInitialPath
+                                                                                     withRecursiveDepth:depth - 1] ;
                 
-                [predicatesForNewSubPredicate addObject:newPred] ;
+                [predicatesForNewSubPredicate addObject:predForThisRelationship] ;
                 
             }
             
@@ -272,6 +288,9 @@ const int depthForDefaultMethods_cbd_ = 0 ;
                 [predicatesForSubPredicate addObject:[NSCompoundPredicate andPredicateWithSubpredicates:predicatesForNewSubPredicate]] ;
             }
         }
+        
+        
+        
     }
     
     if ([predicatesForSubPredicate count] > 0)

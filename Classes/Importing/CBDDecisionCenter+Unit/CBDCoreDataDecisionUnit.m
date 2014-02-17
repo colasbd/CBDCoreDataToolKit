@@ -13,7 +13,7 @@
 /**************************************/
 #pragma mark - IMPORTS
 /**************************************/
-#import "CBDCoreDataDiscriminatorUnit.h"
+#import "CBDCoreDataDecisionUnit.h"
 #import "NSManagedObject+CBDMiscMethods.h"
 #import "NSEntityDescription+CBDMiscMethods.h"
 
@@ -87,7 +87,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 /**************************************/
 #pragma mark - DÉCLARATIONS PRIVÉES
 /**************************************/
-@interface CBDCoreDataDiscriminatorUnit ()
+@interface CBDCoreDataDecisionUnit ()
 
 //#pragma mark -
 //
@@ -162,7 +162,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 /**************************************/
 
 
-@implementation CBDCoreDataDiscriminatorUnit
+@implementation CBDCoreDataDecisionUnit
 
 
 
@@ -421,7 +421,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 
 
 
-- (void)mergeWith:(CBDCoreDataDiscriminatorUnit *)anOtherUnit
+- (void)mergeWith:(CBDCoreDataDecisionUnit *)anOtherUnit
 {
     if (self.entity != anOtherUnit.entity)
     {
@@ -579,7 +579,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 }
 
 
-- (BOOL)isEqualToDiscriminatorUnit:(CBDCoreDataDiscriminatorUnit *)other
+- (BOOL)isEqualToDiscriminatorUnit:(CBDCoreDataDecisionUnit *)other
 {
     if (self.entity == other.entity
         && [self.nameAttributesToUse isEqualToSet:other.nameAttributesToUse]

@@ -7,10 +7,11 @@
 //
 
 #import "CBDCoreDataDiscriminator.h"
-#import "CBDCoreDataDiscriminatorUnit.h"
+#import "CBDCoreDataDecisionUnit.h"
 #import "CBDCoreDataDiscriminatorHint.h"
 #import "CBDCoreDataDiscriminatorHintCatalog.h"
 #import "NSEntityDescription+CBDMiscMethods.h"
+#import "NSEntityDescription+CBDActiveRecord.h"
 #import "NSManagedObject+CBDMiscMethods.h"
 #import "CBDCoreDataDiscriminator+UsingPredicateAndFetching.h"
 
@@ -76,7 +77,7 @@ const BOOL safeMode = NO ;
  If YES, to boost the research, we do a kind of pre-search, using NSPredicates and CoreData.
  */
 const BOOL usingCoreDataAcceleration = YES ;
-const int depthForCoreDataAcceleration_cbd_=3 ;
+const int depthForCoreDataAcceleration_cbd_=0 ;
 
 
 /**********************************************************************
@@ -202,7 +203,7 @@ const int depthForCoreDataAcceleration_cbd_=3 ;
 }
 
 
-- (void)addDiscriminatorUnit:(CBDCoreDataDiscriminatorUnit *)aDiscriminatorUnit
+- (void)addDiscriminatorUnit:(CBDCoreDataDecisionUnit *)aDiscriminatorUnit
 {
     NSEntityDescription * entity = aDiscriminatorUnit.entity ;
     
@@ -212,7 +213,7 @@ const int depthForCoreDataAcceleration_cbd_=3 ;
     }
     else
     {
-        CBDCoreDataDiscriminatorUnit * theExistingUnit = self.discriminatorUnitByEntity[entity.name] ;
+        CBDCoreDataDecisionUnit * theExistingUnit = self.discriminatorUnitByEntity[entity.name] ;
         
         [theExistingUnit mergeWith:aDiscriminatorUnit] ;
     }
@@ -222,25 +223,25 @@ const int depthForCoreDataAcceleration_cbd_=3 ;
 
 
 
-- (CBDCoreDataDiscriminatorUnit *)defaultDiscriminationUnitFor:(NSEntityDescription *)entity
+- (CBDCoreDataDecisionUnit *)defaultDiscriminationUnitFor:(NSEntityDescription *)entity
 {
     switch (self.discriminationType)
     {
         case CBDCoreDataDiscriminationTypeFacilitating:
         {
-            return [[CBDCoreDataDiscriminatorUnit alloc] initIgnoringDiscriminatorUnitForEntity:entity] ;
+            return [[CBDCoreDataDecisionUnit alloc] initIgnoringDiscriminatorUnitForEntity:entity] ;
             break;
         }
             
         case CBDCoreDataDiscriminationTypeSemiFacilitating:
         {
-            return [[CBDCoreDataDiscriminatorUnit alloc] initSemiExhaustiveDiscriminationUnitFor:entity] ;
+            return [[CBDCoreDataDecisionUnit alloc] initSemiExhaustiveDiscriminationUnitFor:entity] ;
             break;
         }
             
         case CBDCoreDataDiscriminationTypeDemanding:
         {
-            return [[CBDCoreDataDiscriminatorUnit alloc] initExhaustiveDiscriminationUnitFor:entity] ;
+            return [[CBDCoreDataDecisionUnit alloc] initExhaustiveDiscriminationUnitFor:entity] ;
             break;
         }
             
@@ -316,7 +317,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     /*
      The current discriminationUnit
      */
-    CBDCoreDataDiscriminatorUnit * discriminationUnit ;
+    CBDCoreDataDecisionUnit * discriminationUnit ;
     
     NSNumber * explicitelyIncluded ;
     
@@ -471,12 +472,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 
 - (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity
-{
-    if ([entity.name isEqualToString:@"EntityAlpha"])
-    {
-        NSLog(@"here") ;
-    }
-    
+{    
     return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
 }
 
@@ -869,8 +865,8 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
          
         case CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar:
         {
-            //if (assumeYESIfChecking)
-            //{
+            if (assumeYESIfChecking)
+            {
                 //return YES ;
                 return [self registerAndReturnThisAnswer:YES
                                                  trueYES:NO
@@ -878,7 +874,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
                                          andTargetObject:targetObject
                                              withMessage:@"We used the cache + it is a quasi-similar."
                                                  logging:YES] ;
-            //}
+            }
             break ;
         }
             
@@ -918,14 +914,21 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
      */
     
     
-    /*
-     ********
-     FIRST : we check the attributes !!!
-     ********
-     */
     
-
-    if (![self doesObject:sourceObject haveTheSameAttributeValuesAs:targetObject])
+    /*
+     The CoreData Acceleration checks the attributes.
+     So, there is no need to redo it
+     */
+    if (!usingCoreDataAcceleration)
+    {
+        /*
+         ********
+         FIRST : we check the attributes !!!
+         ********
+         */
+        
+        
+        if (![self doesObject:sourceObject haveTheSameAttributeValuesAs:targetObject])
         {
             return [self registerAndReturnThisAnswer:NO
                                              trueYES:NO
@@ -934,9 +937,9 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
                                          withMessage:@"By checking the attributes."
                                              logging:YES] ;
         }
-    
-    
-    
+        
+        
+    }
     
     
     
@@ -1515,45 +1518,6 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 
 
-- (NSSet *) hintsOfPositiveSimilarityTypeFrom:(CBDCoreDataDiscriminatorHintCatalog *)hintCalalog
-                        whoseSourceObjectIsIn:(NSSet *)sourceSet
-                          assumeYESifChecking:(BOOL)assumeYESIfChecking
-{
-    //TODO(We reinforce the controls)
-    assumeYESIfChecking = NO ;
-    BOOL considerTheQuasiSimilarObject = NO ;
-    
-    NSMutableSet * result = [[NSMutableSet alloc] init] ;
-    
-    for (CBDCoreDataDiscriminatorHint * hint in hintCalalog.hints)
-    {
-        if ([sourceSet containsObject:hint.sourceObject]
-            &&
-            (hint.type == CBDCoreDataDiscriminatorHintAboutSimilarity
-             &&
-             hint.relationship == nil)
-            &&
-            (hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar
-             ||
-             (assumeYESIfChecking
-              &&
-              hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsChecking)
-             ||
-             (considerTheQuasiSimilarObject
-              &&
-              hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar)))
-        {
-            [result addObject:hint] ;
-        }
-    }
-    
-    return result ;
-}
-
-
-
-
-
 
 
 //
@@ -1593,7 +1557,9 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
      We add it to the global catalog !!!
      If sourceObject and targetObject are NSManagedObjects
      */
-    if ([sourceObject isKindOfClass:[NSManagedObject class]])
+    if ([sourceObject isKindOfClass:[NSManagedObject class]]
+        &&
+        !status)
     {
         [self.globalHintCatalog addHintOfSimilarityBetwenSourceObject:sourceObject
                                                       andTargetObject:targetObject
@@ -1619,5 +1585,97 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 }
 
 
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Finding similar object
+/**************************************/
+
+
+- (NSArray *)similarObjectTo:(NSManagedObject *)sourceObject
+                       inMOC:(NSManagedObjectContext *)MOC
+{
+    if (!sourceObject
+        ||
+        !MOC)
+    {
+        return @[] ;
+    }
+    
+    NSEntityDescription * entity = sourceObject.entity ;
+    
+    NSArray * objectsToTest ;
+    
+    if (usingCoreDataAcceleration)
+    {
+        objectsToTest = [self objectsVirtuallySimilarTo:sourceObject
+                                     withPredicateDepth:depthForCoreDataAcceleration_cbd_
+                                                  inMOC:MOC] ;
+    }
+    else
+    {
+        objectsToTest = [entity allInMOC_cbd_:MOC] ;
+    }
+    
+    NSMutableArray * result = [[NSMutableArray alloc] init] ;
+    
+    for (NSManagedObject * objectToTest in objectsToTest)
+    {
+        if ([self isThisSourceObject:sourceObject
+               similarToTargetObject:objectToTest])
+        {
+            [result addObject:objectsToTest] ;
+        }
+    }
+    
+    return result ;
+}
+
+
+
+- (NSManagedObject *)firstSimilarObjectTo:(NSManagedObject *)sourceObject
+                                    inMOC:(NSManagedObjectContext *)MOC
+{
+    if (!sourceObject
+        ||
+        !MOC)
+    {
+        return nil ;
+    }
+    
+    NSEntityDescription * entity = sourceObject.entity ;
+    
+    NSArray * objectsToTest ;
+    
+    if (usingCoreDataAcceleration)
+    {
+        objectsToTest = [self objectsVirtuallySimilarTo:sourceObject
+                                     withPredicateDepth:depthForCoreDataAcceleration_cbd_
+                                                  inMOC:MOC] ;
+    }
+    else
+    {
+        objectsToTest = [entity allInMOC_cbd_:MOC] ;
+    }
+    
+    
+    __block NSManagedObject * result ;
+    
+    [objectsToTest enumerateObjectsUsingBlock:^(NSManagedObject * objectToTest, NSUInteger idx, BOOL *stop)
+    {
+        if ([self isThisSourceObject:sourceObject
+               similarToTargetObject:objectToTest])
+        {
+            result = objectToTest ;
+            *stop = YES ;
+        }
+    }] ;
+    
+    return result ;
+}
 
 @end

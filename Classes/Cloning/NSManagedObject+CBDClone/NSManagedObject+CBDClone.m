@@ -190,6 +190,18 @@
 - (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
         exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
 {
+    NSMutableArray * arrayOfAttributesToInclude = [sourceObject.entity.attributeKeys mutableCopy] ;
+    [arrayOfAttributesToInclude removeObjectsInArray:namesOfAttributesToExclude] ;
+    
+    [self fillInAttributesFrom:sourceObject
+           onlyAttributes_cbd_:arrayOfAttributesToInclude] ;
+}
+
+
+
+- (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
+          onlyAttributes_cbd_:(NSArray *)namesOfAttributesToCopy
+{
     NSManagedObjectContext * contextSource = [sourceObject managedObjectContext] ;
     NSString *sourceEntityName = [[sourceObject entity] name];
     
@@ -200,15 +212,13 @@
     
     for (NSString *attr in attributes)
     {
-        if (![namesOfAttributesToExclude containsObject:attr])
+        if ([namesOfAttributesToCopy containsObject:attr])
         {
             [self setValue:[sourceObject valueForKey:attr] forKey:attr];
         }
     }
+
 }
-
-
-
 
 
 

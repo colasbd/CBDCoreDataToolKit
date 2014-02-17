@@ -69,7 +69,7 @@ const BOOL ignoreWinsOverNotIgnore ;
  
   A CBDCoreDataDiscriminatorUnit instance refers to an NSEntityDescription and to some attributes and/or relationships to decide if two instances of this NSEntityDescription should be considered as equal.
 */
-@interface CBDCoreDataDiscriminatorUnit : NSObject
+@interface CBDCoreDataDecisionUnit : NSObject
 //
 //
 /**************************************/
@@ -226,7 +226,7 @@ The entity of the instance
  
  If one of the unit is of the "ignoring" type, then the resulting constraint will also be.
  */
-- (void)mergeWith:(CBDCoreDataDiscriminatorUnit *)anOtherUnit ;
+- (void)mergeWith:(CBDCoreDataDecisionUnit *)anOtherUnit ;
 
 
 /**

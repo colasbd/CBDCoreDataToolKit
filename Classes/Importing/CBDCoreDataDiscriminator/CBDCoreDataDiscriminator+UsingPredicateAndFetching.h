@@ -45,7 +45,6 @@ const int depthForDefaultMethods_cbd_ ;
 
 
 
-
 //
 //
 /**************************************/
@@ -70,8 +69,6 @@ const int depthForDefaultMethods_cbd_ ;
  */
 - (BOOL)           isThisSourceObject:(NSManagedObject *)sourceObject
        virtuallySimilarToTargetObject:(NSManagedObject *)targetObject ;
-
-
 
 
 
