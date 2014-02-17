@@ -252,6 +252,9 @@
         {
             if ((varHint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsChecking
                  ||
+                 FIXME(a corriger)
+//                 varHint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar
+//                 ||
                  varHint.relationship != nil)
                 &&
                 (varHint.sourceObject == sourceObject

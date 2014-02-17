@@ -42,6 +42,13 @@ typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminationType)
 
 
 
+
+/**********************************************************************
+ **********************************************************************
+ *****************           PARAMETERS            ********************
+ **********************************************************************
+ **********************************************************************/
+
 /*
  This boolean sets the method with use.
  If YES: the method is more likely to end, but I didn't prove that the algorithm is exact (but I don't have any counter-example)
@@ -51,7 +58,7 @@ const BOOL optionYESIfChecking = NO ;
 
 
 /*
- If there is a conflict (a key is asked to be included and ignored), ignore wins in this BOOL is YES
+ If there is a conflict (a key is asked to be included and ignored), ignore wins if this BOOL is YES
  */
 const BOOL ignoreWinsOverInclude = YES ;
 
@@ -59,8 +66,24 @@ const BOOL ignoreWinsOverInclude = YES ;
 /*
  If safeMode == YES, there is less chance of NSException, 
  but I didn't prove that the algorithm is exact (but I don't have any counter-example)
+ 
+ If safeMode == NO, it could lead to an NSException (I didn't encountered), but the algorithm is exact.
  */
 const BOOL safeMode = NO ;
+
+
+/*
+ If YES, to boost the research, we do a kind of pre-search, using NSPredicates and CoreData.
+ */
+const BOOL usingCoreDataAcceleration = YES ;
+const int depthForCoreDataAcceleration_cbd_=3 ;
+
+
+/**********************************************************************
+ **********************************************************************/
+
+
+
 
 
 
@@ -74,14 +97,6 @@ const BOOL safeMode = NO ;
 @property (nonatomic, readwrite) CBDCoreDataDiscriminationType discriminationType ;
 
 @property (nonatomic, strong, readwrite)CBDCoreDataDiscriminatorHintCatalog * globalHintCatalog ;
-
-
-/**
- Return the registered CBDCoreDataDiscriminatorUnit corresponding to the entity
- 
- Returns nil if there are not
- */
-- (CBDCoreDataDiscriminatorUnit *)discriminatorUnitForEntity:(NSEntityDescription *)entity ;
 
 
 - (CBDCoreDataDiscriminatorHintCatalog *)globalHintCatalogEnhancedWith:(CBDCoreDataDiscriminatorHintCatalog *)otherCatalog ;
@@ -323,19 +338,19 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
      */
     NSDictionary * infoOfSuperentity ;
     BOOL parentEntityExplicitelyIncluded ;
-    NSNumber * shouldIgnoreForParent ;
+    BOOL shouldIgnoreForParent ;
     
     if (entity.superentity)
     {
         infoOfSuperentity = [self getInfosFor:entity.superentity] ;
         parentEntityExplicitelyIncluded = [infoOfSuperentity[CBDCoreDataDiscriminatorGetExplicitelyIncluded] boolValue] ;
-        shouldIgnoreForParent = infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] ;
+        shouldIgnoreForParent = [infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
     }
     else
     {
         infoOfSuperentity = nil ;
         parentEntityExplicitelyIncluded = NO ;
-        shouldIgnoreForParent = @NO ;
+        shouldIgnoreForParent = NO ;
     }
     
     
@@ -373,7 +388,9 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     {
         for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore])
         {
-            if (![discriminationUnit.nameAttributesToUse containsObject:key])
+            if (![discriminationUnit.nameAttributesToUse containsObject:key]
+                ||
+                ![explicitelyIncluded boolValue])
             {
                 [resultSetAttributesToIgnore addObject:key] ;
             }
@@ -403,7 +420,9 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     {
         for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore])
         {
-            if (![discriminationUnit.relationshipDescriptionsToUse containsObject:key])
+            if (![discriminationUnit.relationshipDescriptionsToUse containsObject:key]
+                ||
+                ![explicitelyIncluded boolValue])
             {
                 [resultSetRelationshipsToIgnore addObject:key] ;
             }
@@ -418,7 +437,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     }
     else
     {
-        shouldIgnore = shouldIgnoreForParent ;
+        shouldIgnore = @(shouldIgnoreForParent) ;
     }
     
     
@@ -453,6 +472,11 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 - (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity
 {
+    if ([entity.name isEqualToString:@"EntityAlpha"])
+    {
+        NSLog(@"here") ;
+    }
+    
     return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
 }
 
@@ -463,15 +487,6 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 }
 
 
-
-
-
-//
-//
-/**************************************/
-#pragma mark - DiscriminatingUnits
-/**************************************/
-/// @name <#argument#>
 
 
 
@@ -663,7 +678,6 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 - (BOOL)     isThisSourceObject:(NSManagedObject *)sourceObject
           similarToTargetObject:(NSManagedObject *)targetObject
 {
-    i = 0 ;
     /*
      I don't know if putting YES to this option make the algorithm not correct.
      I don't know if putting NO to this option make the algorithm falling in infinite loops.
@@ -685,7 +699,6 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 
 
-int i = 0 ;
 
 //
 //
@@ -700,19 +713,9 @@ int i = 0 ;
             assumeYESifChecking:(BOOL)assumeYESIfChecking
                   numberOfCalls:(NSInteger)numberOfCalls
 {
-    i = i + 1 ;
-    NSLog(@"%d", i) ;
-    
     if (self.shouldLog)
     {
         NSLog(@"Checking similarity of %@ and %@", sourceObject, targetObject) ;
-    }
-    
-    if ([sourceObject respondsToSelector:@selector(name)]
-        &&
-        [[sourceObject valueForKey:@"name"] isEqualToString:@"Colas"])
-    {
-        NSLog(@"here") ;
     }
     
     /*
@@ -786,6 +789,29 @@ int i = 0 ;
                                      withMessage:@"The entity is in the black list."
                                          logging:NO] ;
     }
+    
+    
+    
+    
+    
+    /*
+     We use the core-data acceleration
+     */
+    if (usingCoreDataAcceleration
+        &&
+        ![self           isThisSourceObject:sourceObject
+             virtuallySimilarToTargetObject:targetObject
+                         withPredicateDepth:depthForCoreDataAcceleration_cbd_])
+    {
+        return [self registerAndReturnThisAnswer:NO
+                                         trueYES:NO
+                                 forSourceObject:sourceObject
+                                 andTargetObject:targetObject
+                                     withMessage:@"The two objects are not virtually similar."
+                                         logging:NO] ;
+    }
+    
+    
     
     
     
@@ -1211,10 +1237,14 @@ int i = 0 ;
     }
     
     
-    FIXME(essayer avec trueYES a NO)
+    /*
+     Here, trueYES can also be set to YES
+     
+     For more safety, we set it to NO
+     */
     //return YES ;
     return [self registerAndReturnThisAnswer:YES
-                                     trueYES:YES
+                                     trueYES:NO
                              forSourceObject:sourceObject
                              andTargetObject:targetObject
                                  withMessage:@"This YES comes from the bottom of the core method"
@@ -1406,8 +1436,8 @@ int i = 0 ;
         
     }
 
-    TODO(decommenter  --> plus de bug)
-    TODO(commenter  --> plus long)
+    //(decommenter  --> plus de bug)
+    //(commenter  --> plus long)
 
 //    NSSet * setOfGoodHints = [self hintsOfPositiveSimilarityTypeFrom:hintCalalog
 //                                               whoseSourceObjectIsIn:sourceSet
@@ -1439,24 +1469,19 @@ int i = 0 ;
     {
         for (NSManagedObject * targetObject in targetSet)
         {
-            TODO(Ici : l ajout core data)
-            if ([self           isThisSourceObject:sourceObject
-                    virtuallySimilarToTargetObject:targetObject])
+            if ([self isThisSourceObject:sourceObject
+                   similarToTargetObject:targetObject
+                        usingHintCatalog:hintCalalog
+                     assumeYESifChecking:assumeYESIfChecking
+                           numberOfCalls:numberOfCalls + 1])
             {
-                if ([self isThisSourceObject:sourceObject
-                       similarToTargetObject:targetObject
-                            usingHintCatalog:hintCalalog
-                         assumeYESifChecking:assumeYESIfChecking
-                               numberOfCalls:numberOfCalls + 1])
-                {
-                    return [self isSourceSet:sourceSet
-                          similarToTargetSet:targetSet
-                            withSourceObject:sourceObject
-                                   similarTo:targetObject
-                            usingHintCataLog:hintCalalog
-                         assumeYESifChecking:assumeYESIfChecking
-                               numberOfCalls:numberOfCalls + 1] ;
-                }
+                return [self isSourceSet:sourceSet
+                      similarToTargetSet:targetSet
+                        withSourceObject:sourceObject
+                               similarTo:targetObject
+                        usingHintCataLog:hintCalalog
+                     assumeYESifChecking:assumeYESIfChecking
+                           numberOfCalls:numberOfCalls + 1] ;
             }
         }
     }
@@ -1494,8 +1519,9 @@ int i = 0 ;
                         whoseSourceObjectIsIn:(NSSet *)sourceSet
                           assumeYESifChecking:(BOOL)assumeYESIfChecking
 {
-    TODO(on renforce les controle)
+    //TODO(We reinforce the controls)
     assumeYESIfChecking = NO ;
+    BOOL considerTheQuasiSimilarObject = NO ;
     
     NSMutableSet * result = [[NSMutableSet alloc] init] ;
     
@@ -1509,9 +1535,13 @@ int i = 0 ;
             &&
             (hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar
              ||
-             (hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsChecking
+             (assumeYESIfChecking
               &&
-              assumeYESIfChecking)))
+              hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsChecking)
+             ||
+             (considerTheQuasiSimilarObject
+              &&
+              hint.similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar)))
         {
             [result addObject:hint] ;
         }
@@ -1541,17 +1571,6 @@ int i = 0 ;
                         withMessage:(NSString *)message
                             logging:(BOOL)logging
 {
-    TODO(a enlever)
-    if ([sourceObject respondsToSelector:@selector(name)]
-        &&
-        [[sourceObject valueForKey:@"name"] isEqualToString:[targetObject valueForKey:@"name"]]
-         &&
-         theBOOLReturn == NO)
-         {
-             NSLog(@"PB");
-         }
-    
-    
     CBDCoreDataDiscriminatorSimilarityStatus status ;
     if (theBOOLReturn)
     {

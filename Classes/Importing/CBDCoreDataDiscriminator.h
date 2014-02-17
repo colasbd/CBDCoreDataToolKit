@@ -11,27 +11,6 @@
 
 
 
-/*
- This boolean sets the method with use.
- If YES: the method is more likely to end, but I didn't prove that the algorithm is exact (but I don't have any counter-example)
- If NO: the method is exact
- */
-const BOOL optionYESIfChecking ;
-
-
-/*
- If there is a conflict (a key is asked to be included and ignored), ignore wins in this BOOL is YES
- */
-const BOOL ignoreWinsOverInclude ;
-
-
-/*
- If safeMode == YES, there is less chance of NSException,
- but I didn't prove that the algorithm is exact (but I don't have any counter-example)
- */
-const BOOL safeMode ;
-
-
 
 /**
  CBDCoreDataDiscriminator is a helper class for CBDCoreDataDiscriminator.
@@ -282,6 +261,9 @@ const BOOL safeMode ;
 #pragma mark - Managing the log
 /// @name Managing the cache
 
+/**
+ Turn ON/OFF the log
+ */
 - (void)shouldLog:(BOOL)shouldLog ;
 
 
