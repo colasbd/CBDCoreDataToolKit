@@ -1,7 +1,3 @@
-//
-//  CBDCoreDataDiscriminator.h
-//  Pods
-//
 //  Created by Colas on 12/02/2014.
 //
 //
@@ -12,46 +8,9 @@
 
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - Classes utilisées
-/**************************************/
-//
-//@class <#nom de la classe#> ;
 
 
 
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATION DES CONSTANTES
-/**************************************/
-//
-//extern NSString* const <#exempleDeConstante#> ;
-
-
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATION PUBLIQUE : properties
-/**************************************/
 
 
 /*
@@ -63,45 +22,19 @@ const BOOL ignoreWinsOverNotIgnore ;
 
 
 /**
- CBDCoreDataDiscriminatorUnit is a helper class for CBDCoreDataDiscriminator.
+ CBDCoreDataDecisionUnit is a helper class for the library CBDCoreDataToolKit.
  
- CBDCoreDataDiscriminatorUnit encapsulates the data for the discrimination relatively to an entity.
+ CBDCoreDataDecisionUnit encapsulates the data for the decision relatively to an entity.
  
-  A CBDCoreDataDiscriminatorUnit instance refers to an NSEntityDescription and to some attributes and/or relationships to decide if two instances of this NSEntityDescription should be considered as equal.
-*/
+ A CBDCoreDataDecisionUnit instance refers to an NSEntityDescription and to some attributes and/or relationships to consider to do various actions (comparing, deleting, copying, etc.).
+ */
 @interface CBDCoreDataDecisionUnit : NSObject
-//
-//
-/**************************************/
-#pragma mark Properties de paramétrage
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties strong
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties-référence
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties read only
-/**************************************/
 
 
 
 /**
-The entity of the instance
-*/
+ The entity of the instance
+ */
 @property (nonatomic, weak, readonly)NSEntityDescription *entity ;
 
 
@@ -112,53 +45,41 @@ The entity of the instance
 
 
 /**
- The names of the attributes used for discrimination for the instance
+ The names of the attributes used for decision for the instance
  */
 @property (nonatomic, readonly)NSSet* nameAttributesToUse ;
 
 
 
 /**
- The NSRelationshipDescription's of the  relationships used for discrimination for the instance
+ The NSRelationshipDescription's of the  relationships used for decision for the instance
  */
 @property (nonatomic, readonly)NSSet* relationshipDescriptionsToUse ;
 
 
 
 /**
- The names of the attributes explicitely ignored for discrimination for the instance
+ The names of the attributes explicitely ignored for decision for the instance
  */
 @property (nonatomic, readonly)NSSet* nameAttributesToIgnore ;
 
 
 
 /**
- The NSRelationshipDescription's of the  relationships explicitely ignored for discrimination for the instance
+ The NSRelationshipDescription's of the  relationships explicitely ignored for decision for the instance
  */
 @property (nonatomic, readonly)NSSet* relationshipDescriptionsToIgnore ;
 
 
 
 /**
- The names of the other keys (they will not be used for discrimination) for the instance
+ The names of the other keys (they will not be used for decision) for the instance
  
  If non-empty, it means that the user has given some keys not corresponding to
  attributes nor relationships
  */
 @property (nonatomic, readonly)NSSet* nameOtherKeys ;
 
-//
-//
-/**************************************/
-#pragma mark Properties de convenance
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
 
 
 
@@ -166,56 +87,63 @@ The entity of the instance
 
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATION PUBLIQUE : méthodes
-/**************************************/
 
 #pragma mark - Initialization
 ///Initialization
 
 /**
- In the `init` method, you give attributes and relationships you want to use to discriminate between objects.
+ The designated initializer.
  */
-- (id)initDiscriminatorUnitForEntity:(NSEntityDescription *)entity
-                  usingAttributes:(NSArray *)namessAttributeForDiscrimination
-                 andRelationships:(NSArray *)namesRelationshipForDiscrimination ;
+-  (id)       initForEntity:(NSEntityDescription *)entity
+            usingAttributes:(NSArray *)namesUsedAttributeForDecision
+         usingRelationships:(NSArray *)namesUsedRelationshipsForDecision
+         ignoringAttributes:(NSArray *)namesIgnoredAttributeForDecision
+      ignoringRelationships:(NSArray *)namesIgnoredRelationshipsForDecision
+            shouldBeIgnored:(BOOL)shouldBeIgnored ;
+
 
 
 /**
- The given entity will be ignored in the discrimination.
+ In the `init` method, you give attributes and relationships you want to use to discriminate between objects.
+ */
+- (id)     initForEntity:(NSEntityDescription *)entity
+         usingAttributes:(NSArray *)namesAttributeForDecision
+        andRelationships:(NSArray *)namesRelationshipForDecision ;
+
+
+/**
+ The given entity will be ignored in the decision.
  
  In other words, any two instances of the given entity will be considered as similar.
  */
-- (id)initIgnoringDiscriminatorUnitForEntity:(NSEntityDescription *)entity ;
+- (id)initWithIgnoringEntity:(NSEntityDescription *)entity ;
 
 
 
 /**
- Create a CBDCoreDataDiscriminatorUnit instance with all attributes
- for the given NSEntityDescription as criteria for discrimination.
+ Create a CBDCoreDataDecisionUnit instance with all attributes
+ for the given NSEntityDescription as criteria for decision.
  */
-- (id)initSemiExhaustiveDiscriminationUnitFor:(NSEntityDescription *)entity ;
+- (id)initSemiExhaustiveFor:(NSEntityDescription *)entity ;
 
 
 
 /**
- Create a CBDCoreDataDiscriminatorUnit instance with all attributes and all relationships
- for the given NSEntityDescription as criteria for discrimination.
+ Create a CBDCoreDataDecisionUnit instance with all attributes and all relationships
+ for the given NSEntityDescription as criteria for decision.
  */
-- (id)initExhaustiveDiscriminationUnitFor:(NSEntityDescription *)entity ;
+- (id)initExhaustiveFor:(NSEntityDescription *)entity ;
 
 
 
 /**
  In the `init` method, you give attributes and relationships you want to use to discriminate between objects.
  */
-- (id)initDiscriminatorUnitForEntity:(NSEntityDescription *)entity
-                  ignoringAttributes:(NSArray *)namesIgnoredAttributeForDiscrimination
-                    andRelationships:(NSArray *)namesIgnoredRelationshipForDiscrimination ;
+- (id)      initForEntity:(NSEntityDescription *)entity
+       ignoringAttributes:(NSArray *)namesIgnoredAttributes
+         andRelationships:(NSArray *)namesIgnoredRelationships;
+
+
 
 
 
@@ -225,31 +153,20 @@ The entity of the instance
  The constraints will add.
  
  If one of the unit is of the "ignoring" type, then the resulting constraint will also be.
+ 
+ The ignores wins over the include (as long as the `const` parameter `ignoreWinsOverNotIgnore` is 
+ set to `YES`, the default value — which is not supposed to be changed)
  */
 - (void)mergeWith:(CBDCoreDataDecisionUnit *)anOtherUnit ;
 
 
-/**
- Removes the given attributes and relationships from the DiscriminationUnit 
- */
-- (void)removeAttributes:(NSArray *)namessAttributeForDiscrimination
-        andRelationships:(NSArray *)namesRelationshipForDiscrimination ;
-
-
-
-
-//
-//#pragma mark - Discrimination
-///// @name Discrimination
-//
 ///**
-// Compares two objects **using only the attributes** of this instance of CBDCoreDataDiscriminatorUnit.
-// 
-// This method is used by CBDCoreDataDiscriminator but should not be used directly.
+// Removes the given attributes and relationships from the DecisionUnit
 // */
-//- (BOOL)              doesObject:(NSManagedObject *)sourceObject
-//    haveTheSameAttributeValuesAs:(NSManagedObject *)targetObject ;
+//- (void)removeAttributes:(NSArray *)namessAttributeForDecision
+//        andRelationships:(NSArray *)namesRelationshipForDecision ;
 //
+
 
 
 
@@ -262,7 +179,7 @@ The entity of the instance
 /**
  Remark : the method `isEqual:` is overwritten.
  
- Two DiscriminationUnits are equal if they are related to the same entity and operate on the same keys.
+ Two DecisionUnits are equal if they are related to the same entity and operate on the same keys.
  */
 - (BOOL)isEqual:(id)object ;
 

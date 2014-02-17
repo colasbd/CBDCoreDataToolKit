@@ -9,7 +9,7 @@
 #import "CBDCoreDataDiscriminator+UsingPredicateAndFetching.h"
 #import "NSEntityDescription+CBDMiscMethods.h"
 #import "NSEntityDescription+CBDActiveRecord.h"
-
+#import "CBDCoreDataDecisionCenter.h"
 
 
 const int depthForDefaultMethods_cbd_ = 0 ;
@@ -148,7 +148,7 @@ const int depthForDefaultMethods_cbd_ = 0 ;
     /*
      Checking attributes
      */
-    for (NSString * nameAttribute in [self attributesToCheckFor:entity])
+    for (NSString * nameAttribute in [self.decisionCenter attributesToCheckFor:entity])
     {
         NSPredicate * predicate ;
         predicate = [NSPredicate predicateWithFormat:@"%K.%K == %@",
@@ -160,7 +160,7 @@ const int depthForDefaultMethods_cbd_ = 0 ;
     }
     
     
-    NSSet * relationshipsToCheck = [self relationshipsToCheckFor:entity] ;
+    NSSet * relationshipsToCheck = [self.decisionCenter relationshipsToCheckFor:entity] ;
     NSDictionary * dispatchedRelationshipsToCheck = [entity dispatchedRelationshipsFrom_cbd_:relationshipsToCheck] ;
     
     NSSet * toOneRelationships = dispatchedRelationshipsToCheck[CBDKeyDescriptionToOneRelationship] ;

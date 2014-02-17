@@ -7,39 +7,43 @@
 //
 
 #import "CBDCoreDataDiscriminator.h"
-#import "CBDCoreDataDecisionUnit.h"
+
+#import "CBDCoreDataDecisionCenter.h"
+
 #import "CBDCoreDataDiscriminatorHint.h"
 #import "CBDCoreDataDiscriminatorHintCatalog.h"
+
 #import "NSEntityDescription+CBDMiscMethods.h"
-#import "NSEntityDescription+CBDActiveRecord.h"
 #import "NSManagedObject+CBDMiscMethods.h"
+
+#import "NSEntityDescription+CBDActiveRecord.h"
 #import "CBDCoreDataDiscriminator+UsingPredicateAndFetching.h"
 
 
-/**
- The following options deal with the case when an entity has no DiscriminatorUnit associated.
- 
- Let's recall that a DiscriminatorUnit is meant to declare upon which attributes/relationships
- the objects of a given entity are compared.
- 
- So, if an entity has no associated CBDCoreDataDiscriminationType, what to do ?
- 
- We define three options :
- 
- - CBDCoreDataDiscriminatorResearchFacilitating: all the objects of such entities will be declared equal. It
- is equivalent to ignoring this entity
- 
- - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we only consider their attributes. This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
- 
- - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we  consider both all the attributes and all the relationships.
- */
-typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminationType)
-{
-    CBDCoreDataDiscriminationTypeFacilitating,
-    CBDCoreDataDiscriminationTypeSemiFacilitating,
-    CBDCoreDataDiscriminationTypeDemanding,
-    CBDCoreDataDiscriminationTypeCount
-};
+///**
+// The following options deal with the case when an entity has no DiscriminatorUnit associated.
+// 
+// Let's recall that a DiscriminatorUnit is meant to declare upon which attributes/relationships
+// the objects of a given entity are compared.
+// 
+// So, if an entity has no associated CBDCoreDataDiscriminationType, what to do ?
+// 
+// We define three options :
+// 
+// - CBDCoreDataDiscriminatorResearchFacilitating: all the objects of such entities will be declared equal. It
+// is equivalent to ignoring this entity
+// 
+// - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we only consider their attributes. This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
+// 
+// - CBDCoreDataDiscriminatorResearchSemiFacilitating: to compare two object of this entity, we  consider both all the attributes and all the relationships.
+// */
+//typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminationType)
+//{
+//    CBDCoreDataDiscriminationTypeFacilitating,
+//    CBDCoreDataDiscriminationTypeSemiFacilitating,
+//    CBDCoreDataDiscriminationTypeDemanding,
+//    CBDCoreDataDiscriminationTypeCount
+//};
 
 
 
@@ -58,10 +62,10 @@ typedef NS_ENUM(NSInteger, CBDCoreDataDiscriminationType)
 const BOOL optionYESIfChecking = NO ;
 
 
-/*
- If there is a conflict (a key is asked to be included and ignored), ignore wins if this BOOL is YES
- */
-const BOOL ignoreWinsOverInclude = YES ;
+///*
+// If there is a conflict (a key is asked to be included and ignored), ignore wins if this BOOL is YES
+// */
+//const BOOL ignoreWinsOverInclude = YES ;
 
 
 /*
@@ -92,10 +96,12 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
 
 @property (nonatomic)BOOL shouldLog ;
 
+//
+//@property (nonatomic, strong, readwrite)NSMutableDictionary * discriminatorUnitByEntity ;
+//
+//@property (nonatomic, readwrite) CBDCoreDataDiscriminationType discriminationType ;
 
-@property (nonatomic, strong, readwrite)NSMutableDictionary * discriminatorUnitByEntity ;
-
-@property (nonatomic, readwrite) CBDCoreDataDiscriminationType discriminationType ;
+@property (nonatomic, strong, readwrite)CBDCoreDataDecisionCenter * decisionCenter ;
 
 @property (nonatomic, strong, readwrite)CBDCoreDataDiscriminatorHintCatalog * globalHintCatalog ;
 
@@ -123,16 +129,20 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
 #pragma mark - Init
 /**************************************/
 
-- (id)init
+
+
+
+- (id)initWithDecisionCenter:(CBDCoreDataDecisionCenter *)decisionCenter
 {
     self = [super init] ;
     
     if (self)
     {
-        self.shouldLog = NO ;
-        self.globalHintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
-        self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
-        [self chooseFacilitatingType] ;
+        _shouldLog = NO ;
+        _globalHintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
+        _decisionCenter = decisionCenter ;
+        //self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
+        //[self chooseFacilitatingType] ;
     }
     
     return self ;
@@ -145,345 +155,343 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
 {
     CBDCoreDataDiscriminator * newDiscriminator = [[CBDCoreDataDiscriminator alloc] init] ;
     
-    newDiscriminator.discriminationType = self.discriminationType ;
+    newDiscriminator.decisionCenter = [self.decisionCenter copy] ;
     newDiscriminator.shouldLog = self.shouldLog ;
-    
-    newDiscriminator.discriminatorUnitByEntity = [self.discriminatorUnitByEntity copy];
     
     return newDiscriminator ;
 }
 
 
 
-
-#pragma mark - Choosing the mode of discrimination
-
-
-- (void)chooseFacilitatingType
-{
-    self.discriminationType = CBDCoreDataDiscriminationTypeFacilitating ;
-    [self flushTheCache] ;
-}
-
-
-
-- (void)chooseSemiFacilitatingType ;
-{
-    self.discriminationType = CBDCoreDataDiscriminationTypeSemiFacilitating ;
-    [self flushTheCache] ;
-}
-
-
-- (void)chooseDemandingType ;
-{
-    self.discriminationType = CBDCoreDataDiscriminationTypeDemanding ;
-    [self flushTheCache] ;
-}
-
-
+//
+//#pragma mark - Choosing the mode of discrimination
+//
+//
+//- (void)chooseFacilitatingType
+//{
+//    self.discriminationType = CBDCoreDataDiscriminationTypeFacilitating ;
+//    [self flushTheCache] ;
+//}
+//
+//
+//
+//- (void)chooseSemiFacilitatingType ;
+//{
+//    self.discriminationType = CBDCoreDataDiscriminationTypeSemiFacilitating ;
+//    [self flushTheCache] ;
+//}
+//
+//
+//- (void)chooseDemandingType ;
+//{
+//    self.discriminationType = CBDCoreDataDiscriminationTypeDemanding ;
+//    [self flushTheCache] ;
+//}
 
 
 
 //
 //
-/**************************************/
-#pragma mark - Managing discriminatorUnits and entities
-/**************************************/
-
-
-- (NSArray *)discriminatorUnits
-{
-    return [self.discriminatorUnitByEntity allValues] ;
-}
-
-
-- (NSArray *)registeredEntities
-{
-    return [self.discriminatorUnits valueForKey:@"entity"] ;
-}
-
-
-- (void)addDiscriminatorUnit:(CBDCoreDataDecisionUnit *)aDiscriminatorUnit
-{
-    NSEntityDescription * entity = aDiscriminatorUnit.entity ;
-    
-    if (![[self.discriminatorUnitByEntity allKeys] containsObject:entity.name])
-    {
-        self.discriminatorUnitByEntity[entity.name] = aDiscriminatorUnit ;
-    }
-    else
-    {
-        CBDCoreDataDecisionUnit * theExistingUnit = self.discriminatorUnitByEntity[entity.name] ;
-        
-        [theExistingUnit mergeWith:aDiscriminatorUnit] ;
-    }
-}
-
-
-
-
-
-- (CBDCoreDataDecisionUnit *)defaultDiscriminationUnitFor:(NSEntityDescription *)entity
-{
-    switch (self.discriminationType)
-    {
-        case CBDCoreDataDiscriminationTypeFacilitating:
-        {
-            return [[CBDCoreDataDecisionUnit alloc] initIgnoringDiscriminatorUnitForEntity:entity] ;
-            break;
-        }
-            
-        case CBDCoreDataDiscriminationTypeSemiFacilitating:
-        {
-            return [[CBDCoreDataDecisionUnit alloc] initSemiExhaustiveDiscriminationUnitFor:entity] ;
-            break;
-        }
-            
-        case CBDCoreDataDiscriminationTypeDemanding:
-        {
-            return [[CBDCoreDataDecisionUnit alloc] initExhaustiveDiscriminationUnitFor:entity] ;
-            break;
-        }
-            
-        default:
-            return nil ;
-            break;
-    }
-}
-
-
-
-
-
-
-
-
-- (void)removeAllDiscriminatorUnits
-{
-    self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
-    
-    [self flushTheCache] ;
-}
-
-
-
-- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity
-{
-    [self.discriminatorUnitByEntity removeObjectForKey:entity.name] ;
-}
-
-
-
-
-
+////
+////
+///**************************************/
+//#pragma mark - Managing discriminatorUnits and entities
+///**************************************/
 //
 //
-/**************************************/
-#pragma mark - the DiscriminatorUnits : how they impact the entities
-/**************************************/
-
-
-
-
-
-
-
-- (BOOL)shouldIgnore:(NSEntityDescription *)entity
-{
-    return [[self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
-}
-
-
-
-
-/*
- The keys use for the dictionnary
- */
-NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToInclude = @"CBDCoreDataDiscriminatorGetInfoAttributesToInclude" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore" ;
-NSString * const   CBDCoreDataDiscriminatorGetExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetExplicitelyIncluded" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscriminatorGetInfoCount" ;
-
-
-
-/*
- This method gets the infos recursively on entity.superentity
- */
-- (NSDictionary *)getInfosFor:(NSEntityDescription *)entity
-{
-    /*
-     The current discriminationUnit
-     */
-    CBDCoreDataDecisionUnit * discriminationUnit ;
-    
-    NSNumber * explicitelyIncluded ;
-    
-    if ([self.registeredEntities containsObject:entity])
-    {
-        explicitelyIncluded = @YES ;
-        discriminationUnit = self.discriminatorUnitByEntity[entity.name] ;
-    }
-    else
-    {
-        explicitelyIncluded = @NO ;
-        discriminationUnit = [self defaultDiscriminationUnitFor:entity] ;
-    }
-    
-    
-    
-    /*
-     The info of the parent
-     */
-    NSDictionary * infoOfSuperentity ;
-    BOOL parentEntityExplicitelyIncluded ;
-    BOOL shouldIgnoreForParent ;
-    
-    if (entity.superentity)
-    {
-        infoOfSuperentity = [self getInfosFor:entity.superentity] ;
-        parentEntityExplicitelyIncluded = [infoOfSuperentity[CBDCoreDataDiscriminatorGetExplicitelyIncluded] boolValue] ;
-        shouldIgnoreForParent = [infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
-    }
-    else
-    {
-        infoOfSuperentity = nil ;
-        parentEntityExplicitelyIncluded = NO ;
-        shouldIgnoreForParent = NO ;
-    }
-    
-    
-    
-    
-    /*
-     Merging the info
-     */
-    NSMutableSet * resultSetAttributesToInclude = [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetRelationshipsToInclude = [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetAttributesToIgnore = [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetRelationshipsToIgnore = [[NSMutableSet alloc] init] ;
-    NSNumber * shouldIgnore ;
-
-    
-    // AttributesToInclude
-    [resultSetAttributesToInclude unionSet:discriminationUnit.nameAttributesToUse] ;
-    
-    if (parentEntityExplicitelyIncluded)
-    {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToInclude])
-        {
-            if (![discriminationUnit.nameAttributesToIgnore containsObject:key])
-            {
-                [resultSetAttributesToInclude addObject:key] ;
-            }
-        }
-    }
-    
-    
-    // AttributesToIgnore
-    [resultSetAttributesToIgnore unionSet:discriminationUnit.nameAttributesToIgnore] ;
-    
-    if (parentEntityExplicitelyIncluded)
-    {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore])
-        {
-            if (![discriminationUnit.nameAttributesToUse containsObject:key]
-                ||
-                ![explicitelyIncluded boolValue])
-            {
-                [resultSetAttributesToIgnore addObject:key] ;
-            }
-        }
-    }
-    
-    
-    // RelatioshipsToInclude
-    [resultSetRelationshipsToInclude unionSet:discriminationUnit.relationshipDescriptionsToUse] ;
-    
-    if (parentEntityExplicitelyIncluded)
-    {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude])
-        {
-            if (![discriminationUnit.relationshipDescriptionsToIgnore containsObject:key])
-            {
-                [resultSetRelationshipsToInclude addObject:key] ;
-            }
-        }
-    }
-    
-    
-    // RelatioshipsToIgnore
-    [resultSetRelationshipsToIgnore unionSet:discriminationUnit.relationshipDescriptionsToIgnore] ;
-    
-    if (parentEntityExplicitelyIncluded)
-    {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore])
-        {
-            if (![discriminationUnit.relationshipDescriptionsToUse containsObject:key]
-                ||
-                ![explicitelyIncluded boolValue])
-            {
-                [resultSetRelationshipsToIgnore addObject:key] ;
-            }
-        }
-    }
-    
-    
-    // ShouldIgnore
-    if (discriminationUnit.shouldBeIgnored)
-    {
-        shouldIgnore = @YES ;
-    }
-    else
-    {
-        shouldIgnore = @(shouldIgnoreForParent) ;
-    }
-    
-    
-    // Removing doublons : elements that are both in ToInclude and ToIgnore
-    if (ignoreWinsOverInclude)
-    {
-        [resultSetAttributesToInclude minusSet:resultSetAttributesToIgnore] ;
-        [resultSetRelationshipsToInclude minusSet:resultSetRelationshipsToIgnore] ;
-    }
-    else
-    {
-        [resultSetAttributesToIgnore minusSet:resultSetAttributesToInclude] ;
-        [resultSetRelationshipsToIgnore minusSet:resultSetRelationshipsToInclude] ;
-    }
-    
-    
-    return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : resultSetAttributesToInclude,
-             CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude : resultSetRelationshipsToInclude,
-             CBDCoreDataDiscriminatorGetInfoAttributesToIgnore : resultSetAttributesToIgnore,
-             CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : resultSetRelationshipsToIgnore,
-             CBDCoreDataDiscriminatorGetInfoShouldIgnore : shouldIgnore,
-             CBDCoreDataDiscriminatorGetExplicitelyIncluded : explicitelyIncluded} ;
-    
-}
-
-
-
-
-
-
-
-
-- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity
-{    
-    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
-}
-
-
-- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
-{
-    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] ;
-}
-
-
-
+//- (NSArray *)discriminatorUnits
+//{
+//    return [self.discriminatorUnitByEntity allValues] ;
+//}
+//
+//
+//- (NSArray *)registeredEntities
+//{
+//    return [self.discriminatorUnits valueForKey:@"entity"] ;
+//}
+//
+//
+//- (void)addDiscriminatorUnit:(CBDCoreDataDecisionUnit *)aDiscriminatorUnit
+//{
+//    NSEntityDescription * entity = aDiscriminatorUnit.entity ;
+//    
+//    if (![[self.discriminatorUnitByEntity allKeys] containsObject:entity.name])
+//    {
+//        self.discriminatorUnitByEntity[entity.name] = aDiscriminatorUnit ;
+//    }
+//    else
+//    {
+//        CBDCoreDataDecisionUnit * theExistingUnit = self.discriminatorUnitByEntity[entity.name] ;
+//        
+//        [theExistingUnit mergeWith:aDiscriminatorUnit] ;
+//    }
+//}
+//
+//
+//
+//
+//
+//- (CBDCoreDataDecisionUnit *)defaultDiscriminationUnitFor:(NSEntityDescription *)entity
+//{
+//    switch (self.discriminationType)
+//    {
+//        case CBDCoreDataDiscriminationTypeFacilitating:
+//        {
+//            return [[CBDCoreDataDecisionUnit alloc] initIgnoringDiscriminatorUnitForEntity:entity] ;
+//            break;
+//        }
+//            
+//        case CBDCoreDataDiscriminationTypeSemiFacilitating:
+//        {
+//            return [[CBDCoreDataDecisionUnit alloc] initSemiExhaustiveDiscriminationUnitFor:entity] ;
+//            break;
+//        }
+//            
+//        case CBDCoreDataDiscriminationTypeDemanding:
+//        {
+//            return [[CBDCoreDataDecisionUnit alloc] initExhaustiveDiscriminationUnitFor:entity] ;
+//            break;
+//        }
+//            
+//        default:
+//            return nil ;
+//            break;
+//    }
+//}
+//
+//
+//
+//
+//
+//
+//
+//
+//- (void)removeAllDiscriminatorUnits
+//{
+//    self.discriminatorUnitByEntity = [[NSMutableDictionary alloc] init] ;
+//    
+//    [self flushTheCache] ;
+//}
+//
+//
+//
+//- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity
+//{
+//    [self.discriminatorUnitByEntity removeObjectForKey:entity.name] ;
+//}
+//
+//
+//
+//
+//
+////
+////
+///**************************************/
+//#pragma mark - the DiscriminatorUnits : how they impact the entities
+///**************************************/
+//
+//
+//
+//
+//
+//
+//
+//- (BOOL)shouldIgnore:(NSEntityDescription *)entity
+//{
+//    return [[self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
+//}
+//
+//
+//
+//
+///*
+// The keys use for the dictionnary
+// */
+//NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToInclude = @"CBDCoreDataDiscriminatorGetInfoAttributesToInclude" ;
+//NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude" ;
+//NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore" ;
+//NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore" ;
+//NSString * const   CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore" ;
+//NSString * const   CBDCoreDataDiscriminatorGetExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetExplicitelyIncluded" ;
+//NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscriminatorGetInfoCount" ;
+//
+//
+//
+///*
+// This method gets the infos recursively on entity.superentity
+// */
+//- (NSDictionary *)getInfosFor:(NSEntityDescription *)entity
+//{
+//    /*
+//     The current discriminationUnit
+//     */
+//    CBDCoreDataDecisionUnit * discriminationUnit ;
+//    
+//    NSNumber * explicitelyIncluded ;
+//    
+//    if ([self.registeredEntities containsObject:entity])
+//    {
+//        explicitelyIncluded = @YES ;
+//        discriminationUnit = self.discriminatorUnitByEntity[entity.name] ;
+//    }
+//    else
+//    {
+//        explicitelyIncluded = @NO ;
+//        discriminationUnit = [self defaultDiscriminationUnitFor:entity] ;
+//    }
+//    
+//    
+//    
+//    /*
+//     The info of the parent
+//     */
+//    NSDictionary * infoOfSuperentity ;
+//    BOOL parentEntityExplicitelyIncluded ;
+//    BOOL shouldIgnoreForParent ;
+//    
+//    if (entity.superentity)
+//    {
+//        infoOfSuperentity = [self getInfosFor:entity.superentity] ;
+//        parentEntityExplicitelyIncluded = [infoOfSuperentity[CBDCoreDataDiscriminatorGetExplicitelyIncluded] boolValue] ;
+//        shouldIgnoreForParent = [infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
+//    }
+//    else
+//    {
+//        infoOfSuperentity = nil ;
+//        parentEntityExplicitelyIncluded = NO ;
+//        shouldIgnoreForParent = NO ;
+//    }
+//    
+//    
+//    
+//    
+//    /*
+//     Merging the info
+//     */
+//    NSMutableSet * resultSetAttributesToInclude = [[NSMutableSet alloc] init] ;
+//    NSMutableSet * resultSetRelationshipsToInclude = [[NSMutableSet alloc] init] ;
+//    NSMutableSet * resultSetAttributesToIgnore = [[NSMutableSet alloc] init] ;
+//    NSMutableSet * resultSetRelationshipsToIgnore = [[NSMutableSet alloc] init] ;
+//    NSNumber * shouldIgnore ;
+//
+//    
+//    // AttributesToInclude
+//    [resultSetAttributesToInclude unionSet:discriminationUnit.nameAttributesToUse] ;
+//    
+//    if (parentEntityExplicitelyIncluded)
+//    {
+//        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToInclude])
+//        {
+//            if (![discriminationUnit.nameAttributesToIgnore containsObject:key])
+//            {
+//                [resultSetAttributesToInclude addObject:key] ;
+//            }
+//        }
+//    }
+//    
+//    
+//    // AttributesToIgnore
+//    [resultSetAttributesToIgnore unionSet:discriminationUnit.nameAttributesToIgnore] ;
+//    
+//    if (parentEntityExplicitelyIncluded)
+//    {
+//        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore])
+//        {
+//            if (![discriminationUnit.nameAttributesToUse containsObject:key]
+//                ||
+//                ![explicitelyIncluded boolValue])
+//            {
+//                [resultSetAttributesToIgnore addObject:key] ;
+//            }
+//        }
+//    }
+//    
+//    
+//    // RelatioshipsToInclude
+//    [resultSetRelationshipsToInclude unionSet:discriminationUnit.relationshipDescriptionsToUse] ;
+//    
+//    if (parentEntityExplicitelyIncluded)
+//    {
+//        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude])
+//        {
+//            if (![discriminationUnit.relationshipDescriptionsToIgnore containsObject:key])
+//            {
+//                [resultSetRelationshipsToInclude addObject:key] ;
+//            }
+//        }
+//    }
+//    
+//    
+//    // RelatioshipsToIgnore
+//    [resultSetRelationshipsToIgnore unionSet:discriminationUnit.relationshipDescriptionsToIgnore] ;
+//    
+//    if (parentEntityExplicitelyIncluded)
+//    {
+//        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore])
+//        {
+//            if (![discriminationUnit.relationshipDescriptionsToUse containsObject:key]
+//                ||
+//                ![explicitelyIncluded boolValue])
+//            {
+//                [resultSetRelationshipsToIgnore addObject:key] ;
+//            }
+//        }
+//    }
+//    
+//    
+//    // ShouldIgnore
+//    if (discriminationUnit.shouldBeIgnored)
+//    {
+//        shouldIgnore = @YES ;
+//    }
+//    else
+//    {
+//        shouldIgnore = @(shouldIgnoreForParent) ;
+//    }
+//    
+//    
+//    // Removing doublons : elements that are both in ToInclude and ToIgnore
+//    if (ignoreWinsOverInclude)
+//    {
+//        [resultSetAttributesToInclude minusSet:resultSetAttributesToIgnore] ;
+//        [resultSetRelationshipsToInclude minusSet:resultSetRelationshipsToIgnore] ;
+//    }
+//    else
+//    {
+//        [resultSetAttributesToIgnore minusSet:resultSetAttributesToInclude] ;
+//        [resultSetRelationshipsToIgnore minusSet:resultSetRelationshipsToInclude] ;
+//    }
+//    
+//    
+//    return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : resultSetAttributesToInclude,
+//             CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude : resultSetRelationshipsToInclude,
+//             CBDCoreDataDiscriminatorGetInfoAttributesToIgnore : resultSetAttributesToIgnore,
+//             CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : resultSetRelationshipsToIgnore,
+//             CBDCoreDataDiscriminatorGetInfoShouldIgnore : shouldIgnore,
+//             CBDCoreDataDiscriminatorGetExplicitelyIncluded : explicitelyIncluded} ;
+//    
+//}
+//
+//
+//
+//
+//
+//
+//
+//
+//- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity
+//{    
+//    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
+//}
+//
+//
+//- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
+//{
+//    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] ;
+//}
+//
+//
+//
 
 
 
@@ -538,7 +546,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     
     NSEntityDescription * entity = sourceObject.entity ;
     
-    NSSet *setOfAttributesToCheck = [self attributesToCheckFor:entity] ;
+    NSSet *setOfAttributesToCheck = [self.decisionCenter attributesToCheckFor:entity] ;
     
     
     
@@ -776,7 +784,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     /*
      We check if the entity is excluded
      */
-    if ([self shouldIgnore:entity])
+    if ([self.decisionCenter shouldIgnore:entity])
     {
         return [self registerAndReturnThisAnswer:YES
                                          trueYES:YES
@@ -961,7 +969,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     /*
      We get the relations to consider
      */
-    NSMutableSet * relationsToCheck = [[self relationshipsToCheckFor:entity] mutableCopy];
+    NSMutableSet * relationsToCheck = [[self.decisionCenter relationshipsToCheckFor:entity] mutableCopy];
     
     
     
@@ -983,7 +991,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     
     for (NSRelationshipDescription * relation in relationsToCheck)
     {
-        if ([self shouldIgnore:relation.entity])
+        if ([self.decisionCenter shouldIgnore:relation.entity])
         {
             [result removeObject:relation] ;
         }

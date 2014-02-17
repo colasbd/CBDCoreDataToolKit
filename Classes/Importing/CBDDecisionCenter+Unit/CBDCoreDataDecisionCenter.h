@@ -13,6 +13,34 @@
 
 
 
+/**
+ The following options deal with the case when an entity has no DecisionUnit associated.
+ 
+ Let's recall that a DecisionUnit is meant to declare upon which attributes/relationships
+ the objects of a given entity are considered (for copying, deleting, etc.).
+ 
+ So, if an entity has no associated CBDCoreDataDecisionType, what to do ?
+ 
+ We define three options :
+ 
+ - CBDCoreDataDecisionTypeFacilitating: all the objects of such entities will be declared equal. It
+ is equivalent to ignoring this entity
+ 
+ - CBDCoreDataDecisionTypeSemiFacilitating: to compare two object of this entity, we only consider their attributes. This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
+ 
+ - CBDCoreDataDecisionTypeDemanding: to compare two object of this entity, we consider both all the attributes and all the relationships.
+ */
+typedef NS_ENUM(NSInteger, CBDCoreDataDecisionType)
+{
+    CBDCoreDataDecisionTypeFacilitating,
+    CBDCoreDataDecisionTypeSemiFacilitating,
+    CBDCoreDataDecisionTypeDemanding,
+    CBDCoreDataDecisionTypeCount
+};
+
+
+
+
 
 //
 //
@@ -30,109 +58,86 @@
 
 
 
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DECLARATION OF CONSTANTS
-/**************************************/
-//
-//extern NSString* const <#example of a constant#> ;
-
-
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - ENUMS
-/**************************************/
-//
-//typedef NS_ENUM(NSInteger, <#example of ENUM#>)
-//{
-//    <#example of ENUM#>Item1,
-//    <#example of ENUM#>Item2,
-//    <#example of ENUM#>Item3,
-//    <#example of ENUM#>Count
-//};
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - PUBLIC HEADER : properties
-/**************************************/
+/**
+ A CBDCoreDataDecisionCenter models a system (a collection) of CBDCoreDataDecisionUnits.
+ 
+ It is intended to decide which attributes/relationships/entities one should consider, for various actions (as deleting, copying, etc.)
+ 
+ It is also designed to manage the case of parent/child entities having DecisionUnits on their own.
+ */
 @interface CBDCoreDataDecisionCenter : NSObject
 //
-//
-/**************************************/
-#pragma mark Properties used as parameters for the instance
-/**************************************/
 
 
-//
-//
-/**************************************/
-#pragma mark Strong Properties
-/**************************************/
+
 
 
 //
 //
 /**************************************/
-#pragma mark Scalar types Properties
+#pragma mark - Initialization
 /**************************************/
+/// @name Initialization
+
+
+/**
+Chooses the facilitating type. This is the default type. When you change types, the cache is flushed.
+
+When an entity has no DecisionUnit explicitely associated,
+all the objects of such entities will be declared equal. It
+is equivalent to ignoring this entity.
+
+The relationships to objects with this entity will also be ignored.
+*/
+- (id)initWithFacilitatingType ;
+
+/**
+Chooses the semi-facilitating type. This is the default type. When you change types, the cache is flushed.
+ 
+ When an entity has no DecisionUnit explicitely associated,
+ to compare two object of this entity, we only consider their attributes.
+
+This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
+ 
+ This is the default mode.
+ */
+- (id)initWithSemiFacilitatingType ;
+
+/**
+ Chooses the demanding type. This is the default type. When you change types, the cache is flushed.
+ 
+ When an entity has no DecisionUnit explicitely associated,
+ to compare two object of this entity,
+ we consider both all the attributes and all the relationships.
+ 
+ */
+- (id)initWithDemandingType ;
+
+
+/**
+ The designated initializer
+ */
+- (id)initWithType:(CBDCoreDataDecisionType)decisionType ;
+
+
+/**
+ Copy method
+ */
+- (id)copy ;
+
 
 
 //
 //
 /**************************************/
-#pragma mark Weak Properties
+#pragma mark - Managing the DecisionUnits
 /**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Read-only Properties
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Convenience Properties
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
-
-
-
-
-#pragma mark - Managing the decision centers
 /// @name Managing the decision centers
 
 /**
-The discriminatorUnits composing the instance
+The DecisionUnits composing the instance
 */
-@property (nonatomic, readonly)NSArray * discriminatorUnits ;
+@property (nonatomic, readonly)NSArray * decisionUnits ;
 
 
 /**
@@ -142,28 +147,25 @@ The entities explicitely registered by the instance for discriminating
 
 
 /**
- To perform a discrimination, one should tell the CBDCoreDataDiscriminator upon which criteria the discrimination will be done.
+ To perform a decision, one should tell the CBDCoreDataDecision upon which criteria the decision will be done.
 
-So, you should DiscriminatorUnits if you want to precise to the engine upon which criteria you want the discrimination to be done.
+So, you should DecisionUnits if you want to precise to the engine upon which criteria you want the decision to be done.
  */
-- (void)addDiscriminatorUnit:(CBDCoreDataDecisionUnit *)aDiscriminatorUnit ;
+- (void)addDecisionUnit:(CBDCoreDataDecisionUnit *)aDecisionUnit ;
 
 
 
 /**
- Remove all the DiscriminatorUnits.
+ Remove all the DecisionUnits.
  */
-- (void)removeAllDiscriminatorUnits ;
+- (void)removeAllDecisionUnits ;
 
 
 
 /**
- Remove the DiscriminatorUnit for entity
+ Remove the DecisionUnit for entity
  */
-- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity ;
-
-
-
+- (void)removeDecisionUnitFor:(NSEntityDescription *)entity ;
 
 
 
@@ -171,10 +173,39 @@ So, you should DiscriminatorUnits if you want to precise to the engine upon whic
 
 //
 //
-/****************************************************************************/
-/****************************************************************************/
 /**************************************/
-#pragma mark - PUBLIC HEADER : methods
+#pragma mark - Using the discriminatorUnits
 /**************************************/
+/// @name Using the discriminatorUnits
+
+
+/**
+ Returns the attributes to check for the entity.
+ 
+ It uses the entity but also the parent entity (the superentity).
+ @warning If there is a conflict, it the entity wins over the superentity
+ @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
+ */
+- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity ;
+
+/**
+ Returns the attributes to check for the entity.
+ 
+ It uses the entity but also the parent entity (the superentity).
+ @warning If there is a conflict, it the entity wins over the superentity
+ @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
+ */
+- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
+
+
+/**
+ Reply YES if the entity should be ignored in the decision
+ */
+- (BOOL)shouldIgnore:(NSEntityDescription *)entity ;
+
+
+
+
+
 
 @end

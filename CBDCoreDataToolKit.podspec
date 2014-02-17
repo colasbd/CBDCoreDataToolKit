@@ -29,7 +29,21 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Importing' do |ss|
-    ss.source_files = 'Classes/Importing/**/*.{h,m}'
+    ss.source_files = 'Classes/Importing/*.{h,m}'
+
+    ss.subspec 'CBDCoreDataDiscriminator' do |sss|
+      sss.source_files = 'Classes/Importing/CBDCoreDataDiscriminator/*.{h,m}'
+
+      sss.subspec 'CBDCoreDataDiscriminatorHint' do |ssss|
+        ssss.source_files = 'Classes/Importing/CBDCoreDataDiscriminator/CBDCoreDataDiscriminatorHint/**/*.{h,m}'
+      end
+      
+    end
+
+    ss.subspec 'CBDDecisionCenter+Unit' do |sss|
+      sss.source_files = 'Classes/Importing/CBDDecisionCenter+Unit/**/*.{h,m}'
+    end
+
   end
 
   s.subspec 'Cloning' do |ss|

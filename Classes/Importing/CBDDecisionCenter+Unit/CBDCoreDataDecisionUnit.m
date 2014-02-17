@@ -177,7 +177,14 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"DiscriminatorUnit for %@ using the attributes %@ and relationships %@", self.entity.name, self.nameAttributesToUse, [self.relationshipDescriptionsToUse valueForKey:@"name"]] ;
+    return [NSString stringWithFormat:@"DecisionUnit for %@:\n * including the attributes %@ and relationships %@\n * excluding the attributes %@ and relationships %@\n * ignoring:%@",
+            self.entity.name,
+            self.nameAttributesToUse,
+            [self.relationshipDescriptionsToUse valueForKey:@"name"],
+            self.nameAttributesToIgnore,
+            [self.relationshipDescriptionsToIgnore valueForKey:@"name"],
+            self.shouldBeIgnored?@"YES":@"NO"
+            ] ;
 }
 
 
@@ -195,12 +202,12 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 
 
 
--  (id)initDiscriminatorUnitForEntity:(NSEntityDescription *)entity
-                  usingAttributes:(NSArray *)namesUsedAttributeForDiscrimination
-               usingRelationships:(NSArray *)namesUsedRelationshipsForDiscrimination
-               ignoringAttributes:(NSArray *)namesIgnoredAttributeForDiscrimination
-            ignoringRelationships:(NSArray *)namesIgnoredRelationshipsForDiscrimination
-                  shouldBeIgnored:(BOOL)shouldBeIgnored
+-  (id)       initForEntity:(NSEntityDescription *)entity
+            usingAttributes:(NSArray *)namesUsedAttributeForDecision
+         usingRelationships:(NSArray *)namesUsedRelationshipsForDecision
+         ignoringAttributes:(NSArray *)namesIgnoredAttributeForDecision
+      ignoringRelationships:(NSArray *)namesIgnoredRelationshipsForDecision
+            shouldBeIgnored:(BOOL)shouldBeIgnored
 {
     self = [super init] ;
     
@@ -216,12 +223,12 @@ const BOOL ignoreWinsOverNotIgnore = YES;
         NSMutableSet * ignoredRelationshipDescriptions = [[NSMutableSet alloc] init] ;
         
         NSMutableSet * nameOtherKeys = [[NSMutableSet alloc] init] ;
-
+        
         
         /*
          USED
          */
-        for (NSString * nameRelation in namesUsedRelationshipsForDiscrimination)
+        for (NSString * nameRelation in namesUsedRelationshipsForDecision)
         {
             if ([[entity.relationshipsByName allKeys] containsObject:nameRelation])
             {
@@ -233,7 +240,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
             }
         }
         
-        for (NSString * nameAttribute in namesUsedAttributeForDiscrimination)
+        for (NSString * nameAttribute in namesUsedAttributeForDecision)
         {
             if ([self.entity.attributeKeys containsObject:nameAttribute])
             {
@@ -249,7 +256,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
         /*
          IGNORED
          */
-        for (NSString * nameRelation in namesIgnoredRelationshipsForDiscrimination)
+        for (NSString * nameRelation in namesIgnoredRelationshipsForDecision)
         {
             if ([[entity.relationshipsByName allKeys] containsObject:nameRelation])
             {
@@ -261,7 +268,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
             }
         }
         
-        for (NSString * nameAttribute in namesIgnoredAttributeForDiscrimination)
+        for (NSString * nameAttribute in namesIgnoredAttributeForDecision)
         {
             if ([self.entity.attributeKeys containsObject:nameAttribute])
             {
@@ -280,7 +287,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
         self.mutableIgnoredRelationshipDescriptions = ignoredRelationshipDescriptions ;
         
         self.mutableNameOtherKeys = nameOtherKeys ;
-
+        
     }
     
     return self ;
@@ -288,62 +295,62 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 
 
 
--  (id) initDiscriminatorUnitForEntity:(NSEntityDescription *)entity
-                       usingAttributes:(NSArray *)namesUsedAttributeForDiscrimination
-                      andRelationships:(NSArray *)namesUsedRelationshipsForDiscrimination
+-  (id) initForEntity:(NSEntityDescription *)entity
+      usingAttributes:(NSArray *)namesUsedAttributeForDecision
+     andRelationships:(NSArray *)namesUsedRelationshipsForDecision
 {
-    return [self initDiscriminatorUnitForEntity:entity
-                                usingAttributes:namesUsedAttributeForDiscrimination
-                             usingRelationships:namesUsedRelationshipsForDiscrimination
-                             ignoringAttributes:nil
-                          ignoringRelationships:nil
-                                shouldBeIgnored:NO] ;
+    return [self initForEntity:entity
+               usingAttributes:namesUsedAttributeForDecision
+            usingRelationships:namesUsedRelationshipsForDecision
+            ignoringAttributes:nil
+         ignoringRelationships:nil
+               shouldBeIgnored:NO] ;
 }
 
 
-- (id)initDiscriminatorUnitForEntity:(NSEntityDescription *)entity
-                  ignoringAttributes:(NSArray *)namesAttributeForDiscrimination
-                    andRelationships:(NSArray *)namesRelationshipForDiscrimination
+- (id)initForEntity:(NSEntityDescription *)entity
+ ignoringAttributes:(NSArray *)namesAttributeForDecision
+   andRelationships:(NSArray *)namesRelationshipForDecision
 {
-    return [self initDiscriminatorUnitForEntity:entity
-                                usingAttributes:nil
-                             usingRelationships:nil
-                             ignoringAttributes:namesAttributeForDiscrimination
-                          ignoringRelationships:namesRelationshipForDiscrimination
-                                shouldBeIgnored:NO] ;
-
+    return [self initForEntity:entity
+               usingAttributes:nil
+            usingRelationships:nil
+            ignoringAttributes:namesAttributeForDecision
+         ignoringRelationships:namesRelationshipForDecision
+               shouldBeIgnored:NO] ;
+    
 }
 
 
-- (id)initSemiExhaustiveDiscriminationUnitFor:(NSEntityDescription *)entity
+- (id)initSemiExhaustiveFor:(NSEntityDescription *)entity
 {
-    return [self initDiscriminatorUnitForEntity:entity
-                                usingAttributes:entity.attributeKeys
-                             usingRelationships:nil
-                             ignoringAttributes:nil
-                          ignoringRelationships:[entity.relationshipsByName allKeys]
-                                shouldBeIgnored:NO] ;
-}
-
-
-
-- (id)initExhaustiveDiscriminationUnitFor:(NSEntityDescription *)entity
-{
-    return [self initDiscriminatorUnitForEntity:entity
-                                usingAttributes:entity.attributeKeys
-                               andRelationships:[entity.relationshipsByName allKeys]] ;
+    return [self initForEntity:entity
+               usingAttributes:entity.attributeKeys
+            usingRelationships:nil
+            ignoringAttributes:nil
+         ignoringRelationships:[entity.relationshipsByName allKeys]
+               shouldBeIgnored:NO] ;
 }
 
 
 
-- (id)initIgnoringDiscriminatorUnitForEntity:(NSEntityDescription *)entity
+- (id)initExhaustiveFor:(NSEntityDescription *)entity
 {
-    return  [self initDiscriminatorUnitForEntity:entity
-                                 usingAttributes:nil
-                              usingRelationships:nil
-                              ignoringAttributes:nil
-                           ignoringRelationships:nil
-                                 shouldBeIgnored:NO] ;
+    return [self initForEntity:entity
+               usingAttributes:entity.attributeKeys
+              andRelationships:[entity.relationshipsByName allKeys]] ;
+}
+
+
+
+- (id)initWithIgnoringEntity:(NSEntityDescription *)entity
+{
+    return  [self initForEntity:entity
+                usingAttributes:nil
+             usingRelationships:nil
+             ignoringAttributes:nil
+          ignoringRelationships:nil
+                shouldBeIgnored:NO] ;
 }
 
 
@@ -390,25 +397,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
     return [self.mutableNameOtherKeys copy] ;
 }
 
-//
-//- (NSSet *)toOneRelationshipDescriptions
-//{
-//    NSArray * array = [self.entity classifiedRelationshipsFrom_cbd_:self.usedRelationshipDescriptions][CBDKeyDescriptionToOneRelationship] ;
-//    return [NSSet setWithArray:array] ;
-//}
-//
-//
-//- (NSSet *)orderedToManyRelationshipDescriptions
-//{
-//    NSArray * array = [self.entity classifiedRelationshipsFrom_cbd_:self.usedRelationshipDescriptions][CBDKeyDescriptionToManyOrderedRelationship] ;
-//    return [NSSet setWithArray:array] ;
-//}
-//
-//- (NSSet *)nonOrderedToManyRelationshipDescriptions
-//{
-//    NSArray * array = [self.entity classifiedRelationshipsFrom_cbd_:self.usedRelationshipDescriptions][CBDKeyDescriptionToManyNonOrderedRelationship] ;
-//    return [NSSet setWithArray:array] ;
-//}
+
 
 
 
@@ -426,7 +415,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
     if (self.entity != anOtherUnit.entity)
     {
         [NSException raise:NSInvalidArgumentException
-                    format:@"You cannot merge two CBDCoreDataDiscriminatorUnit with different entities."] ;
+                    format:@"You cannot merge two CBDCoreDataDecisionUnit with different entities."] ;
     }
     
     if (anOtherUnit.shouldBeIgnored
@@ -451,24 +440,24 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 }
 
 
-
-/**
- Removes the given attributes and relationships from the DiscriminationUnit
- */
-- (void)removeAttributes:(NSArray *)namessAttributeForDiscrimination
-        andRelationships:(NSArray *)namesRelationshipForDiscrimination
-{
-    for (NSString * nameAttribute in namessAttributeForDiscrimination)
-    {
-        [self.mutableNameUsedAttributes removeObject:nameAttribute] ;
-    }
-    
-    for (NSString * nameRelationship in namesRelationshipForDiscrimination)
-    {
-        [self.mutableUsedRelationshipDescriptions removeObject:self.entity.relationshipsByName[nameRelationship]] ;
-    }
-    
-}
+//
+///**
+// Removes the given attributes and relationships from the DecisionUnit
+// */
+//- (void)removeAttributes:(NSArray *)namessAttributeForDecision
+//        andRelationships:(NSArray *)namesRelationshipForDecision
+//{
+//    for (NSString * nameAttribute in namessAttributeForDecision)
+//    {
+//        [self.mutableNameUsedAttributes removeObject:nameAttribute] ;
+//    }
+//    
+//    for (NSString * nameRelationship in namesRelationshipForDecision)
+//    {
+//        [self.mutableUsedRelationshipDescriptions removeObject:self.entity.relationshipsByName[nameRelationship]] ;
+//    }
+//    
+//}
 
 
 
@@ -476,11 +465,11 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 //
 //
 /**************************************/
-#pragma mark - Discrimination
+#pragma mark - Decision
 /**************************************/
 
 /**
- Compares two objects **using only the attributes** of this instance of CBDCoreDataDiscriminatorUnit.
+ Compares two objects **using only the attributes** of this instance of CBDCoreDataDecisionUnit.
  
  This method is used by CBDCoreDataDiscriminator but should not be used directly.
  */
@@ -575,11 +564,11 @@ const BOOL ignoreWinsOverNotIgnore = YES;
         return NO;
     }
     
-    return [self isEqualToDiscriminatorUnit:other];
+    return [self isEqualToDecisionUnit:other];
 }
 
 
-- (BOOL)isEqualToDiscriminatorUnit:(CBDCoreDataDecisionUnit *)other
+- (BOOL)isEqualToDecisionUnit:(CBDCoreDataDecisionUnit *)other
 {
     if (self.entity == other.entity
         && [self.nameAttributesToUse isEqualToSet:other.nameAttributesToUse]

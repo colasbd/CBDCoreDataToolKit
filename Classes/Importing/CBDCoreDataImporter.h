@@ -8,7 +8,7 @@
 
 #import <CoreData/CoreData.h>
 
-@class CBDCoreDataDiscriminator ;
+@class CBDCoreDataDecisionCenter, CBDCoreDataDiscriminator ;
 
 
 
@@ -60,19 +60,6 @@
 /**************************************/
 
 
-//
-//
-/**************************************/
-#pragma mark Properties strong
-/**************************************/
-@property (nonatomic, strong)CBDCoreDataDiscriminator * discriminator ;
-
-
-//
-//
-/**************************************/
-#pragma mark Properties-référence
-/**************************************/
 
 
 //
@@ -80,23 +67,9 @@
 /**************************************/
 #pragma mark Properties read only
 /**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties de convenance
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
-
-
-
+@property (nonatomic, strong, readonly)CBDCoreDataDecisionCenter * decisionCenterForDescrimination ;
+@property (nonatomic, strong, readonly)CBDCoreDataDecisionCenter * decisionCenterForCopy ;
+@property (nonatomic, strong, readonly)CBDCoreDataDiscriminator * discriminator ;
 
 
 
@@ -115,9 +88,15 @@
 /**
  The discriminator's goal is to decide if two NSManagedObjects are similar.
 */
-- (id)initWithSourceMOC:(NSManagedObjectContext *)sourceMOC
-              targetMOC:(NSManagedObjectContext *)targetMOC
-      withDiscriminator:(CBDCoreDataDiscriminator *)discriminator ;
+//- (id)initWithSourceMOC:(NSManagedObjectContext *)sourceMOC
+//              targetMOC:(NSManagedObjectContext *)targetMOC
+//      withDiscriminator:(CBDCoreDataDiscriminator *)discriminator ;
+
+
+- (id) initWithDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescriminating
+                  withDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopying
+                                 withSourceMOC:(NSManagedObjectContext *)sourceMOC
+                                     targetMOC:(NSManagedObjectContext *)targetMOC ;
 
 
 /**
@@ -141,27 +120,27 @@
 - (NSManagedObject *)import:(NSManagedObject *)objectToImport ;
 
 
-/**
- Performs an import.
- 
- @argument namesOfAttribuesToExclude This is names of attributes for the objectToImport. Theses attibutes won't be copied to the new object resulting from the import. 
- 
- @warning Plus, these attributes will be removed from the list of attributes to be checked for discrimination. (If no discrimination unit is explicitely given
- 
- @argument namesOfRelationshipsToExclude This is names of relationships for the objectToImport. Theses relationships won't be copied to the new object resulting from the import.
- 
- @warning Plus, these relationships will be removed from the list of relationships to be checked for discrimination.
- */
-- (NSManagedObject *)import:(NSManagedObject *)objectToImport
-         copyAlsoAttributes:(NSArray *)namesOfAttribuesToInclude
-      copyAlsoRelationships:(NSArray *)namesOfRelationshipsToInclude ;
-
-FIXME(projet à reprendre je veux pouvoir distinguer les critère de recherche et les critères de copie)
-
-- (NSManagedObject *)import:(NSManagedObject *)objectToImport
-         copyAlsoAttributes:(NSArray *)namesOfAttribuesToInclude
-      copyAlsoRelationships:(NSArray *)namesOfRelationshipsToInclude
-            excludeEntities:(NSArray *)namesOfTheEntitesToExclude ;
+///**
+// Performs an import.
+// 
+// @argument namesOfAttribuesToExclude This is names of attributes for the objectToImport. Theses attibutes won't be copied to the new object resulting from the import. 
+// 
+// @warning Plus, these attributes will be removed from the list of attributes to be checked for discrimination. (If no discrimination unit is explicitely given
+// 
+// @argument namesOfRelationshipsToExclude This is names of relationships for the objectToImport. Theses relationships won't be copied to the new object resulting from the import.
+// 
+// @warning Plus, these relationships will be removed from the list of relationships to be checked for discrimination.
+// */
+//- (NSManagedObject *)import:(NSManagedObject *)objectToImport
+//         copyAlsoAttributes:(NSArray *)namesOfAttribuesToInclude
+//      copyAlsoRelationships:(NSArray *)namesOfRelationshipsToInclude ;
+//
+//FIXME(projet à reprendre je veux pouvoir distinguer les critère de recherche et les critères de copie)
+//
+//- (NSManagedObject *)import:(NSManagedObject *)objectToImport
+//         copyAlsoAttributes:(NSArray *)namesOfAttribuesToInclude
+//      copyAlsoRelationships:(NSArray *)namesOfRelationshipsToInclude
+//            excludeEntities:(NSArray *)namesOfTheEntitesToExclude ;
 
 
 @end

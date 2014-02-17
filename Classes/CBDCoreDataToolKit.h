@@ -1,5 +1,4 @@
 //
-//  NSEntityDescription+CBDActiveRecord.h
 //  MyCBDCoreDataToolKit
 //
 //  Created by Colas on 10/02/2014.
@@ -17,10 +16,14 @@
 #import "NSManagedObjectContext+CBDReplacingAnObject.h"
 
 // Importing
+//      DecisionCenter+Unit
+#import "CBDCoreDataDecisionCenter.h"
 #import "CBDCoreDataDecisionUnit.h"
-#import "CBDCoreDataImporter.h"
+//      Discriminator
 #import "CBDCoreDataDiscriminator.h"
 #import "CBDCoreDataDiscriminator+UsingPredicateAndFetching.h"
+//      Importer
+#import "CBDCoreDataImporter.h"
 
 // Active Record
 #import "NSManagedObjectContext+CBDActiveRecord.h"
