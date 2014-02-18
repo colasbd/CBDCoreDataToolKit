@@ -10,6 +10,8 @@
 
 @implementation Pet
 
-// Custom logic goes here.
-
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"Pet with name %@", self.name] ;
+}
 @end

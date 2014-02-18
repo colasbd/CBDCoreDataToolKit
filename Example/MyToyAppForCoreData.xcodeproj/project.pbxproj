@@ -18,10 +18,25 @@
 			name = Mogenerator;
 			productName = Mogenerator;
 		};
+		CEC5CA8F18AF41AF00AF801A /* ProjectDocumentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = CEC5CA9218AF41AF00AF801A /* Build configuration list for PBXAggregateTarget "ProjectDocumentation" */;
+			buildPhases = (
+				CEC5CA9318AF41D500AF801A /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = ProjectDocumentation;
+			productName = ProjectDocumentation;
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
 		BE9FE611036542658CD4C1ED /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FABC99FAA5B4F6FB328A537 /* libPods.a */; };
+		CE3F85A318AE07500003B4C6 /* _EntityA.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3F859C18AE07500003B4C6 /* _EntityA.m */; };
+		CE3F85A418AE07500003B4C6 /* _EntityB.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3F859E18AE07500003B4C6 /* _EntityB.m */; };
+		CE3F85A518AE07500003B4C6 /* EntityA.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3F85A018AE07500003B4C6 /* EntityA.m */; };
+		CE3F85A618AE07500003B4C6 /* EntityB.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3F85A218AE07500003B4C6 /* EntityB.m */; };
 		CE5DCFB518A4CD5200DA0FDD /* MyToyAppForCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE5DCFB318A4CD5200DA0FDD /* MyToyAppForCoreData.xcdatamodeld */; };
 		CE5DCFC818A4D22A00DA0FDD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA0096618A3DFEA00FA535B /* main.m */; };
 		CE5DCFCA18A4D29900DA0FDD /* EntityWithName.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5DCFC618A4D0A900DA0FDD /* EntityWithName.m */; };
@@ -54,6 +69,22 @@
 		CEBBB1A818A4E9E0001DE37E /* MyApplicationHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBB1A718A4E9E0001DE37E /* MyApplicationHelper.m */; };
 		CEBBB1B118A4FFE0001DE37E /* TheCompaniesViewerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBB1AE18A4FFE0001DE37E /* TheCompaniesViewerController.m */; };
 		CEBBB1B218A4FFE0001DE37E /* TheCompaniesViewerController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEBBB1AF18A4FFE0001DE37E /* TheCompaniesViewerController.xib */; };
+		CEBBBACD18AE214900B3BB92 /* _Entity1.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBABE18AE214900B3BB92 /* _Entity1.m */; };
+		CEBBBACE18AE214900B3BB92 /* _Entity2.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAC018AE214900B3BB92 /* _Entity2.m */; };
+		CEBBBACF18AE214900B3BB92 /* _Entity3.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAC218AE214900B3BB92 /* _Entity3.m */; };
+		CEBBBAD018AE214900B3BB92 /* _EntitySelf.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAC418AE214900B3BB92 /* _EntitySelf.m */; };
+		CEBBBAD118AE214900B3BB92 /* Entity1.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAC618AE214900B3BB92 /* Entity1.m */; };
+		CEBBBAD218AE214900B3BB92 /* Entity2.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAC818AE214900B3BB92 /* Entity2.m */; };
+		CEBBBAD318AE214900B3BB92 /* Entity3.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBACA18AE214900B3BB92 /* Entity3.m */; };
+		CEBBBAD418AE214900B3BB92 /* EntitySelf.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBACC18AE214900B3BB92 /* EntitySelf.m */; };
+		CEBBBADB18AE219D00B3BB92 /* HELP bugs.pdf in Resources */ = {isa = PBXBuildFile; fileRef = CEBBBADA18AE219D00B3BB92 /* HELP bugs.pdf */; };
+		CEBBBAE018AE676100B3BB92 /* _EntityAlpha.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBADD18AE676100B3BB92 /* _EntityAlpha.m */; };
+		CEBBBAE118AE676100B3BB92 /* EntityAlpha.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBADF18AE676100B3BB92 /* EntityAlpha.m */; };
+		CEBBBAE618AE6BC100B3BB92 /* Modèle.png in Resources */ = {isa = PBXBuildFile; fileRef = CEBBBAE518AE6BC100B3BB92 /* Modèle.png */; };
+		CEBBBAEF18AE6C1100B3BB92 /* _EntityBeta.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAE818AE6C1100B3BB92 /* _EntityBeta.m */; };
+		CEBBBAF018AE6C1100B3BB92 /* _EntityGamma.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAEA18AE6C1100B3BB92 /* _EntityGamma.m */; };
+		CEBBBAF118AE6C1100B3BB92 /* EntityBeta.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAEC18AE6C1100B3BB92 /* EntityBeta.m */; };
+		CEBBBAF218AE6C1100B3BB92 /* EntityGamma.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBBBAEE18AE6C1100B3BB92 /* EntityGamma.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +100,14 @@
 /* Begin PBXFileReference section */
 		5FABC99FAA5B4F6FB328A537 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4F87D9B92EF44DB8CCE4430 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		CE3F859B18AE07500003B4C6 /* _EntityA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EntityA.h; sourceTree = "<group>"; };
+		CE3F859C18AE07500003B4C6 /* _EntityA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EntityA.m; sourceTree = "<group>"; };
+		CE3F859D18AE07500003B4C6 /* _EntityB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EntityB.h; sourceTree = "<group>"; };
+		CE3F859E18AE07500003B4C6 /* _EntityB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EntityB.m; sourceTree = "<group>"; };
+		CE3F859F18AE07500003B4C6 /* EntityA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityA.h; sourceTree = "<group>"; };
+		CE3F85A018AE07500003B4C6 /* EntityA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntityA.m; sourceTree = "<group>"; };
+		CE3F85A118AE07500003B4C6 /* EntityB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityB.h; sourceTree = "<group>"; };
+		CE3F85A218AE07500003B4C6 /* EntityB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntityB.m; sourceTree = "<group>"; };
 		CE5DCFB418A4CD5200DA0FDD /* MyToyAppForCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyToyAppForCoreData.xcdatamodel; sourceTree = "<group>"; };
 		CE5DCFB618A4D03E00DA0FDD /* City.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = City.h; sourceTree = "<group>"; };
 		CE5DCFB718A4D03E00DA0FDD /* City.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = City.m; sourceTree = "<group>"; };
@@ -126,6 +165,38 @@
 		CEBBB1AE18A4FFE0001DE37E /* TheCompaniesViewerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TheCompaniesViewerController.m; sourceTree = "<group>"; };
 		CEBBB1AF18A4FFE0001DE37E /* TheCompaniesViewerController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TheCompaniesViewerController.xib; sourceTree = "<group>"; };
 		CEBBB1B018A4FFE0001DE37E /* TheCompaniesViewerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TheCompaniesViewerController.h; sourceTree = "<group>"; };
+		CEBBBABD18AE214900B3BB92 /* _Entity1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _Entity1.h; sourceTree = "<group>"; };
+		CEBBBABE18AE214900B3BB92 /* _Entity1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _Entity1.m; sourceTree = "<group>"; };
+		CEBBBABF18AE214900B3BB92 /* _Entity2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _Entity2.h; sourceTree = "<group>"; };
+		CEBBBAC018AE214900B3BB92 /* _Entity2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _Entity2.m; sourceTree = "<group>"; };
+		CEBBBAC118AE214900B3BB92 /* _Entity3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _Entity3.h; sourceTree = "<group>"; };
+		CEBBBAC218AE214900B3BB92 /* _Entity3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _Entity3.m; sourceTree = "<group>"; };
+		CEBBBAC318AE214900B3BB92 /* _EntitySelf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EntitySelf.h; sourceTree = "<group>"; };
+		CEBBBAC418AE214900B3BB92 /* _EntitySelf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EntitySelf.m; sourceTree = "<group>"; };
+		CEBBBAC518AE214900B3BB92 /* Entity1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity1.h; sourceTree = "<group>"; };
+		CEBBBAC618AE214900B3BB92 /* Entity1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Entity1.m; sourceTree = "<group>"; };
+		CEBBBAC718AE214900B3BB92 /* Entity2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity2.h; sourceTree = "<group>"; };
+		CEBBBAC818AE214900B3BB92 /* Entity2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Entity2.m; sourceTree = "<group>"; };
+		CEBBBAC918AE214900B3BB92 /* Entity3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity3.h; sourceTree = "<group>"; };
+		CEBBBACA18AE214900B3BB92 /* Entity3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Entity3.m; sourceTree = "<group>"; };
+		CEBBBACB18AE214900B3BB92 /* EntitySelf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntitySelf.h; sourceTree = "<group>"; };
+		CEBBBACC18AE214900B3BB92 /* EntitySelf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntitySelf.m; sourceTree = "<group>"; };
+		CEBBBADA18AE219D00B3BB92 /* HELP bugs.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "HELP bugs.pdf"; sourceTree = "<group>"; };
+		CEBBBADC18AE676100B3BB92 /* _EntityAlpha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EntityAlpha.h; sourceTree = "<group>"; };
+		CEBBBADD18AE676100B3BB92 /* _EntityAlpha.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EntityAlpha.m; sourceTree = "<group>"; };
+		CEBBBADE18AE676100B3BB92 /* EntityAlpha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityAlpha.h; sourceTree = "<group>"; };
+		CEBBBADF18AE676100B3BB92 /* EntityAlpha.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntityAlpha.m; sourceTree = "<group>"; };
+		CEBBBAE518AE6BC100B3BB92 /* Modèle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Modèle.png"; sourceTree = "<group>"; };
+		CEBBBAE718AE6C1100B3BB92 /* _EntityBeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EntityBeta.h; sourceTree = "<group>"; };
+		CEBBBAE818AE6C1100B3BB92 /* _EntityBeta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EntityBeta.m; sourceTree = "<group>"; };
+		CEBBBAE918AE6C1100B3BB92 /* _EntityGamma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EntityGamma.h; sourceTree = "<group>"; };
+		CEBBBAEA18AE6C1100B3BB92 /* _EntityGamma.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EntityGamma.m; sourceTree = "<group>"; };
+		CEBBBAEB18AE6C1100B3BB92 /* EntityBeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityBeta.h; sourceTree = "<group>"; };
+		CEBBBAEC18AE6C1100B3BB92 /* EntityBeta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntityBeta.m; sourceTree = "<group>"; };
+		CEBBBAED18AE6C1100B3BB92 /* EntityGamma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityGamma.h; sourceTree = "<group>"; };
+		CEBBBAEE18AE6C1100B3BB92 /* EntityGamma.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntityGamma.m; sourceTree = "<group>"; };
+		CEC9008818B3591A006F072B /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
+		CEC9008918B3597F006F072B /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,9 +221,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE3F85A718AE07560003B4C6 /* EntityB */ = {
+			isa = PBXGroup;
+			children = (
+				CE3F859D18AE07500003B4C6 /* _EntityB.h */,
+				CE3F859E18AE07500003B4C6 /* _EntityB.m */,
+				CE3F85A118AE07500003B4C6 /* EntityB.h */,
+				CE3F85A218AE07500003B4C6 /* EntityB.m */,
+			);
+			name = EntityB;
+			sourceTree = "<group>";
+		};
+		CE3F85A818AE07640003B4C6 /* EntityA */ = {
+			isa = PBXGroup;
+			children = (
+				CE3F859B18AE07500003B4C6 /* _EntityA.h */,
+				CE3F859C18AE07500003B4C6 /* _EntityA.m */,
+				CE3F859F18AE07500003B4C6 /* EntityA.h */,
+				CE3F85A018AE07500003B4C6 /* EntityA.m */,
+			);
+			name = EntityA;
+			sourceTree = "<group>";
+		};
 		CE5DCFB218A4CD5200DA0FDD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				CEBBBAD918AE217D00B3BB92 /* WeirdModel */,
 				CE5DCFE718A4D2C000DA0FDD /* City */,
 				CE5DCFE818A4D2CC00DA0FDD /* Company */,
 				CE5DCFEB18A4D2DB00DA0FDD /* EntityWithName */,
@@ -233,6 +327,7 @@
 		CEA0094E18A3DFEA00FA535B = {
 			isa = PBXGroup;
 			children = (
+				CEC9008818B3591A006F072B /* Macros.h */,
 				CEA0096018A3DFEA00FA535B /* MyToyAppForCoreData */,
 				CEA0098118A3DFEA00FA535B /* MyToyAppForCoreDataTests */,
 				CEA0095918A3DFEA00FA535B /* Frameworks */,
@@ -274,6 +369,9 @@
 		CEA0096018A3DFEA00FA535B /* MyToyAppForCoreData */ = {
 			isa = PBXGroup;
 			children = (
+				CEC9008918B3597F006F072B /* Macros.h */,
+				CEBBBAE518AE6BC100B3BB92 /* Modèle.png */,
+				CEBBBADA18AE219D00B3BB92 /* HELP bugs.pdf */,
 				CEBBB1A018A4E8F3001DE37E /* WindowControllers */,
 				CE5DCFB218A4CD5200DA0FDD /* Model */,
 				CEA0096C18A3DFEA00FA535B /* AppDelegate.h */,
@@ -335,6 +433,99 @@
 			path = WindowControllers;
 			sourceTree = "<group>";
 		};
+		CEBBBAD518AE215200B3BB92 /* EntitySelf */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBAC318AE214900B3BB92 /* _EntitySelf.h */,
+				CEBBBAC418AE214900B3BB92 /* _EntitySelf.m */,
+				CEBBBACB18AE214900B3BB92 /* EntitySelf.h */,
+				CEBBBACC18AE214900B3BB92 /* EntitySelf.m */,
+			);
+			name = EntitySelf;
+			sourceTree = "<group>";
+		};
+		CEBBBAD618AE215B00B3BB92 /* Entity3 */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBAC118AE214900B3BB92 /* _Entity3.h */,
+				CEBBBAC218AE214900B3BB92 /* _Entity3.m */,
+				CEBBBAC918AE214900B3BB92 /* Entity3.h */,
+				CEBBBACA18AE214900B3BB92 /* Entity3.m */,
+			);
+			name = Entity3;
+			sourceTree = "<group>";
+		};
+		CEBBBAD718AE216400B3BB92 /* Entity1 */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBABD18AE214900B3BB92 /* _Entity1.h */,
+				CEBBBABE18AE214900B3BB92 /* _Entity1.m */,
+				CEBBBAC518AE214900B3BB92 /* Entity1.h */,
+				CEBBBAC618AE214900B3BB92 /* Entity1.m */,
+			);
+			name = Entity1;
+			sourceTree = "<group>";
+		};
+		CEBBBAD818AE217000B3BB92 /* Entity2 */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBABF18AE214900B3BB92 /* _Entity2.h */,
+				CEBBBAC018AE214900B3BB92 /* _Entity2.m */,
+				CEBBBAC718AE214900B3BB92 /* Entity2.h */,
+				CEBBBAC818AE214900B3BB92 /* Entity2.m */,
+			);
+			name = Entity2;
+			sourceTree = "<group>";
+		};
+		CEBBBAD918AE217D00B3BB92 /* WeirdModel */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBAF418AE6C2000B3BB92 /* EntityBeta */,
+				CEBBBAF318AE6C1600B3BB92 /* EntityGamma */,
+				CEBBBAE218AE676900B3BB92 /* EntityAlpha */,
+				CEBBBAD718AE216400B3BB92 /* Entity1 */,
+				CEBBBAD818AE217000B3BB92 /* Entity2 */,
+				CEBBBAD618AE215B00B3BB92 /* Entity3 */,
+				CEBBBAD518AE215200B3BB92 /* EntitySelf */,
+				CE3F85A818AE07640003B4C6 /* EntityA */,
+				CE3F85A718AE07560003B4C6 /* EntityB */,
+			);
+			name = WeirdModel;
+			sourceTree = "<group>";
+		};
+		CEBBBAE218AE676900B3BB92 /* EntityAlpha */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBADC18AE676100B3BB92 /* _EntityAlpha.h */,
+				CEBBBADD18AE676100B3BB92 /* _EntityAlpha.m */,
+				CEBBBADE18AE676100B3BB92 /* EntityAlpha.h */,
+				CEBBBADF18AE676100B3BB92 /* EntityAlpha.m */,
+			);
+			name = EntityAlpha;
+			sourceTree = "<group>";
+		};
+		CEBBBAF318AE6C1600B3BB92 /* EntityGamma */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBAE918AE6C1100B3BB92 /* _EntityGamma.h */,
+				CEBBBAEA18AE6C1100B3BB92 /* _EntityGamma.m */,
+				CEBBBAED18AE6C1100B3BB92 /* EntityGamma.h */,
+				CEBBBAEE18AE6C1100B3BB92 /* EntityGamma.m */,
+			);
+			name = EntityGamma;
+			sourceTree = "<group>";
+		};
+		CEBBBAF418AE6C2000B3BB92 /* EntityBeta */ = {
+			isa = PBXGroup;
+			children = (
+				CEBBBAE718AE6C1100B3BB92 /* _EntityBeta.h */,
+				CEBBBAE818AE6C1100B3BB92 /* _EntityBeta.m */,
+				CEBBBAEB18AE6C1100B3BB92 /* EntityBeta.h */,
+				CEBBBAEC18AE6C1100B3BB92 /* EntityBeta.m */,
+			);
+			name = EntityBeta;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -342,9 +533,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CEA0098B18A3DFEA00FA535B /* Build configuration list for PBXNativeTarget "MyToyAppForCoreData" */;
 			buildPhases = (
+				CD5D9C10BBD44B53B7097C96 /* Check Pods Manifest.lock */,
 				CEA0095318A3DFEA00FA535B /* Sources */,
 				CEA0095418A3DFEA00FA535B /* Frameworks */,
 				CEA0095518A3DFEA00FA535B /* Resources */,
+				693B5795926542E0AC57438A /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -403,6 +596,7 @@
 				CEA0095618A3DFEA00FA535B /* MyToyAppForCoreData */,
 				CEA0097A18A3DFEA00FA535B /* MyToyAppForCoreDataTests */,
 				CE5DCFA918A4CB7800DA0FDD /* Mogenerator */,
+				CEC5CA8F18AF41AF00AF801A /* ProjectDocumentation */,
 			);
 		};
 /* End PBXProject section */
@@ -419,6 +613,8 @@
 				CEBBB1B218A4FFE0001DE37E /* TheCompaniesViewerController.xib in Resources */,
 				CEBBB1A518A4E91F001DE37E /* ThePeopleViewerController.xib in Resources */,
 				CE8547BE18A526EB00E8B64E /* TheCityViewerController.xib in Resources */,
+				CEBBBAE618AE6BC100B3BB92 /* Modèle.png in Resources */,
+				CEBBBADB18AE219D00B3BB92 /* HELP bugs.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,6 +629,36 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		693B5795926542E0AC57438A /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CD5D9C10BBD44B53B7097C96 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		CE5DCFB118A4CCD900DA0FDD /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -446,6 +672,19 @@
 			shellPath = /bin/sh;
 			shellScript = "cd MyToyAppForCoreData/Model\nmogenerator -template-var arc=true -m MyToyAppForCoreData.xcdatamodeld";
 		};
+		CEC5CA9318AF41D500AF801A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/appledoc \\\n--project-name MyToyAppForCoreData \\\n--project-company \"MyToyAppForCoreData\" \\\n--company-id com.companyName \\\n--keep-undocumented-objects \\\n--keep-undocumented-members \\\n--search-undocumented-doc \\\n--exit-threshold 2 \\\n--ignore .m \\\n--output \"AppleDoc\" .";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -453,25 +692,43 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEBBBAD318AE214900B3BB92 /* Entity3.m in Sources */,
 				CE5DCFE618A4D2B300DA0FDD /* _Pet.m in Sources */,
 				CE5DCFE518A4D2B300DA0FDD /* _Person.m in Sources */,
 				CE5DCFC818A4D22A00DA0FDD /* main.m in Sources */,
+				CEBBBAF018AE6C1100B3BB92 /* _EntityGamma.m in Sources */,
+				CEBBBACD18AE214900B3BB92 /* _Entity1.m in Sources */,
+				CE3F85A618AE07500003B4C6 /* EntityB.m in Sources */,
 				CEBBB1B118A4FFE0001DE37E /* TheCompaniesViewerController.m in Sources */,
 				CE8547BD18A526EB00E8B64E /* TheCityViewerController.m in Sources */,
 				CE5DCFEF18A4D4E900DA0FDD /* DataCreater.m in Sources */,
 				CE5DCFB518A4CD5200DA0FDD /* MyToyAppForCoreData.xcdatamodeld in Sources */,
+				CEBBBAD218AE214900B3BB92 /* Entity2.m in Sources */,
 				CE5DCFE418A4D2B300DA0FDD /* _Family.m in Sources */,
 				CEA0096E18A3DFEA00FA535B /* AppDelegate.m in Sources */,
+				CEBBBAF218AE6C1100B3BB92 /* EntityGamma.m in Sources */,
 				CEBBB1A418A4E91F001DE37E /* ThePeopleViewerController.m in Sources */,
+				CEBBBAD418AE214900B3BB92 /* EntitySelf.m in Sources */,
 				CE5DCFE218A4D2B300DA0FDD /* _Company.m in Sources */,
+				CEBBBAE018AE676100B3BB92 /* _EntityAlpha.m in Sources */,
+				CEBBBACE18AE214900B3BB92 /* _Entity2.m in Sources */,
+				CE3F85A418AE07500003B4C6 /* _EntityB.m in Sources */,
 				CE5DCFCA18A4D29900DA0FDD /* EntityWithName.m in Sources */,
 				CE5DCFE318A4D2B300DA0FDD /* _EntityWithName.m in Sources */,
+				CEBBBACF18AE214900B3BB92 /* _Entity3.m in Sources */,
+				CE3F85A518AE07500003B4C6 /* EntityA.m in Sources */,
+				CEBBBAE118AE676100B3BB92 /* EntityAlpha.m in Sources */,
 				CE5DCFCC18A4D29900DA0FDD /* City.m in Sources */,
+				CEBBBAEF18AE6C1100B3BB92 /* _EntityBeta.m in Sources */,
+				CEBBBAD118AE214900B3BB92 /* Entity1.m in Sources */,
 				CEBBB1A818A4E9E0001DE37E /* MyApplicationHelper.m in Sources */,
+				CE3F85A318AE07500003B4C6 /* _EntityA.m in Sources */,
 				CE5DCFCE18A4D29900DA0FDD /* Company.m in Sources */,
+				CEBBBAF118AE6C1100B3BB92 /* EntityBeta.m in Sources */,
 				CE5DCFD018A4D29900DA0FDD /* Family.m in Sources */,
 				CE5DCFD218A4D29900DA0FDD /* Person.m in Sources */,
 				CE5DCFE118A4D2B300DA0FDD /* _City.m in Sources */,
+				CEBBBAD018AE214900B3BB92 /* _EntitySelf.m in Sources */,
 				CE5DCFD418A4D29900DA0FDD /* Pet.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -680,6 +937,20 @@
 			};
 			name = Release;
 		};
+		CEC5CA9018AF41AF00AF801A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		CEC5CA9118AF41AF00AF801A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -715,6 +986,15 @@
 			buildConfigurations = (
 				CEA0098F18A3DFEA00FA535B /* Debug */,
 				CEA0099018A3DFEA00FA535B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEC5CA9218AF41AF00AF801A /* Build configuration list for PBXAggregateTarget "ProjectDocumentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEC5CA9018AF41AF00AF801A /* Debug */,
+				CEC5CA9118AF41AF00AF801A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

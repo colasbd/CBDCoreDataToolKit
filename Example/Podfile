@@ -4,3 +4,4 @@ xcodeproj 'MyToyAppForCoreData.xcodeproj'
 
 pod 'CBDCoreDataToolKit', :path => "../CBDCoreDataToolKit.podspec"
 pod 'KCOrderedAccessorFix', '~>0.0.1'
+pod 'CocoaLumberjack', '~>1.8.1'

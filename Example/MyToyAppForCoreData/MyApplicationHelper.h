@@ -68,7 +68,12 @@
 @property (nonatomic, strong) ThePeopleViewerController * thePeopleWC ;
 @property (nonatomic, strong) TheCompaniesViewerController * theCompaniesWC ;
 @property (nonatomic, strong) TheCityViewerController * theCitiesWC ;
-@property (nonatomic, strong) DataCreater * theDataCreater ;
+
+@property (nonatomic, strong) DataCreater * dataCreater ;
+@property (nonatomic, strong) DataCreater * secondaryDataCreater ;
+
+@property (nonatomic, strong) NSManagedObjectContext * secondaryMOC ;
+@property (nonatomic, readonly) NSManagedObjectContext * firstMOC ;
 
 //
 //
@@ -121,5 +126,14 @@
 - (void)removeMoscowLovers ;
 - (void)reinitialize ;
 
+- (void)testMagicalRecord ;
+- (void)testTheSecondaryMOC ;
+- (void)compareObjects ;
+
+
+- (void)createTheSecondaryMOC ;
+
+
+- (void)testImport ;
 
 @end

@@ -21,7 +21,7 @@
 /**************************************/
 //
 @class Person ;
-
+@class EntityA, Entity1, EntitySelf, EntityAlpha ;
 
 
 
@@ -66,6 +66,13 @@
 #pragma mark Properties strong
 /**************************************/
 @property (nonatomic, strong) Person* ada ;
+@property (nonatomic, strong) Person* guilhem ;
+@property (nonatomic, strong) EntityA * objectA ;
+@property (nonatomic, strong) EntitySelf * objectSelf ;
+@property (nonatomic, strong) Entity1 * object1 ;
+@property (nonatomic, strong) EntityAlpha * objectAlpha ;
+@property (nonatomic, strong) EntityAlpha * objectAlpha_2 ;
+
 
 //
 //
@@ -109,6 +116,6 @@
 /**************************************/
 
 - (id)initForMOC:(NSManagedObjectContext *)aMOC ;
-- (void)createTheData ;
+- (void)createTheDataWithGuilhem:(BOOL)withGuilhem ;
 
 @end

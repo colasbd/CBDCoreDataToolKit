@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "NSManagedObjectModel+KCOrderedAccessorFix.h"
+//#import "InitializationCocoaLumberjack.h"
 #import "MyApplicationHelper.h"
 
 @implementation AppDelegate
@@ -26,10 +27,17 @@
 
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{    
-    NSLog(@"Fixing the ordered relationships for CoreData") ;
+{
+//    /*
+//     Mise en place de CocoaLumberjack.
+//     */
+//    InitializationCocoaLumberjack * myInit = [[InitializationCocoaLumberjack alloc] init] ;
+//    [myInit initializeCocoaLumberjack] ;
+    
+    
+    DDLogInfo(@"Fixing the ordered relationships for CoreData") ;
     [self.managedObjectModel kc_generateOrderedSetAccessors] ;
-    NSLog(@"Fixing the ordered relationships for CoreData : done") ;
+    DDLogVerbose(@"Fixing the ordered relationships for CoreData : done") ;
     
     /*
      Création de l'application helper
@@ -97,6 +105,27 @@
 - (IBAction)reinitialize:(id)sender
 {
     [self.myApplicationHelper reinitialize] ;
+}
+
+- (IBAction)testMagicalRecord:(id)sender
+{
+    [self.myApplicationHelper testMagicalRecord] ;
+}
+
+- (IBAction)testTheSecondaryMOC:(id)sender
+{
+    [self.myApplicationHelper testTheSecondaryMOC] ;
+}
+
+- (IBAction)compareObjects:(id)sender
+{
+    [self.myApplicationHelper compareObjects] ;
+}
+
+
+- (IBAction)testImport:(id)sender
+{
+    [self.myApplicationHelper testImport] ;
 }
 
 
