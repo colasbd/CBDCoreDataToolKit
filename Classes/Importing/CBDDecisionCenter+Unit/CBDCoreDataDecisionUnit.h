@@ -93,6 +93,10 @@ const BOOL ignoreWinsOverNotIgnore ;
 
 /**
  The designated initializer.
+ 
+ A `CBDCoreDataDecisionUnit` will behave differently depending upon the @see `decisionType` of the `CBDCoreDataDecisionCenter` in which it is included. If the type of the center is "semi-facilitating" (meaning that by default, all the attributes are considered), and if you add to this center a unit that includes explicitely only one relationship, then both this relationship and all the attributes will be considered for actions.
+ 
+ If you want, in this case, to have less attributes, you should use a `ignoringAttributes:` initializer.
  */
 -  (id)       initForEntity:(NSEntityDescription *)entity
             usingAttributes:(NSArray *)namesUsedAttributeForDecision
@@ -160,12 +164,7 @@ const BOOL ignoreWinsOverNotIgnore ;
 - (void)mergeWith:(CBDCoreDataDecisionUnit *)anOtherUnit ;
 
 
-///**
-// Removes the given attributes and relationships from the DecisionUnit
-// */
-//- (void)removeAttributes:(NSArray *)namessAttributeForDecision
-//        andRelationships:(NSArray *)namesRelationshipForDecision ;
-//
+
 
 
 

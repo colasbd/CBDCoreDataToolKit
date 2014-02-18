@@ -6,66 +6,16 @@
 //
 //
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - IMPORTS
-/**************************************/
+
+
+
 #import "CBDCoreDataDecisionUnit.h"
 #import "NSManagedObject+CBDMiscMethods.h"
 #import "NSEntityDescription+CBDMiscMethods.h"
 
 
-/*
- Classes modèle
- */
 
 
-/*
- Moteur
- */
-
-
-/*
- Singletons
- */
-
-
-/*
- Vues
- */
-
-
-/*
- Catégories
- */
-
-
-/*
- Pods
- */
-
-
-/*
- Autres
- */
-
-
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - INSTANCIATION DES CONSTANTES
-/**************************************/
-//
 
 /*
  When merging, if YES, ignore wins
@@ -79,30 +29,9 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 
 
 
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATIONS PRIVÉES
-/**************************************/
 @interface CBDCoreDataDecisionUnit ()
 
 //#pragma mark -
-//
-//
-/**************************************/
-#pragma mark Properties de paramétrage
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties assistantes
-/**************************************/
-
 
 //
 //
@@ -128,19 +57,6 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 #pragma mark Properties-référence
 /**************************************/
 @property (nonatomic, weak, readwrite)NSEntityDescription *entity ;
-
-//
-//
-/**************************************/
-#pragma mark Properties de convenance
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
 
 
 @end
@@ -440,24 +356,6 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 }
 
 
-//
-///**
-// Removes the given attributes and relationships from the DecisionUnit
-// */
-//- (void)removeAttributes:(NSArray *)namessAttributeForDecision
-//        andRelationships:(NSArray *)namesRelationshipForDecision
-//{
-//    for (NSString * nameAttribute in namessAttributeForDecision)
-//    {
-//        [self.mutableNameUsedAttributes removeObject:nameAttribute] ;
-//    }
-//    
-//    for (NSString * nameRelationship in namesRelationshipForDecision)
-//    {
-//        [self.mutableUsedRelationshipDescriptions removeObject:self.entity.relationshipsByName[nameRelationship]] ;
-//    }
-//    
-//}
 
 
 

@@ -186,7 +186,7 @@ So, you should DecisionUnits if you want to precise to the engine upon which cri
  @warning If there is a conflict, it the entity wins over the superentity
  @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
  */
-- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity ;
+- (NSSet *)attributesFor:(NSEntityDescription *)entity ;
 
 /**
  Returns the attributes to check for the entity.
@@ -195,7 +195,7 @@ So, you should DecisionUnits if you want to precise to the engine upon which cri
  @warning If there is a conflict, it the entity wins over the superentity
  @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
  */
-- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
+- (NSSet *)relationshipsFor:(NSEntityDescription *)entity ;
 
 
 /**

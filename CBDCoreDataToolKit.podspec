@@ -3,10 +3,10 @@ Pod::Spec.new do |s|
 
   s.name         = "CBDCoreDataToolKit"
   s.version      = "2.0.0"
-  s.summary      = "Clone, replace, import and fetch methods for CoreData"
+  s.summary      = "Cloning, replacing, importing with CoreData"
 
   s.description  = <<-DESC
-                  Clone, replace, import and fetch methods for CoreData
+                  Cloning, replacing, importing with CoreData
 
                   * cloning a NSManagedObject from a NSManagedObjectContext (MOC) to another
                   * replacing a NSManagedObject by another
@@ -24,6 +24,8 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Classes/CBDCoreDataToolKit.h'
 
+  s.prefix_header_contents = '#define TODO()'
+  
   s.subspec 'Misc' do |ss|
     ss.source_files = 'Classes/Misc/**/*.{h,m}'
   end

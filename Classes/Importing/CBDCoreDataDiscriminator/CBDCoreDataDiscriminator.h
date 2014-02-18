@@ -36,9 +36,15 @@
 #pragma mark - Initialisation
 /// @name Initialisation
 /**
- The usual `init` method.
+ The disgnated intializer takes a CBDCoreDataDecisionCenter as an argument.
  */
 - (id)initWithDecisionCenter:(CBDCoreDataDecisionCenter *)decisionCenter ;
+
+
+/**
+ This convenience initializer will compare entities according to their attribues only.
+ */
+- (id)initWithDefaultType ;
 
 
 /**
@@ -77,128 +83,6 @@
 
 
 
-//
-//#pragma mark - Choosing the mode of discrimination
-///// @name Choosing the mode of discrimination
-//
-///**
-// Chooses the facilitating type. This is the default type. When you change types, the cache is flushed.
-// 
-// When an entity has no DiscriminatorUnit explicitely associated,
-// all the objects of such entities will be declared equal. It
-// is equivalent to ignoring this entity.
-// 
-// The relationships to objects with this entity will also be ignored.
-// */
-//- (void)chooseFacilitatingType ;
-//
-///**
-// Chooses the semi-facilitating type. This is the default type. When you change types, the cache is flushed.
-// 
-// When an entity has no DiscriminatorUnit explicitely associated,
-// to compare two object of this entity, we only consider their attributes.
-// 
-// This option is convenient but in some case, it could be too demanding, for instance if the objects of the given entity are markes with a `dateOfCreation` very precise.
-// */
-//- (void)chooseSemiFacilitatingType ;
-//
-///**
-// Chooses the demanding type. This is the default type. When you change types, the cache is flushed.
-// 
-// When an entity has no DiscriminatorUnit explicitely associated,
-// to compare two object of this entity,
-// we consider both all the attributes and all the relationships.
-// 
-// */
-//- (void)chooseDemandingType ;
-//
-
-
-
-
-
-
-//
-//#pragma mark - Managing the discrimination units
-///// @name Managing the discrimination units
-//
-///**
-// The discriminatorUnits composing the instance
-// */
-//@property (nonatomic, readonly)NSArray * discriminatorUnits ;
-//
-//
-///**
-// The entities explicitely registered by the instance for discriminating
-// */
-//@property (nonatomic, readonly)NSArray * registeredEntities ;
-//
-//
-///**
-// To perform a discrimination, one should tell the CBDCoreDataDiscriminator upon which criteria the discrimination will be done.
-// 
-// So, you should DiscriminatorUnits if you want to precise to the engine upon which criteria you want the discrimination to be done.
-// */
-//- (void)addDiscriminatorUnit:(CBDCoreDataDecisionUnit *)aDiscriminatorUnit ;
-//
-//
-//
-///**
-// Remove all the DiscriminatorUnits.
-// */
-//- (void)removeAllDiscriminatorUnits ;
-//
-//
-//
-///**
-// Remove the DiscriminatorUnit for entity
-//*/
-//- (void)removeDiscriminatorUnitFor:(NSEntityDescription *)entity ;
-//
-
-
-
-
-//
-////
-////
-///**************************************/
-//#pragma mark - Using the discriminatorUnits
-///**************************************/
-///// @name Using the discriminatorUnits
-//
-//
-//
-//
-//
-///**
-// Returns the attributes to check for the entity.
-// 
-// It uses the entity but also the parent entity (the superentity).
-// @warning If there is a conflict, it the entity wins over the superentity
-// @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
-// */
-//- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity ;
-//
-///**
-// Returns the attributes to check for the entity.
-// 
-// It uses the entity but also the parent entity (the superentity).
-// @warning If there is a conflict, it the entity wins over the superentity
-// @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
-// */
-//- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
-//
-//
-///**
-// Reply YES if the entity should be ignored in the discrimination
-// */
-//- (BOOL)shouldIgnore:(NSEntityDescription *)entity ;
-//
-
-
-
-
 
 //
 //
@@ -232,7 +116,7 @@
  
  By default, the result is stored in the cache.
  */
-- (BOOL)isThisSourceObject:(NSManagedObject *)sourceObject
+- (BOOL)    isSourceObject:(NSManagedObject *)sourceObject
      similarToTargetObject:(NSManagedObject *)targetObject ;
 
 

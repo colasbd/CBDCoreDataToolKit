@@ -257,7 +257,6 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBD
 NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore" ;
 NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore" ;
 NSString * const   CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore" ;
-NSString * const   CBDCoreDataDiscriminatorGetExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetExplicitelyIncluded" ;
 NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscriminatorGetInfoCount" ;
 
 
@@ -268,20 +267,36 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 - (NSDictionary *)getInfosFor:(NSEntityDescription *)entity
 {
     /*
+     The nil-case
+     */
+    if (!entity)
+    {
+        return nil ;
+    }
+    
+    
+    
+    
+    /*
+     The default discriminationUnit
+     */
+    CBDCoreDataDecisionUnit * defaultDiscriminationUnit ;
+    defaultDiscriminationUnit = [self defaultDiscriminationUnitFor:entity] ;
+    
+    
+    
+    /*
      The current discriminationUnit
      */
     CBDCoreDataDecisionUnit * discriminationUnit ;
     
-    NSNumber * explicitelyIncluded ;
     
     if ([self.registeredEntities containsObject:entity])
     {
-        explicitelyIncluded = @YES ;
         discriminationUnit = self.decisionUnitsByEntity[entity.name] ;
     }
     else
     {
-        explicitelyIncluded = @NO ;
         discriminationUnit = [self defaultDiscriminationUnitFor:entity] ;
     }
     
@@ -291,21 +306,11 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
      The info of the parent
      */
     NSDictionary * infoOfSuperentity ;
-    BOOL parentEntityExplicitelyIncluded ;
     BOOL shouldIgnoreForParent ;
     
-    if (entity.superentity)
-    {
-        infoOfSuperentity = [self getInfosFor:entity.superentity] ;
-        parentEntityExplicitelyIncluded = [infoOfSuperentity[CBDCoreDataDiscriminatorGetExplicitelyIncluded] boolValue] ;
-        shouldIgnoreForParent = [infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
-    }
-    else
-    {
-        infoOfSuperentity = nil ;
-        parentEntityExplicitelyIncluded = NO ;
-        shouldIgnoreForParent = NO ;
-    }
+    infoOfSuperentity = [self getInfosFor:entity.superentity] ;
+    shouldIgnoreForParent = [infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
+    
     
     
     
@@ -321,67 +326,52 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     
     
     // AttributesToInclude
-    [resultSetAttributesToInclude unionSet:discriminationUnit.nameAttributesToUse] ;
+    [resultSetAttributesToInclude unionSet:defaultDiscriminationUnit.nameAttributesToUse] ;
+    [resultSetAttributesToInclude unionSet:infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToInclude]] ;
     
-    if (parentEntityExplicitelyIncluded)
+    if (!ignoreWinsOverInclude)
     {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToInclude])
-        {
-            if (![discriminationUnit.nameAttributesToIgnore containsObject:key])
-            {
-                [resultSetAttributesToInclude addObject:key] ;
-            }
-        }
+        [resultSetAttributesToInclude minusSet:discriminationUnit.nameAttributesToIgnore] ;
     }
+    [resultSetAttributesToInclude unionSet:discriminationUnit.nameAttributesToUse] ;
+
+
     
     
     // AttributesToIgnore
+    [resultSetAttributesToIgnore unionSet:defaultDiscriminationUnit.nameAttributesToIgnore] ;
+    [resultSetAttributesToIgnore unionSet:infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore]] ;
+    
+    if (ignoreWinsOverInclude)
+    {
+        [resultSetAttributesToIgnore minusSet:discriminationUnit.nameAttributesToUse] ;
+    }
     [resultSetAttributesToIgnore unionSet:discriminationUnit.nameAttributesToIgnore] ;
     
-    if (parentEntityExplicitelyIncluded)
-    {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore])
-        {
-            if (![discriminationUnit.nameAttributesToUse containsObject:key]
-                ||
-                ![explicitelyIncluded boolValue])
-            {
-                [resultSetAttributesToIgnore addObject:key] ;
-            }
-        }
-    }
+
     
     
     // RelatioshipsToInclude
-    [resultSetRelationshipsToInclude unionSet:discriminationUnit.relationshipDescriptionsToUse] ;
+    [resultSetRelationshipsToInclude unionSet:defaultDiscriminationUnit.relationshipDescriptionsToUse] ;
+    [resultSetRelationshipsToInclude unionSet:infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude]] ;
     
-    if (parentEntityExplicitelyIncluded)
+    if (!ignoreWinsOverInclude)
     {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude])
-        {
-            if (![discriminationUnit.relationshipDescriptionsToIgnore containsObject:key])
-            {
-                [resultSetRelationshipsToInclude addObject:key] ;
-            }
-        }
+        [resultSetRelationshipsToInclude minusSet:discriminationUnit.relationshipDescriptionsToIgnore] ;
     }
-    
+    [resultSetRelationshipsToInclude unionSet:discriminationUnit.relationshipDescriptionsToUse] ;
+
     
     // RelatioshipsToIgnore
+    [resultSetRelationshipsToIgnore unionSet:defaultDiscriminationUnit.relationshipDescriptionsToIgnore] ;
+    [resultSetRelationshipsToIgnore unionSet:infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore]] ;
+    
+    if (ignoreWinsOverInclude)
+    {
+        [resultSetRelationshipsToIgnore minusSet:discriminationUnit.relationshipDescriptionsToUse] ;
+    }
     [resultSetRelationshipsToIgnore unionSet:discriminationUnit.relationshipDescriptionsToIgnore] ;
     
-    if (parentEntityExplicitelyIncluded)
-    {
-        for (NSString * key in infoOfSuperentity[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore])
-        {
-            if (![discriminationUnit.relationshipDescriptionsToUse containsObject:key]
-                ||
-                ![explicitelyIncluded boolValue])
-            {
-                [resultSetRelationshipsToIgnore addObject:key] ;
-            }
-        }
-    }
     
     
     // ShouldIgnore
@@ -408,12 +398,14 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     }
     
     
+
+    
     return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : resultSetAttributesToInclude,
              CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude : resultSetRelationshipsToInclude,
              CBDCoreDataDiscriminatorGetInfoAttributesToIgnore : resultSetAttributesToIgnore,
              CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : resultSetRelationshipsToIgnore,
              CBDCoreDataDiscriminatorGetInfoShouldIgnore : shouldIgnore,
-             CBDCoreDataDiscriminatorGetExplicitelyIncluded : explicitelyIncluded} ;
+             } ;
     
 }
 
@@ -424,13 +416,13 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
 
 
 
-- (NSSet *)attributesToCheckFor:(NSEntityDescription *)entity
+- (NSSet *)attributesFor:(NSEntityDescription *)entity
 {
     return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
 }
 
 
-- (NSSet *)relationshipsToCheckFor:(NSEntityDescription *)entity ;
+- (NSSet *)relationshipsFor:(NSEntityDescription *)entity ;
 {
     return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] ;
 }

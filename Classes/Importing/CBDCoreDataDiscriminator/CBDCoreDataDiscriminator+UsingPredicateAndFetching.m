@@ -123,6 +123,10 @@ const int depthForDefaultMethods_cbd_ = 0 ;
 /**************************************/
 
 
+TODO(on peut ameliorer cette method)
+// http://stackoverflow.com/questions/21823339/chaining-replacements-dont-work-in-nspredicate)
+
+
 - (NSPredicate *)_predicateToFindObjectsVirtuallySimilarTo:(NSManagedObject *)sourceObject
                                            withInitialPath:(NSExpression *)initialPath
                                         withRecursiveDepth:(NSUInteger)depth
@@ -148,7 +152,7 @@ const int depthForDefaultMethods_cbd_ = 0 ;
     /*
      Checking attributes
      */
-    for (NSString * nameAttribute in [self.decisionCenter attributesToCheckFor:entity])
+    for (NSString * nameAttribute in [self.decisionCenter attributesFor:entity])
     {
         NSPredicate * predicate ;
         predicate = [NSPredicate predicateWithFormat:@"%K.%K == %@",
@@ -160,7 +164,7 @@ const int depthForDefaultMethods_cbd_ = 0 ;
     }
     
     
-    NSSet * relationshipsToCheck = [self.decisionCenter relationshipsToCheckFor:entity] ;
+    NSSet * relationshipsToCheck = [self.decisionCenter relationshipsFor:entity] ;
     NSDictionary * dispatchedRelationshipsToCheck = [entity dispatchedRelationshipsFrom_cbd_:relationshipsToCheck] ;
     
     NSSet * toOneRelationships = dispatchedRelationshipsToCheck[CBDKeyDescriptionToOneRelationship] ;
