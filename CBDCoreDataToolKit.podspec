@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "CBDCoreDataToolKit"
-  s.version      = "2.0.0"
+  s.version      = "2.0.1"
   s.summary      = "Cloning, replacing, importing with CoreData"
 
   s.description  = <<-DESC
@@ -30,7 +30,9 @@ Pod::Spec.new do |s|
 # *******************************
 #
 # Comment out the following line to see the TODO
-  s.prefix_header_contents = '#define TODO(args...)'
+  #s.prefix_header_contents = '#define TODO(args...)'
+# Comment in the following line to include the todo file
+  s.resource  = "todo.rtf"
 # *******************************
 
 

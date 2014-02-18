@@ -64,7 +64,6 @@ TODO(on peut ameliorer le process)
 
 
 
-
 /**
  With this convenience initializer: the object between `sourceMOC` and `targetMOC` will be discriminate only upon their attributes. And, when an object is effectively imported (copied) to `targetMOC`, all its attributes and relationships will also be imported (and copied if necessary).
  */
@@ -100,7 +99,7 @@ TODO(on peut ameliorer le process)
 /**
  In order not to copy several times the same object, an instance of CBDCoreDataImporting maintains a cache.
  
- Flushing the cache may lead to doublons!
+ Flushing the cache may lead to duplicates!
  */
 - (void)flushTheCache ;
 

@@ -223,6 +223,26 @@ const BOOL ignoreWinsOverNotIgnore = YES;
                shouldBeIgnored:NO] ;
 }
 
+- (id)     initForEntity:(NSEntityDescription *)entity
+     usingOnlyAttributes:(NSArray *)namesAttributeForDecision
+    andOnlyRelationships:(NSArray *)namesRelationshipForDecision
+{
+    NSMutableArray * attributesToIgnore ;
+    NSMutableArray * relationshipsToIgnore ;
+
+    attributesToIgnore = [[entity.attributesByName allKeys] mutableCopy];
+    relationshipsToIgnore = [[entity.relationshipsByName allKeys] mutableCopy];
+    
+    [attributesToIgnore removeObjectsInArray:namesAttributeForDecision] ;
+    [relationshipsToIgnore removeObjectsInArray:namesRelationshipForDecision] ;
+    
+    return [self initForEntity:entity
+               usingAttributes:namesAttributeForDecision
+            usingRelationships:namesRelationshipForDecision
+            ignoringAttributes:attributesToIgnore
+         ignoringRelationships:relationshipsToIgnore
+               shouldBeIgnored:NO] ;
+}
 
 - (id)initForEntity:(NSEntityDescription *)entity
  ignoringAttributes:(NSArray *)namesAttributeForDecision
@@ -238,13 +258,48 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 }
 
 
+
+/**
+ In this `init` method, you ask to ignore all  attributes or relationships.
+ */
+- (id)      initForEntity:(NSEntityDescription *)entity
+    ignoringAllAttributes:(BOOL)ignoringAllAttributes
+ ignoringAllRelationships:(BOOL)ignoringAllRelationships
+{
+    NSArray * attributesToIgnore = ignoringAllAttributes?[entity.attributesByName allKeys]:@[] ;
+    NSArray * relationshipsToIgnore = ignoringAllRelationships?[entity.relationshipsByName allKeys]:@[] ;
+    
+    return [self initForEntity:entity
+            ignoringAttributes:attributesToIgnore
+              andRelationships:relationshipsToIgnore] ;
+}
+
+
+/**
+ In this `init` method, you ask to include all  attributes or relationships.
+ */
+- (id)      initForEntity:(NSEntityDescription *)entity
+     includeAllAttributes:(BOOL)includingAllAttributes
+  includeAllRelationships:(BOOL)includingAllRelationships
+{
+    NSArray * attributesToInclude = includingAllAttributes?[entity.attributesByName allKeys]:@[] ;
+    NSArray * relationshipsToInclude = includingAllRelationships?[entity.relationshipsByName allKeys]:@[] ;
+    
+    return [self initForEntity:entity
+            ignoringAttributes:attributesToInclude
+              andRelationships:relationshipsToInclude] ;
+}
+
+
+
+
 - (id)initSemiExhaustiveFor:(NSEntityDescription *)entity
 {
     return [self initForEntity:entity
                usingAttributes:[entity.attributesByName allKeys]
             usingRelationships:nil
             ignoringAttributes:nil
-         ignoringRelationships:[entity.relationshipsByName allKeys]
+         ignoringRelationships:nil//[entity.relationshipsByName allKeys]
                shouldBeIgnored:NO] ;
 }
 
@@ -266,7 +321,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
              usingRelationships:nil
              ignoringAttributes:nil
           ignoringRelationships:nil
-                shouldBeIgnored:NO] ;
+                shouldBeIgnored:YES] ;
 }
 
 

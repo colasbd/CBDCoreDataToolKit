@@ -77,10 +77,10 @@
 }
 
 
-+ (NSString *)nameEntity_cbd_:(NSManagedObjectContext *)_cbd
-{
-    return [self nameEntityForMOC_cbd_:nil] ;
-}
+//+ (NSString *)nameEntity_cbd_
+//{
+//    return [self nameEntityForMOC_cbd_:nil] ;
+//}
 
 
 

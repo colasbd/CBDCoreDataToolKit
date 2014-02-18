@@ -164,7 +164,8 @@
 
 
 
-- (id)initWithDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescriminating withDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopying
+- (id)initWithDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescriminating
+                    withDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopying
                                 withSourceMOC:(NSManagedObjectContext *)sourceMOC
                                     targetMOC:(NSManagedObjectContext *)targetMOC
 {

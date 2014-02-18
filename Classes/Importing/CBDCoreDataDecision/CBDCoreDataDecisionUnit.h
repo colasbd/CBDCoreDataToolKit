@@ -108,11 +108,47 @@ const BOOL ignoreWinsOverNotIgnore ;
 
 
 /**
- In the `init` method, you give attributes and relationships you want to use to discriminate between objects.
+ In this `init` method, you give attributes and relationships you want to use to discriminate between objects.
  */
 - (id)     initForEntity:(NSEntityDescription *)entity
          usingAttributes:(NSArray *)namesAttributeForDecision
         andRelationships:(NSArray *)namesRelationshipForDecision ;
+
+
+/**
+ In this `init` method, you give attributes and relationships you want to use to discriminate between objects.
+ 
+ You (implicitely) exclude all the other attributes or relationships
+ */
+- (id)     initForEntity:(NSEntityDescription *)entity
+     usingOnlyAttributes:(NSArray *)namesAttributeForDecision
+    andOnlyRelationships:(NSArray *)namesRelationshipForDecision ;
+
+
+/**
+ In this `init` method, you give attributes and relationships you want to use to discriminate between objects.
+ */
+- (id)      initForEntity:(NSEntityDescription *)entity
+       ignoringAttributes:(NSArray *)namesIgnoredAttributes
+         andRelationships:(NSArray *)namesIgnoredRelationships;
+
+
+/**
+ In this `init` method, you ask to ignore all  attributes or relationships.
+ */
+- (id)      initForEntity:(NSEntityDescription *)entity
+    ignoringAllAttributes:(BOOL)ignoringAllAttributes
+ ignoringAllRelationships:(BOOL)ignoringAllRelationships;
+
+
+/**
+ In this `init` method, you ask to include all  attributes or relationships.
+ */
+- (id)      initForEntity:(NSEntityDescription *)entity
+     includeAllAttributes:(BOOL)includingAllAttributes
+  includeAllRelationships:(BOOL)includingAllRelationships;
+
+
 
 
 /**
@@ -140,12 +176,6 @@ const BOOL ignoreWinsOverNotIgnore ;
 
 
 
-/**
- In the `init` method, you give attributes and relationships you want to use to discriminate between objects.
- */
-- (id)      initForEntity:(NSEntityDescription *)entity
-       ignoringAttributes:(NSArray *)namesIgnoredAttributes
-         andRelationships:(NSArray *)namesIgnoredRelationships;
 
 
 

@@ -11,6 +11,11 @@
 @class CBDCoreDataDecisionCenter ;
 
 
+/**
+ Keys for the dictionnaries used for duplicate elements between two MOCs.
+ */
+NSString * const   CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC ;
+NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
 
 
 /**
@@ -71,10 +76,6 @@
  */
 - (void)flushTheCache ;
 
-/**
- Removes the last entry of the cache
- */
-- (void)removeLastEntryOfTheCache ;
 
 /**
  Show the cache
@@ -128,10 +129,47 @@
                        inMOC:(NSManagedObjectContext *)MOC ;
 
 /**
- First similar objects
+ First similar object
  */
 - (NSManagedObject *)firstSimilarObjectTo:(NSManagedObject *)sourceObject
                                     inMOC:(NSManagedObjectContext *)MOC ;
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Finding duplicates
+/**************************************/
+/// @name Finding duplicates
+
+
+
+/**
+ Find the duplicates of objects of referenceMOC in MOCWhereWeAreWorking of the specified entities.
+ 
+ @return Returns a dictionnary, whose keys are the objectID of this objects, and whose values are dictionnaries with two keys:
+ 
+ - `CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC`: the object with `objectID` the key. It is the object in `MOCWhereWeAreWorking`.
+ - `CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC`: the object in `referenceMOC` which is similar to the other object.
+ */
+- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
+                                ofEntities:(NSArray *)namesOfEntities ;
+
+
+
+
+/**
+ Find the duplicates of objects of referenceMOC in MOCWhereWeAreWorking of all the entities.
+ 
+ @return Returns a dictionnary, whose keys are the objectID of this objects, and whose values are dictionnaries with two keys:
+ 
+ - `CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC`: the object with `objectID` the key. It is the object in `MOCWhereWeAreWorking`.
+ - `CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC`: the object in `referenceMOC` which is similar to the other object.
+ */
+- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC;
 
 
 #pragma mark - Managing the log

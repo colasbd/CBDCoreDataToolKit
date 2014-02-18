@@ -54,26 +54,6 @@
 #pragma mark - DÉCLARATION PUBLIQUE : properties
 /**************************************/
 @interface CBDCoreDataDiscriminatorHintCatalog : NSObject
-//
-//
-/**************************************/
-#pragma mark Properties de paramétrage
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties strong
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties-référence
-/**************************************/
-
 
 //
 //
@@ -82,18 +62,6 @@
 /**************************************/
 @property (nonatomic, readonly)NSOrderedSet * hints ;
 
-//
-//
-/**************************************/
-#pragma mark Properties de convenance
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
 
 
 
@@ -101,19 +69,9 @@
 
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATION PUBLIQUE : méthodes
-/**************************************/
-
-
+#pragma mark - Initialisation and setting
 /// @name Initialisation and setting
 
-// This method is private
-//+ (CBDCoreDataDiscriminatorSimilarityStatus)statusFromArrayOfStatus:(NSArray *)arrayOfStatus ;
 
 /**
  An init method.
@@ -125,8 +83,6 @@
  */
 - (id)copy ;
 
-// This method is private
-//- (void)addHint:(CBDCoreDataDiscriminatorHint *)hint ;
 
 /**
  Add a hint about similarity for two objects.
@@ -164,6 +120,8 @@
 
 
 
+
+#pragma mark -  Flushing the catalog
 /// @name Flushing the catalog
 
 /**
@@ -171,14 +129,23 @@
  */
 - (void)flush ;
 
-/**
- Removes the last hint from the hintCatalog.
- */
-- (void)removeLastHint ;
 
 
 
+
+#pragma mark -  Using the HintCatalog
 /// @name Using the HintCatalog
+
+
+/**
+ Gives a first and quick answer about the similarity between the two objects.
+ 
+ If it returns YES, it means that they are similar (or quasi-similar).
+ 
+ If not, it means that further research has to be done.
+ */
+- (BOOL)quickStatusBetween:(NSManagedObject *)sourceObject
+                       and:(NSManagedObject *)targetObject ;
 
 /**
  Decides, depending of the HintCatalog, what can be said about the similary between sourceObject and targetObject

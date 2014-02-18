@@ -385,7 +385,7 @@ NSString * const   CBDCoreDataDiscriminatorGetInfoCount = @"CBDCoreDataDiscrimin
     }
     
     
-    // Removing doublons : elements that are both in ToInclude and ToIgnore
+    // Removing duplicates : elements that are both in ToInclude and ToIgnore
     if (ignoreWinsOverInclude)
     {
         [resultSetAttributesToInclude minusSet:resultSetAttributesToIgnore] ;

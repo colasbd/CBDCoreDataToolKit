@@ -49,7 +49,7 @@ const BOOL safeMode = NO ;
  If YES, to boost the research, we do a kind of pre-search, using NSPredicates and CoreData.
  */
 const BOOL usingCoreDataAcceleration = YES ;
-const int depthForCoreDataAcceleration_cbd_=0 ;
+const int depthForCoreDataAcceleration_cbd_=2 ;
 
 
 /**********************************************************************
@@ -137,6 +137,201 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
 
 
 
+//
+//
+/**************************************/
+#pragma mark - Managing the cache
+/**************************************/
+
+
+/**
+ Removes all the entries of the cache
+ */
+- (void)flushTheCache
+{
+    [self.globalHintCatalog flush] ;
+}
+
+
+
+
+- (void)logTheCache
+{
+    NSLog(@"The cache is %@", self.globalHintCatalog) ;
+}
+
+
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Managing the log
+/**************************************/
+
+
+- (void)shouldLog:(BOOL)shouldLog
+{
+    self.shouldLog = shouldLog ;
+}
+
+
+
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Enhancing the catalog
+/**************************************/
+
+
+- (CBDCoreDataDiscriminatorHintCatalog *)globalHintCatalogEnhancedWith:(CBDCoreDataDiscriminatorHintCatalog *)otherCatalog
+{
+    CBDCoreDataDiscriminatorHintCatalog * result ;
+    
+    result = [self.globalHintCatalog copy] ;
+    [result addHintsFromCatalog:otherCatalog] ;
+    
+    return result ;
+}
+
+
+
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Duplicates
+/**************************************/
+
+
+NSString * const    CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC = @"CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC";
+NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC" ;
+
+
+- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC;
+{
+    NSArray * arrayOfAllEntities = [[MOCWhereWeAreWorking.persistentStoreCoordinator.managedObjectModel entitiesByName] allKeys] ;
+    
+    return [self objectsInWorkingMOC:MOCWhereWeAreWorking
+       alreadyExistingInReferenceMOC:referenceMOC
+                          ofEntities:arrayOfAllEntities] ;
+}
+
+
+
+- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
+                                ofEntities:(NSArray *)namesOfEntities ;
+
+{
+    NSMutableDictionary * result = [[NSMutableDictionary alloc] init] ;
+    
+    for (NSString * nameEntity in namesOfEntities)
+    {
+        NSEntityDescription * entity = [NSEntityDescription entityForName:nameEntity
+                                                   inManagedObjectContext:MOCWhereWeAreWorking] ;
+        
+        if (self.shouldLog)
+        {
+            NSLog(@"Starting to search for the duplicates of %@", nameEntity) ;
+        }
+        
+        NSArray * allObjects = [entity allInMOC_cbd_:referenceMOC] ;
+        
+// CODE MULTITHREAD  -> bug
+//
+//        [allObjects enumerateObjectsWithOptions:NSEnumerationConcurrent
+//                                     usingBlock:^(NSManagedObject * object, NSUInteger idx, BOOL *stop)
+//        {
+//            NSManagedObject * resultObject = [self firstSimilarObjectTo:object
+//                                                                  inMOC:referenceMOC] ;
+//            
+//            if (!resultObject)
+//            {
+//                NSDictionary * dico = @{CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC: object,
+//                                        CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC: resultObject} ;
+//                
+//                result[object.objectID] = dico ;
+//            }
+//
+//        }] ;
+        
+        for (NSManagedObject * object in allObjects)
+        {
+            NSManagedObject * resultObject = [self firstSimilarObjectTo:object
+                                                                  inMOC:referenceMOC] ;
+            
+            if (!resultObject)
+            {
+                NSDictionary * dico = @{CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC: object,
+                                        CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC: resultObject} ;
+                
+                result[object.objectID] = dico ;
+            }
+        }
+    }
+    
+    return result ;
+}
+
+
+
+
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Discriminate : convenience methods
+/**************************************/
+
+
+
+
+- (BOOL)     isSourceObject:(NSManagedObject *)sourceObject
+          similarToTargetObject:(NSManagedObject *)targetObject
+{
+    /*
+     I don't know if putting YES to this option make the algorithm not correct.
+     I don't know if putting NO to this option make the algorithm falling in infinite loops.
+     */
+    
+    BOOL result =  [self isThisSourceObject:sourceObject
+                      similarToTargetObject:targetObject
+                           usingHintCatalog:self.globalHintCatalog
+                        assumeYESifChecking:optionYESIfChecking
+                              numberOfCalls:1] ;
+
+    
+    /*
+     Returning the result
+     */
+    return result ;
+}
+
+
+
+
+
+
+
+
 
 //
 //
@@ -204,11 +399,11 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
             !valueTargetObject)
         {
             //return YES ;
-//            return [self returnTheValue:YES
-//                        forSourceObject:sourceObject
-//                        andTargetObject:targetObject
-//                            withMessage:@"Both attributes are nil."
-//                                logging:NO] ;
+            //            return [self returnTheValue:YES
+            //                        forSourceObject:sourceObject
+            //                        andTargetObject:targetObject
+            //                            withMessage:@"Both attributes are nil."
+            //                                logging:NO] ;
             
             return YES ;
         }
@@ -228,11 +423,11 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
     }
     
     //return YES ;
-//    return [self returnTheValue:YES
-//                forSourceObject:sourceObject
-//                andTargetObject:targetObject
-//                    withMessage:nil
-//                        logging:NO] ;
+    //    return [self returnTheValue:YES
+    //                forSourceObject:sourceObject
+    //                andTargetObject:targetObject
+    //                    withMessage:nil
+    //                        logging:NO] ;
     return YES ;
 }
 
@@ -242,112 +437,10 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
 
 
 
-#pragma mark - Managing the log
-/// @name Managing the cache
-
-- (void)shouldLog:(BOOL)shouldLog
-{
-    self.shouldLog = shouldLog ;
-}
-
-
-
-
 //
 //
 /**************************************/
-#pragma mark - Managing the cache
-/**************************************/
-
-
-/**
- Removes all the entries of the cache
- */
-- (void)flushTheCache
-{
-    [self.globalHintCatalog flush] ;
-}
-
-/**
- Removes the last entry of the cache
- */
-- (void)removeLastEntryOfTheCache
-{
-    [self.globalHintCatalog removeLastHint] ;
-}
-
-
-- (void)logTheCache
-{
-    NSLog(@"The cache is %@", self.globalHintCatalog) ;
-}
-
-
-
-
-
-
-
-
-//
-//
-/**************************************/
-#pragma mark - Enhancing the catalog
-/**************************************/
-
-
-- (CBDCoreDataDiscriminatorHintCatalog *)globalHintCatalogEnhancedWith:(CBDCoreDataDiscriminatorHintCatalog *)otherCatalog
-{
-    CBDCoreDataDiscriminatorHintCatalog * result ;
-    
-    result = [self.globalHintCatalog copy] ;
-    [result addHintsFromCatalog:otherCatalog] ;
-    
-    return result ;
-}
-
-
-
-
-
-//
-//
-/**************************************/
-#pragma mark - Discriminate : convenience methods
-/**************************************/
-
-
-
-
-- (BOOL)     isSourceObject:(NSManagedObject *)sourceObject
-          similarToTargetObject:(NSManagedObject *)targetObject
-{
-    /*
-     I don't know if putting YES to this option make the algorithm not correct.
-     I don't know if putting NO to this option make the algorithm falling in infinite loops.
-     */
-    
-    BOOL result =  [self isThisSourceObject:sourceObject
-                      similarToTargetObject:targetObject
-                           usingHintCatalog:self.globalHintCatalog
-                        assumeYESifChecking:optionYESIfChecking
-                              numberOfCalls:1] ;
-
-    
-    /*
-     Returning the result
-     */
-    return result ;
-}
-
-
-
-
-
-//
-//
-/**************************************/
-#pragma mark - Discriminate : core methods
+#pragma mark - ■■■■■■ Discriminate : CORE METHOD  ■■■■■■
 /**************************************/
 
 
@@ -357,6 +450,24 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
             assumeYESifChecking:(BOOL)assumeYESIfChecking
                   numberOfCalls:(NSInteger)numberOfCalls
 {
+    /*************************
+     *     QUICK HINTS
+     *************************
+     To accelerate the algorithm
+     *************************/
+    
+    if ([self.globalHintCatalog quickStatusBetween:sourceObject
+                                               and:targetObject])
+    {
+        return YES ;
+    }
+    
+    
+    /*************************
+     *     Normal tests
+     *************************
+     *************************/
+    
     if (self.shouldLog)
     {
         NSLog(@"Checking similarity of %@ and %@", sourceObject, targetObject) ;
@@ -1315,7 +1426,7 @@ const int depthForCoreDataAcceleration_cbd_=0 ;
     
     [objectsToTest enumerateObjectsUsingBlock:^(NSManagedObject * objectToTest, NSUInteger idx, BOOL *stop)
     {
-        if ([self isSourceObject:sourceObject
+        if ([self     isSourceObject:sourceObject
                similarToTargetObject:objectToTest])
         {
             result = objectToTest ;

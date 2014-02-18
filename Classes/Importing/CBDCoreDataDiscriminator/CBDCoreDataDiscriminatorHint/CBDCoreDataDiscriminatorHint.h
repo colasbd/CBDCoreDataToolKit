@@ -12,69 +12,14 @@
 #import "CBDCoreDataDiscriminatorHintType.h"
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - Classes utilisées
-/**************************************/
-//
-//@class <#nom de la classe#> ;
 
 
 
 
 
 
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATION DES CONSTANTES
-/**************************************/
-//
-//extern NSString* const <#exempleDeConstante#> ;
-
-
-
-
-
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATION PUBLIQUE : properties
-/**************************************/
 @interface CBDCoreDataDiscriminatorHint : NSObject
-//
-//
-/**************************************/
-#pragma mark Properties de paramétrage
-/**************************************/
 
-
-//
-//
-/**************************************/
-#pragma mark Properties strong
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties-référence
-/**************************************/
 
 
 //
@@ -88,32 +33,17 @@
 @property (nonatomic, weak, readonly) NSRelationshipDescription * relationship ;
 @property (nonatomic, readonly) CBDCoreDataDiscriminatorSimilarityStatus similarityStatus ;
 
-//
-//
-/**************************************/
-#pragma mark Properties de convenance
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
-
-
-
 
 
 
 
 //
 //
-/****************************************************************************/
-/****************************************************************************/
 /**************************************/
-#pragma mark - DÉCLARATION PUBLIQUE : méthodes
+#pragma mark - Init methods
 /**************************************/
+/// @name Init methods
+
 
 - (id)  initWithSimilarityBetwenSourceObject:(NSManagedObject *)sourceObject
                              andTargetObject:(NSManagedObject *)targetObject

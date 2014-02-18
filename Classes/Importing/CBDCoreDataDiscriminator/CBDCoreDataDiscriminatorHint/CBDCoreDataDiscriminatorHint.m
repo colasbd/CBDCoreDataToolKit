@@ -16,59 +16,6 @@
 #import "CBDCoreDataDiscriminatorHint.h"
 
 
-/*
- Classes modèle
- */
-
-
-/*
- Moteur
- */
-
-
-/*
- Singletons
- */
-
-
-/*
- Vues
- */
-
-
-/*
- Catégories
- */
-
-
-/*
- Pods
- */
-
-
-/*
- Autres
- */
-
-
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - INSTANCIATION DES CONSTANTES
-/**************************************/
-//
-//NSString* const <#exempleDeConstante#> = @"Exemple de constante";
-
-
-
-
 
 
 
@@ -83,28 +30,6 @@
 /**************************************/
 @interface CBDCoreDataDiscriminatorHint ()
 
-//#pragma mark -
-//
-//
-/**************************************/
-#pragma mark Properties de paramétrage
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties assistantes
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties strong
-/**************************************/
-
-
 //
 //
 /**************************************/
@@ -115,19 +40,6 @@
 @property (nonatomic, weak, readwrite) NSManagedObject * targetObject ;
 @property (nonatomic, weak, readwrite) NSRelationshipDescription * relationship ;
 @property (nonatomic, readwrite) CBDCoreDataDiscriminatorSimilarityStatus similarityStatus ;
-
-//
-//
-/**************************************/
-#pragma mark Properties de convenance
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
 
 
 

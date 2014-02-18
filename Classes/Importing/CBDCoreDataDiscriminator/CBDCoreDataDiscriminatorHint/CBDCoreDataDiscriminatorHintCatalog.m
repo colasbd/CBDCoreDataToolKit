@@ -17,56 +17,6 @@
 #import "CBDCoreDataDiscriminatorHint.h"
 
 
-/*
- Classes modèle
- */
-
-
-/*
- Moteur
- */
-
-
-/*
- Singletons
- */
-
-
-/*
- Vues
- */
-
-
-/*
- Catégories
- */
-
-
-/*
- Pods
- */
-
-
-/*
- Autres
- */
-
-
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - INSTANCIATION DES CONSTANTES
-/**************************************/
-//
-//NSString* const <#exempleDeConstante#> = @"Exemple de constante";
-
 
 
 
@@ -84,20 +34,6 @@
 /**************************************/
 @interface CBDCoreDataDiscriminatorHintCatalog ()
 
-//#pragma mark -
-//
-//
-/**************************************/
-#pragma mark Properties de paramétrage
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties assistantes
-/**************************************/
-
 
 //
 //
@@ -105,27 +41,8 @@
 #pragma mark Properties strong
 /**************************************/
 @property (nonatomic, strong, readwrite)NSMutableOrderedSet * mutableHints ;
+@property (nonatomic, strong, readwrite)NSMutableDictionary * quickHints ;
 
-
-//
-//
-/**************************************/
-#pragma mark Properties-référence
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Properties de convenance
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
 
 
 
@@ -186,6 +103,7 @@
     if (self)
     {
         self.mutableHints = [[NSMutableOrderedSet alloc] init] ;
+        self.quickHints = [[NSMutableDictionary alloc] init] ;
     }
     
     return self ;
@@ -242,6 +160,16 @@
     CBDCoreDataDiscriminatorHint * hint ;
     
     /*
+     If we get a positive status, we add a quickHint
+     */
+    if (similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar
+        ||
+        similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsQuasiSimilar)
+    {
+        self.quickHints[sourceObject.objectID] = targetObject.objectID ;
+    }
+    
+    /*
      If we get a positive status, we remove the uncertain status
      */
     if (similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsSimilar
@@ -262,6 +190,17 @@
             {
                 [self.mutableHints removeObject:varHint] ;
             }
+        }
+        
+        /*
+         We remove the quickHint if the result is negative
+         */
+        if (similarityStatus == CBDCoreDataDiscriminatorSimilarityStatusIsNotSimilar
+            &&
+            [self quickStatusBetween:sourceObject
+                                 and:targetObject])
+        {
+            [self.quickHints removeObjectForKey:sourceObject.objectID] ;
         }
     }
     
@@ -331,18 +270,9 @@
 - (void)flush
 {
     self.mutableHints = [[NSMutableOrderedSet alloc] init] ;
+    self.quickHints = [[NSMutableDictionary alloc] init] ;
 }
 
-/**
- Removes the last hint from the hintCatalog.
- */
-- (void)removeLastHint
-{
-    if ([self.mutableHints lastObject])
-    {
-        [self.mutableHints removeObject:[self.mutableHints lastObject]] ;
-    }
-}
 
 
 
@@ -576,6 +506,22 @@
     }
     
     return usefulHints ;
+}
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Quick status
+/**************************************/
+/// @name Quick status
+
+
+- (BOOL)quickStatusBetween:(NSManagedObject *)sourceObject
+                       and:(NSManagedObject *)targetObject
+{
+    return (self.quickHints[sourceObject.objectID] == targetObject.objectID) ;
 }
 
 
