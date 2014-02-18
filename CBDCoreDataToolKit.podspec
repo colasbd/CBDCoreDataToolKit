@@ -33,47 +33,82 @@ Pod::Spec.new do |s|
   s.prefix_header_contents = '#define TODO(args...)'
 # *******************************
 
-  s.subspec 'Misc' do |ss|
-    ss.source_files = 'Classes/Misc/**/*.{h,m}'
-    ss.requires_arc = true
-  end
 
   s.subspec 'Importing' do |ss|
+    ss.dependency 'CBDCoreDataToolKit/ActiveRecord'
+
+
     ss.source_files = 'Classes/Importing/*.{h,m}'
     ss.requires_arc = true
+    ss.ios.platform   = :ios, '5.0'
+    ss.osx.platform   = :osx, '10.7'
+
 
     ss.subspec 'CBDCoreDataDiscriminator' do |sss|
+      sss.dependency 'CBDCoreDataToolKit/Misc'
+      sss.dependency 'CBDCoreDataToolKit/CBDDecisionCenter+Unit'
+
       sss.source_files = 'Classes/Importing/CBDCoreDataDiscriminator/*.{h,m}'
       sss.requires_arc = true
+      sss.ios.platform   = :ios, '5.0'
+      sss.osx.platform   = :osx, '10.7'
 
       sss.subspec 'CBDCoreDataDiscriminatorHint' do |ssss|
         ssss.source_files = 'Classes/Importing/CBDCoreDataDiscriminator/CBDCoreDataDiscriminatorHint/**/*.{h,m}'
         ssss.requires_arc = true
+        ssss.ios.platform   = :ios, '5.0'
+        ssss.osx.platform   = :osx, '10.7'
       end
-      
+
     end
 
-    ss.subspec 'CBDDecisionCenter+Unit' do |sss|
-      sss.source_files = 'Classes/Importing/CBDDecisionCenter+Unit/**/*.{h,m}'
+
+
+    ss.subspec 'CBDCoreDataDecision' do |sss|
+      sss.dependency 'CBDCoreDataToolKit/Misc'
+
+      sss.source_files = 'Classes/Importing/CBDCoreDataDecision/**/*.{h,m}'
       sss.requires_arc = true
+      sss.ios.platform   = :ios, '5.0'
+      sss.osx.platform   = :osx, '10.7'
+
     end
 
   end
+
+
 
   s.subspec 'Cloning' do |ss|
     ss.source_files = 'Classes/Cloning/**/*.{h,m}'
     ss.requires_arc = true
+    ss.ios.platform   = :ios, '5.0'
+    ss.osx.platform   = :osx, '10.7'   
   end
+
+
 
   s.subspec 'Replacing' do |ss|
     ss.source_files = 'Classes/Replacing/**/*.{h,m}'
     ss.requires_arc = true
+    ss.ios.platform   = :ios, '5.0'
+    ss.osx.platform   = :osx, '10.7'
   end
   
+
   s.subspec 'ActiveRecord' do |ss|
     ss.source_files = 'Classes/ActiveRecord/**/*.{h,m}'
     ss.requires_arc = true
   end
+
+
+  s.subspec 'Misc' do |ss|
+    ss.source_files = 'Classes/Misc/**/*.{h,m}'
+    ss.requires_arc = true
+    ss.ios.platform   = :ios, '5.0'
+    ss.osx.platform   = :osx, '10.7'
+  end
+
+
 
 
   s.ios.platform   = :ios, '5.0'
