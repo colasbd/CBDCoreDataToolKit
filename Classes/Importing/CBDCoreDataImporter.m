@@ -107,6 +107,9 @@
 /**************************************/
 #pragma mark Properties strong
 /**************************************/
+@property (nonatomic)BOOL shouldLog ;
+
+
 @property (nonatomic, strong)NSMutableDictionary * cache ;
 
 @property (nonatomic, strong, readwrite)CBDCoreDataDiscriminator * discriminator ;
@@ -169,6 +172,7 @@
     
     if (self)
     {
+        _shouldLog = NO ;
         _cache = [[NSMutableDictionary alloc] init] ;
         _sourceMOC = sourceMOC ;
         _targetMOC = targetMOC ;
@@ -227,6 +231,21 @@
 
 
 
+//
+//
+/**************************************/
+#pragma mark - Loggin
+/**************************************/
+
+
+
+- (void)shouldLog:(BOOL)shouldLog
+          deepLog:(BOOL)deepLog
+{
+    self.shouldLog = YES ;
+    [self.discriminator shouldLog:deepLog] ;
+}
+
 
 
 
@@ -242,7 +261,10 @@
 
 - (NSManagedObject *) import:(NSManagedObject *)objectToImport
 {
-    NSLog(@"Importing %@", objectToImport) ;
+    if (self.shouldLog)
+    {
+        NSLog(@"Importing %@", objectToImport) ;
+    }
     /*
      We exclude the nil case
      */
@@ -259,6 +281,10 @@
     
     if ([[self.cache allKeys] containsObject:objectToImport.objectID])
     {
+        if (self.shouldLog)
+        {
+            NSLog(@"Object already in the cache.") ;
+        }
         return self.cache[objectToImport.objectID] ;
     }
     
@@ -277,6 +303,11 @@
     
     if (firstSimilarObject)
     {
+        if (self.shouldLog)
+        {
+            NSLog(@"No need to import, there is a similar object in the targetMOC.") ;
+        }
+        
         /*
          We cache it
          */
@@ -294,9 +325,7 @@
     self.cache[objectToImport.objectID] = objectImported ;
     
     
-    
     NSMutableArray * attributesToInclude = [[[self.decisionCenterForCopy attributesFor:entity] allObjects] mutableCopy] ;
-    
     
     /*
      First : we deal with the attributes
@@ -304,7 +333,10 @@
     [objectImported fillInAttributesFrom:objectToImport
                      onlyAttributes_cbd_:attributesToInclude] ;
     
-    
+    if (self.shouldLog)
+    {
+        NSLog(@"Creation of a new object %@ in the target MOC for the import.", objectImported) ;
+    }
     
     
     /*

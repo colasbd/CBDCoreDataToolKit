@@ -105,6 +105,11 @@ TODO(on peut ameliorer le process)
 - (void)flushTheCache ;
 
 
+/**
+ Logging
+ */
+- (void)shouldLog:(BOOL)shouldLog
+          deepLog:(BOOL)deepLog ;
 
 
 #pragma mark Importing

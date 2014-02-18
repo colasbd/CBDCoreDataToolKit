@@ -24,8 +24,14 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Classes/CBDCoreDataToolKit.h'
 
+# *******************************
+# ************* TODO ************
+# *******************************
+#
+# Comment out the following line to see the TODO
   s.prefix_header_contents = '#define TODO(args...)'
-  
+# *******************************
+
   s.subspec 'Misc' do |ss|
     ss.source_files = 'Classes/Misc/**/*.{h,m}'
   end
