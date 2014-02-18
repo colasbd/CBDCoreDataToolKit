@@ -158,7 +158,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
         
         for (NSString * nameAttribute in namesUsedAttributeForDecision)
         {
-            if ([self.entity.attributeKeys containsObject:nameAttribute])
+            if ([[entity.attributesByName allKeys] containsObject:nameAttribute])
             {
                 [nameUsedAttributes addObject:nameAttribute] ;
             }
@@ -186,7 +186,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
         
         for (NSString * nameAttribute in namesIgnoredAttributeForDecision)
         {
-            if ([self.entity.attributeKeys containsObject:nameAttribute])
+            if ([[entity.attributesByName allKeys] containsObject:nameAttribute])
             {
                 [nameIgnoredAttributes addObject:nameAttribute] ;
             }
@@ -241,7 +241,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 - (id)initSemiExhaustiveFor:(NSEntityDescription *)entity
 {
     return [self initForEntity:entity
-               usingAttributes:entity.attributeKeys
+               usingAttributes:[entity.attributesByName allKeys]
             usingRelationships:nil
             ignoringAttributes:nil
          ignoringRelationships:[entity.relationshipsByName allKeys]
@@ -253,7 +253,7 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 - (id)initExhaustiveFor:(NSEntityDescription *)entity
 {
     return [self initForEntity:entity
-               usingAttributes:entity.attributeKeys
+               usingAttributes:[entity.attributesByName allKeys]
               andRelationships:[entity.relationshipsByName allKeys]] ;
 }
 

@@ -190,7 +190,7 @@
 - (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
         exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
 {
-    NSMutableArray * arrayOfAttributesToInclude = [sourceObject.entity.attributeKeys mutableCopy] ;
+    NSMutableArray * arrayOfAttributesToInclude = [[sourceObject.entity.attributesByName allKeys] mutableCopy] ;
     [arrayOfAttributesToInclude removeObjectsInArray:namesOfAttributesToExclude] ;
     
     [self fillInAttributesFrom:sourceObject

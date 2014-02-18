@@ -24,6 +24,8 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Classes/CBDCoreDataToolKit.h'
 
+  s.requires_arc = true
+
 # *******************************
 # ************* TODO ************
 # *******************************
