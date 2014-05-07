@@ -29,16 +29,16 @@ Pod::Spec.new do |s|
 # ************* TODO ************
 # *******************************
 #
-# Uncomment the following line to see the TODO
-  #s.prefix_header_contents = '#define TODO(args...)'
+# Comment the following line to see the TODO
+  s.prefix_header_contents = '#define TODO(args...)'
 #
 #
-# Uncomment to ignore the TODO
-  s.prefix_header_contents = '#import "MyCBDMacros.h"'
+# Comment to ignore the TODO
+  #s.prefix_header_contents = '#import "MyCBDMacros.h"'
 #
 #
 # Uncomment in the following line to include the todo file
-  s.resource  = "todo.rtf"
+  #s.resource  = "todo.rtf"
 # *******************************
 
 
