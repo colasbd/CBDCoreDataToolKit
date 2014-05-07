@@ -231,7 +231,7 @@ const int depthForCoreDataAcceleration_cbd_=2 ;
 
 - (void)reSetTheCoreDataAcceleration
 {
-    FIXME(a checker)
+    TODO(a checker)
 //    if ([[self.blocksToTestSimilarityByEntity allKeys] count] == 0)
 //    {
 //        self.usingCoreDataAcceleration = usingCoreDataAcceleration_default ;

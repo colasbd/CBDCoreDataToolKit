@@ -6,7 +6,7 @@
 
 #define COMMENTS_ON 0
 
-CBD_SHOULD_DO_CHANGES_HERE
+TODO(a faire)
 int numberOfEntitiesCopied = 0 ;
 
 
@@ -19,7 +19,7 @@ int numberOfEntitiesCopied = 0 ;
     
     if (numberOfEntitiesCopied >= 10)
     {
-        CBD_SHOULD_CHECK_HERE
+        TODO(a faire)
         NSError * error ;
         [context save:&error] ;
         numberOfEntitiesCopied = 0 ;
