@@ -48,7 +48,7 @@ const BOOL safeMode = NO ;
 /*
  If YES, to boost the research, we do a kind of pre-search, using NSPredicates and CoreData.
  */
-const BOOL usingCoreDataAcceleration = YES ;
+const BOOL usingCoreDataAcceleration_default = YES ;
 const int depthForCoreDataAcceleration_cbd_=2 ;
 
 
@@ -62,11 +62,16 @@ const int depthForCoreDataAcceleration_cbd_=2 ;
 
 @interface CBDCoreDataDiscriminator ()
 
+@property (nonatomic)BOOL usingCoreDataAcceleration ;
+
 @property (nonatomic)BOOL shouldLog ;
 
 @property (nonatomic, strong, readwrite)CBDCoreDataDecisionCenter * decisionCenter ;
 
 @property (nonatomic, strong, readwrite)CBDCoreDataDiscriminatorHintCatalog * globalHintCatalog ;
+
+@property (nonatomic, strong, readwrite)NSMutableDictionary *blocksToTestSimilarityByEntity ;
+@property (nonatomic, strong, readwrite)NSMutableDictionary *finalBlockToTestSimilarityByEntity ;
 
 
 - (CBDCoreDataDiscriminatorHintCatalog *)globalHintCatalogEnhancedWith:(CBDCoreDataDiscriminatorHintCatalog *)otherCatalog ;
@@ -101,9 +106,12 @@ const int depthForCoreDataAcceleration_cbd_=2 ;
     
     if (self)
     {
+        _usingCoreDataAcceleration = usingCoreDataAcceleration_default ;
         _shouldLog = NO ;
         _globalHintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
         _decisionCenter = decisionCenter ;
+        _blocksToTestSimilarityByEntity = [[NSMutableDictionary alloc] init] ;
+        _finalBlockToTestSimilarityByEntity = [[NSMutableDictionary alloc] init] ;
     }
     
     return self ;
@@ -119,9 +127,9 @@ const int depthForCoreDataAcceleration_cbd_=2 ;
 }
 
 
-- (id)copy
+- (id)copyWithZone:(NSZone *)zone
 {
-    CBDCoreDataDiscriminator * newDiscriminator = [[CBDCoreDataDiscriminator alloc] init] ;
+    CBDCoreDataDiscriminator * newDiscriminator = [[CBDCoreDataDiscriminator allocWithZone:zone] init] ;
     
     newDiscriminator.decisionCenter = [self.decisionCenter copy] ;
     newDiscriminator.shouldLog = self.shouldLog ;
@@ -129,6 +137,110 @@ const int depthForCoreDataAcceleration_cbd_=2 ;
     return newDiscriminator ;
 }
 
+
+
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Managing blocks to test similarity
+/**************************************/
+
+
+- (void)clearAllBlocksForEntity:(NSEntityDescription *)entity
+{
+    if (self.blocksToTestSimilarityByEntity[entity.name])
+    {
+        [self.blocksToTestSimilarityByEntity removeObjectForKey:entity.name] ;
+        [self rebuildFinalBlockForEntity:entity] ;
+        [self reSetTheCoreDataAcceleration] ;
+    }
+}
+
+
+- (void)       addForEntity:(NSEntityDescription *)entity
+      blockToTestSimilarity:(BOOL (^)(NSManagedObject *, NSManagedObject *))blockToTestSimilarity
+{
+    if (!self.blocksToTestSimilarityByEntity[entity.name])
+    {
+        self.blocksToTestSimilarityByEntity[entity.name] = [[NSMutableArray alloc] init] ;
+    }
+    
+    [self.blocksToTestSimilarityByEntity[entity.name] addObject:blockToTestSimilarity] ;
+    [self rebuildFinalBlockForEntity:entity] ;
+    [self reSetTheCoreDataAcceleration] ;
+}
+
+
+- (BOOL (^)(NSManagedObject *, NSManagedObject *))blockForEntity:(NSEntityDescription *)entity
+{
+    return self.finalBlockToTestSimilarityByEntity[entity.name] ;
+}
+
+
+- (void)rebuildFinalBlockForEntity:(NSEntityDescription *)entity
+{
+    NSArray * arrayOfBlocks = self.blocksToTestSimilarityByEntity[entity.name] ;
+    
+    if ([arrayOfBlocks count] == 0)
+    {
+        [self.finalBlockToTestSimilarityByEntity removeObjectForKey:entity.name] ;
+    }
+    else if ([arrayOfBlocks count] == 1)
+    {
+        self.finalBlockToTestSimilarityByEntity[entity.name] = [self.blocksToTestSimilarityByEntity[entity.name] lastObject] ;
+    }
+    else
+    {
+        BOOL(^finalBlock)(NSManagedObject *, NSManagedObject *) ;
+        
+        finalBlock = ^BOOL(NSManagedObject * souceObject, NSManagedObject * targetObject)
+        {
+            __block BOOL result = YES ;
+            
+            [arrayOfBlocks enumerateObjectsUsingBlock:^(BOOL(^currentBlock)(NSManagedObject *, NSManagedObject *),
+                                                        NSUInteger idx,
+                                                        BOOL *stop)
+            {
+                if (currentBlock(souceObject, targetObject) == NO)
+                {
+                    result = NO ;
+                    *stop = YES ;
+                }
+            }] ;
+            
+            return result ;
+        } ;
+        
+        self.finalBlockToTestSimilarityByEntity[entity.name] = finalBlock ;
+    }
+}
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Managing the CoreData acceleration
+/**************************************/
+
+
+
+- (void)reSetTheCoreDataAcceleration
+{
+    FIXME(a checker)
+//    if ([[self.blocksToTestSimilarityByEntity allKeys] count] == 0)
+//    {
+//        self.usingCoreDataAcceleration = usingCoreDataAcceleration_default ;
+//    }
+//    else
+//    {
+//        self.usingCoreDataAcceleration = NO ;
+//    }
+}
 
 
 
@@ -216,27 +328,68 @@ const int depthForCoreDataAcceleration_cbd_=2 ;
 /**************************************/
 
 
-NSString * const    CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC = @"CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC";
+NSString * const   CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC = @"CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC";
 NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC" ;
 
 
-- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
-             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC;
+- (NSDictionary *) infosOnObjectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+                alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC;
 {
-    NSArray * arrayOfAllEntities = [[MOCWhereWeAreWorking.persistentStoreCoordinator.managedObjectModel entitiesByName] allKeys] ;
-    
+    return [self infosOnObjectsInWorkingMOC:MOCWhereWeAreWorking
+              alreadyExistingInReferenceMOC:referenceMOC
+                                 ofEntities:nil] ;
+}
+
+
+- (NSSet *)objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+ alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
+{
     return [self objectsInWorkingMOC:MOCWhereWeAreWorking
        alreadyExistingInReferenceMOC:referenceMOC
-                          ofEntities:arrayOfAllEntities] ;
+                          ofEntities:nil] ;
+}
+
+
+- (NSSet *)      objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+       alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
+                          ofEntities:(NSArray *)namesOfEntities
+{
+    NSMutableSet * result = [[NSMutableSet alloc] init] ;
+    
+    NSDictionary * infosOfDuplicates = [self infosOnObjectsInWorkingMOC:MOCWhereWeAreWorking
+                                          alreadyExistingInReferenceMOC:referenceMOC
+                                                             ofEntities:namesOfEntities] ;
+    
+    [infosOfDuplicates enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID * key, NSDictionary * dico, BOOL *stop)
+    {
+        [result addObject:dico[CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC]] ;
+    }];
+    
+    return result ;
 }
 
 
 
-- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
-             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
-                                ofEntities:(NSArray *)namesOfEntities ;
-
+- (NSDictionary *) infosOnObjectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+                alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
+                                   ofEntities:(NSArray *)namesOfEntities
 {
+    /*
+     Prelude:
+     
+     If namesOfEntities is nil,
+     we take all the entities
+     */
+    if (!namesOfEntities)
+    {
+        namesOfEntities = [[MOCWhereWeAreWorking.persistentStoreCoordinator.managedObjectModel entitiesByName] allKeys] ;
+    }
+    
+    
+    
+    /*
+     Core of the method:
+     */
     NSMutableDictionary * result = [[NSMutableDictionary alloc] init] ;
     
     for (NSString * nameEntity in namesOfEntities)
@@ -249,8 +402,9 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
             NSLog(@"Starting to search for the duplicates of %@", nameEntity) ;
         }
         
-        NSArray * allObjects = [entity allInMOC_cbd_:referenceMOC] ;
-        
+        NSArray * allObjectsInMOCWhereWeAreWorking = [entity allInMOC_cbd_:MOCWhereWeAreWorking] ;
+        NSArray * allObjectsInReferenceMOC = [entity allInMOC_cbd_:referenceMOC] ;
+
 // CODE MULTITHREAD  -> bug
 //
 //        [allObjects enumerateObjectsWithOptions:NSEnumerationConcurrent
@@ -269,19 +423,49 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
 //
 //        }] ;
         
-        for (NSManagedObject * object in allObjects)
+        
+        if ([allObjectsInMOCWhereWeAreWorking count] < [allObjectsInReferenceMOC count])
         {
-            NSManagedObject * resultObject = [self firstSimilarObjectTo:object
-                                                                  inMOC:referenceMOC] ;
+            /*
+             We loop in MOCWhereWeAreWorking
+             */
             
-            if (!resultObject)
+            for (NSManagedObject * objectInMOCWhereWeAreWorking in allObjectsInMOCWhereWeAreWorking)
             {
-                NSDictionary * dico = @{CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC: object,
-                                        CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC: resultObject} ;
+                NSManagedObject * resultObjectInReferenceMOC = [self firstSimilarObjectTo:objectInMOCWhereWeAreWorking
+                                                                                    inMOC:referenceMOC] ;
                 
-                result[object.objectID] = dico ;
+                if (resultObjectInReferenceMOC)
+                {
+                    NSDictionary * dico = @{CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC: objectInMOCWhereWeAreWorking,
+                                            CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC: resultObjectInReferenceMOC} ;
+                    
+                    result[objectInMOCWhereWeAreWorking.objectID] = dico ;
+                }
             }
         }
+        else
+        {
+            /*
+             We loop in referenceMOC
+             */
+            
+            for (NSManagedObject * objectInReferenceMOC in allObjectsInReferenceMOC)
+            {
+                NSManagedObject * resultObjectInMOCWhereWeAreWorking = [self firstSimilarObjectTo:objectInReferenceMOC
+                                                                                            inMOC:MOCWhereWeAreWorking] ;
+                
+                if (resultObjectInMOCWhereWeAreWorking)
+                {
+                    NSDictionary * dico = @{CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC: resultObjectInMOCWhereWeAreWorking,
+                                            CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC: objectInReferenceMOC} ;
+                    
+                    result[resultObjectInMOCWhereWeAreWorking.objectID] = dico ;
+                }
+            }
+        }
+        
+
     }
     
     return result ;
@@ -501,34 +685,37 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
     
     
     
-    /*
-     Allocating and initializing nil argument
-     */
-    if (!hintCatalog)
-    {
-        hintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
-    }
-
-
-    
-    
-    /*
-     We check if the entities are the same
-     */
-    if (sourceObject.entity != targetObject.entity)
-    {
-        //return NO ;
-        
-        return [self registerAndReturnThisAnswer:NO
-                                         trueYES:NO
-                                 forSourceObject:sourceObject
-                                 andTargetObject:targetObject
-                                     withMessage:@"Entities are not the same."
-                                         logging:NO] ;
-    }
+//    /*
+//     Allocating and initializing nil argument
+//     */
+//    if (!hintCatalog)
+//    {
+//        hintCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
+//    }
+//
+//
+//    
+//    
+//    /*
+//     We check if the entities are the same
+//     */
+//    if (sourceObject.entity != targetObject.entity)
+//    {
+//        //return NO ;
+//        
+//        return [self registerAndReturnThisAnswer:NO
+//                                         trueYES:NO
+//                                 forSourceObject:sourceObject
+//                                 andTargetObject:targetObject
+//                                     withMessage:@"Entities are not the same."
+//                                         logging:NO] ;
+//    }
     
     
     NSEntityDescription * entity = sourceObject.entity ;
+    
+    
+    
     
     
     
@@ -548,11 +735,25 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
     
     
     
+    /*
+     If available, we use blocks
+     */
+    BOOL(^blockToTestSimilarity)(NSManagedObject * sourceObject, NSManagedObject * targetObject) ;
+    
+    blockToTestSimilarity = [self blockForEntity:entity] ;
+    
+    if (blockToTestSimilarity)
+    {
+        return blockToTestSimilarity(sourceObject, targetObject) ;
+    }
+    
+    
+    
     
     /*
      We use the core-data acceleration
      */
-    if (usingCoreDataAcceleration
+    if (self.usingCoreDataAcceleration
         &&
         ![self           isThisSourceObject:sourceObject
              virtuallySimilarToTargetObject:targetObject
@@ -678,7 +879,7 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
      The CoreData Acceleration checks the attributes.
      So, there is no need to redo it
      */
-    if (!usingCoreDataAcceleration)
+    if (!self.usingCoreDataAcceleration)
     {
         /*
          ********
@@ -1369,7 +1570,7 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
     
     NSArray * objectsToTest ;
     
-    if (usingCoreDataAcceleration)
+    if (self.usingCoreDataAcceleration)
     {
         objectsToTest = [self objectsVirtuallySimilarTo:sourceObject
                                      withPredicateDepth:depthForCoreDataAcceleration_cbd_
@@ -1387,7 +1588,7 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
         if ([self isSourceObject:sourceObject
                similarToTargetObject:objectToTest])
         {
-            [result addObject:objectsToTest] ;
+            [result addObject:objectToTest] ;
         }
     }
     
@@ -1410,7 +1611,7 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
     
     NSArray * objectsToTest ;
     
-    if (usingCoreDataAcceleration)
+    if (self.usingCoreDataAcceleration)
     {
         objectsToTest = [self objectsVirtuallySimilarTo:sourceObject
                                      withPredicateDepth:depthForCoreDataAcceleration_cbd_
@@ -1424,15 +1625,19 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCor
     
     __block NSManagedObject * result ;
     
+    
+    
     [objectsToTest enumerateObjectsUsingBlock:^(NSManagedObject * objectToTest, NSUInteger idx, BOOL *stop)
-    {
-        if ([self     isSourceObject:sourceObject
-               similarToTargetObject:objectToTest])
-        {
-            result = objectToTest ;
-            *stop = YES ;
-        }
-    }] ;
+     {
+         BOOL isSimilar = [self     isSourceObject:sourceObject
+                             similarToTargetObject:objectToTest] ;
+         
+         if (isSimilar)
+         {
+             result = objectToTest ;
+             *stop = YES ;
+         }
+     }] ;
     
     return result ;
 }

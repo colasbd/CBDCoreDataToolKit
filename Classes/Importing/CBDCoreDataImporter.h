@@ -25,8 +25,8 @@
 @interface CBDCoreDataImporter : NSObject
 
 
-
-TODO(on peut ameliorer le process)
+// jojo
+//TODO(on peut ameliorer le process)
 /*
  On peut améliorer les recherches à l'aide du cache.
  On peut créer une meilleure classe qui tisse des correspondances entre deux MOCS, et utiliser ces correspondances pour créer des contraintes dans l'import.
@@ -43,6 +43,24 @@ TODO(on peut ameliorer le process)
 
 #pragma mark Initializing and settings
 /// @name Initializing and settings
+
+/*
+ This is the designated initializer. The importer takes four arguments :
+ 
+ @argument sourceMOC The MOC where the objects are coming from
+ 
+ @argument targetMOC The MOC where the objects are coming to
+ 
+ @argument discriminator A `CBDCoreDataDiscriminator` to help the importer to decide if two objects (one in `sourceMOC` and the other one in `targetMOC`) should be considered as similar. Please refer to the documentation
+ 
+ @argument decisionCenterForCopy A CBDCoreDataDecisionCenter to help the importer to decide which attributes and relationships it should consider in the import.
+ */
+
+- (id)     initWithDiscriminator:(CBDCoreDataDiscriminator *)discriminator
+        andDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopy
+                   withSourceMOC:(NSManagedObjectContext *)sourceMOC
+                       targetMOC:(NSManagedObjectContext *)targetMOC ;
+
 
 /*
  The importer takes four arguments :

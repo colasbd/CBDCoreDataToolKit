@@ -29,14 +29,14 @@
 
 - (NSArray *)allObjects_cbd_
 {
-    NSMutableArray * result = [@[] mutableCopy] ;
+    NSMutableSet * result = [[NSMutableSet alloc] init] ;
     
     for (NSEntityDescription * entity in [self allEntities_cbd_])
     {
         [result addObjectsFromArray:[entity allInMOC_cbd_:self]] ;
     }
     
-    return result ;
+    return [result allObjects] ;
 }
 
 
@@ -63,17 +63,24 @@
 #pragma mark - Counting all
 
 
-/** Returns the total amount of the objects from the caller class. */
+TODO(This method can be accelerated)
+/** Returns the total amount of the objects from the caller class. 
+ 
+ Beware of not counting two time objects belonging to several entities.
+ */
 - (NSUInteger)countAllObjects_cbd_
 {
-    NSUInteger result = 0 ;
-    
-    for (NSEntityDescription * entity in [self allEntities_cbd_])
-    {
-        result = result + [entity countInMOC_cbd_:self] ;
-    }
-    
-    return result ;
+    return [[self allObjects_cbd_] count] ;
+// What follows does not work !!
+//
+//    NSUInteger result = 0 ;
+//    
+//    for (NSEntityDescription * entity in [self allEntities_cbd_])
+//    {
+//        result = result + [entity countInMOC_cbd_:self] ;
+//    }
+//    
+//    return result ;
 }
 
 
@@ -142,11 +149,10 @@
     va_end(ap);
     
     
-    return [self findForEntityWithName:nameOfTheEntity
-                             orderedBy:orderBy
-                    withPredicate_cbd_:myPredicate] ;
+    return [self firstForEntityWithName:nameOfTheEntity
+                              orderedBy:orderBy
+                     withPredicate_cbd_:myPredicate] ;
 }
-
 
 /**
  Does a fetch.

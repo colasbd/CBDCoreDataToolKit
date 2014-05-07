@@ -2,20 +2,20 @@
 
 
 
-## CBDCoreDataToolKit: cloning, replacing, importing  easily in CoreData
+## CBDCoreDataToolKit: cloning, replacing, importing  easily in CoreData (and nice misc methods)
 
 
-With **CBDCoreDataToolKit**, you can clone, replace or import your NSManagedObject. Cloning is useful when you want to transfer new data from a `MOC` to another one. Importing is when you want to integrate some data to one `MOC` to another one. By integrating, I mean that the data to import is entirely new. Maybe there is just new links between entities, or maybe there is a new instance of some entity with plenty of relationships with already existing objects.
+With **CBDCoreDataToolKit**, you can clone, replace or import your NSManagedObject. Cloning is useful when you want to transfer new data from a NSManagedObjectContext (a `MOC`) to another one. Importing is when you want to "integrate" some data to one `MOC` to another one. By integrating, I mean that the data to import _is not_ entirely new. Maybe there are just new links between entities, or maybe there is just a new instance of some entity with plenty of relationships with _already existing_ objects.
 
 One has to understand that in such a case:
 
- - cloning will "pull" the entire graph connected to this new object, and we will have plenty of doublons.
+ - cloning will "pull" the entire graph connected to this new object, and we will have plenty of duplicates.
  
-  - importing is much more clever (and difficult) and will "pull" the entire graph connected to this new object **and** will merge it with the already existing graph. **Super great !!**
+ - importing is much more clever (and difficult) and will "pull" the entire graph connected to this new object **and** will merge it with the already existing graph. **Super great !!**
 
 ### 1. Cloning objects
 
-You want to copy an object from a NSManagedObjectContext (`MOC`) to another one. **CBDCoreDataToolKit** can do it. It will also copy the objects in relationship with the first object, but you can specify entities or attributes to ignore.
+You want to copy an object (and _all the graph associated to it_) from a `MOC` to another one. **CBDCoreDataToolKit** can do it. It will also copy the objects in relationship with the first object (and recursively), but you can specify entities or attributes to ignore.
 
 ### 2. Replacing an object by another one
 
@@ -159,6 +159,16 @@ Also available:
  ```-->
  
  
+### 5. Misc methods
+ 
+  TODO
+#### a) Connected entities
+ 
+ TODO
+ 
+#### b) Misc methods
+ TODO
+
 ## Requirements
 
 Some of the methods in the categories over `NSManagedObject+CBDActiveRecord` require one or the other of the following conditions:
@@ -201,11 +211,14 @@ Colas, colas.bardavid@gmail.com
 
 ## Changelog
 
-- 2014/02/18 (v3.0.0): 
+- 2014/05/06 (v3.0.0): 
+  - New `@return` for the `-clone...` method for arrays of objects: it returns now a dictionary mapping the old objects to the new ones
   - New convenience initializers for `CBDCoreDataDecisionUnit`
   - New methods for finding duplicate between two `MOC`s
   - Correction of various bugs
   - No more `- removeLastHint`, `removeLastEntryOfTheCache` methods
+  - Add the `ConnectedEntities` sub-library.
+  - Fix a bug on `allObject_cbd_` and `countAllObjects_cbd_`: it was counting several times belonging to several entities (when an entity has a subentity)
 - 2014/02/18 (v2.0.0): 
   - Introducing the much more hi-tech importer from a `MOC` to another `MOC`. Comparing objects on their graph-like identity..
   - New methods for fetching similar objects. 

@@ -234,6 +234,11 @@
         [fetchRequest setSortDescriptors:sortDescriptors];
     }
 	
+    if (!predicate)
+    {
+        predicate = [NSPredicate predicateWithFormat:@"1 == 1"];
+    }
+    
     [fetchRequest setPredicate:predicate];
     
     // Edit the section name key path and cache name if appropriate.

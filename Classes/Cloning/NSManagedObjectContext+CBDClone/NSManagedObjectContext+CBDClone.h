@@ -15,9 +15,12 @@
 
 /**
  Imports objects from a MOC to another MOC.
+ 
+ @return a dictionary whose keys are the ObjectID of theManagedObjectsToClone (in the old context)
+ and whose values are the NSManagedObject in the current context
  */
-- (void)cloneToThisContextTheObjects:(NSArray *)theManagedObjectsToClone
-                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
-              excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude ;
+- (NSDictionary *)cloneToThisContextTheObjects:(NSArray *)theManagedObjectsToClone
+                                exludeEntities:(NSArray *)namesOfEntitiesToExclude
+                        excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude ;
 
 @end

@@ -13,20 +13,26 @@
 @implementation NSManagedObjectContext (CBDClone)
 
 
-- (void)cloneToThisContextTheObjects:(NSArray *)theManagedObjectsToClone
-                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
-              excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
+- (NSDictionary *)cloneToThisContextTheObjects:(NSArray *)theManagedObjectsToClone
+                                exludeEntities:(NSArray *)namesOfEntitiesToExclude
+                        excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
 {
+    NSMutableDictionary * result = [[NSMutableDictionary alloc] init] ;
+    
     NSMutableDictionary * theAlreadyCopiedObjects ;
     theAlreadyCopiedObjects = [[NSMutableDictionary alloc] init] ;
     
     for (NSManagedObject *obj in theManagedObjectsToClone)
     {
-        [obj cloneInContext:self
-            withCopiedCache:theAlreadyCopiedObjects
-             exludeEntities:namesOfEntitiesToExclude
-     excludeAttributes_cbd_:namesOfAttributesToExclude] ;
+        NSManagedObject * resultObject = [obj cloneInContext:self
+                                             withCopiedCache:theAlreadyCopiedObjects
+                                              exludeEntities:namesOfEntitiesToExclude
+                                      excludeAttributes_cbd_:namesOfAttributesToExclude] ;
+        
+        result[obj.objectID] = resultObject ;
     }
+    
+    return result ;
 }
 
 

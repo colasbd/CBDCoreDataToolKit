@@ -53,7 +53,7 @@
 /**************************************/
 #pragma mark - DÉCLARATION PUBLIQUE : properties
 /**************************************/
-@interface CBDCoreDataDiscriminatorHintCatalog : NSObject
+@interface CBDCoreDataDiscriminatorHintCatalog : NSObject<NSCopying>
 
 //
 //
@@ -78,10 +78,6 @@
  */
 - (id)init ;
 
-/**
- A copy method.
- */
-- (id)copy ;
 
 
 /**

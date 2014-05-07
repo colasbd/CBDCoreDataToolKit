@@ -6,6 +6,8 @@
 
 #define COMMENTS_ON 0
 
+CBD_SHOULD_DO_CHANGES_HERE
+int numberOfEntitiesCopied = 0 ;
 
 
 - (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)context
@@ -13,6 +15,16 @@
                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
              excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
 {
+    numberOfEntitiesCopied = numberOfEntitiesCopied + 1 ;
+    
+    if (numberOfEntitiesCopied >= 10)
+    {
+        CBD_SHOULD_CHECK_HERE
+        NSError * error ;
+        [context save:&error] ;
+        numberOfEntitiesCopied = 0 ;
+    }
+    
     NSString *entityName = [[self entity] name];
     
 #if (COMMENTS_ON)

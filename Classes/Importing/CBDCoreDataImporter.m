@@ -114,7 +114,6 @@
 
 @property (nonatomic, strong, readwrite)CBDCoreDataDiscriminator * discriminator ;
 
-@property (nonatomic, strong, readwrite)CBDCoreDataDecisionCenter * decisionCenterForDiscrimination ;
 @property (nonatomic, strong, readwrite)CBDCoreDataDecisionCenter * decisionCenterForCopy ;
 
 
@@ -162,12 +161,10 @@
 /**************************************/
 
 
-
-
-- (id)initWithDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescriminating
-                    withDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopying
-                                withSourceMOC:(NSManagedObjectContext *)sourceMOC
-                                    targetMOC:(NSManagedObjectContext *)targetMOC
+- (id)    initWithDiscriminator:(CBDCoreDataDiscriminator *)discriminator
+       andDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopy
+                  withSourceMOC:(NSManagedObjectContext *)sourceMOC
+                      targetMOC:(NSManagedObjectContext *)targetMOC
 {
     self = [super init] ;
     
@@ -177,11 +174,29 @@
         _cache = [[NSMutableDictionary alloc] init] ;
         _sourceMOC = sourceMOC ;
         _targetMOC = targetMOC ;
-        _decisionCenterForCopy = decisionCenterForCopying ;
-        self.decisionCenterForDiscrimination = decisionCenterForDescriminating ;
+        _decisionCenterForCopy = decisionCenterForCopy ;
+        _discriminator = discriminator ;
     }
     
     return self ;
+
+}
+
+
+
+- (id)initWithDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescriminating
+                    withDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopying
+                                withSourceMOC:(NSManagedObjectContext *)sourceMOC
+                                    targetMOC:(NSManagedObjectContext *)targetMOC
+{
+    CBDCoreDataDiscriminator * newDiscriminator ;
+    newDiscriminator = [[CBDCoreDataDiscriminator alloc] initWithDecisionCenter:decisionCenterForDescriminating] ;
+    self.discriminator = newDiscriminator ;
+    
+    return [self   initWithDiscriminator:newDiscriminator
+                andDecisionCenterForCopy:decisionCenterForCopying
+                           withSourceMOC:sourceMOC
+                               targetMOC:targetMOC] ;
 }
 
 
@@ -204,14 +219,6 @@
 
 
 
-- (void)setDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescriminating
-{
-    _decisionCenterForDiscrimination = decisionCenterForDescriminating ;
-    
-    CBDCoreDataDiscriminator * newDiscriminator ;
-    newDiscriminator = [[CBDCoreDataDiscriminator alloc] initWithDecisionCenter:decisionCenterForDescriminating] ;
-    self.discriminator = newDiscriminator ;
-}
 
 
 
@@ -243,7 +250,7 @@
 - (void)shouldLog:(BOOL)shouldLog
           deepLog:(BOOL)deepLog
 {
-    self.shouldLog = YES ;
+    self.shouldLog = shouldLog ;
     [self.discriminator shouldLog:deepLog] ;
 }
 

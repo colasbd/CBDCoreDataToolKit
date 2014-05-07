@@ -14,6 +14,9 @@
 @interface NSManagedObjectContext (CBDReplacingAnObject)
 
 /**
+ This method takes the new object and incorporates it in the graph of the old object.
+ Thus, in a sense, the new object will get its relationships for the old object, excepted for the relationships we exclude.
+ 
 @param (NSArray *)namesOfRelationshipsToExclude The relationships in this array won't be "linked" with the new object
  @param (BOOL)withDeleting if YES, the OldObject will be delete at the end of the process
  */

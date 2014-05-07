@@ -29,9 +29,15 @@ Pod::Spec.new do |s|
 # ************* TODO ************
 # *******************************
 #
-# Comment out the following line to see the TODO
+# Uncomment the following line to see the TODO
   #s.prefix_header_contents = '#define TODO(args...)'
-# Comment in the following line to include the todo file
+#
+#
+# Uncomment to ignore the TODO
+  s.prefix_header_contents = '#import "MyCBDMacros.h"'
+#
+#
+# Uncomment in the following line to include the todo file
   s.resource  = "todo.rtf"
 # *******************************
 
@@ -76,6 +82,10 @@ Pod::Spec.new do |s|
 
   s.subspec 'ActiveRecord' do |ss|
     ss.source_files = 'Classes/ActiveRecord/**/*.{h,m}'
+  end
+
+  s.subspec 'ConnectedEntities' do |ss|
+    ss.source_files = 'Classes/ConnectedEntities/**/*.{h,m}'
   end
 
 

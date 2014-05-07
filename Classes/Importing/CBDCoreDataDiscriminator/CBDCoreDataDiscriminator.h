@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+
 @class CBDCoreDataDecisionCenter ;
 
 
@@ -31,7 +32,7 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
  
  A CBDCoreDataDiscriminator instance refers to several CBDCoreDataDiscrimintorUnit instances
  */
-@interface CBDCoreDataDiscriminator : NSObject
+@interface CBDCoreDataDiscriminator : NSObject<NSCopying>
 
 
 
@@ -53,11 +54,6 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
 - (id)initWithDefaultType ;
 
 
-/**
- A copy method.
- */
-- (id)copy ;
-
 
 /**
  The decisionCenter associated to the instance.
@@ -65,6 +61,37 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
 @property (nonatomic, strong, readonly)CBDCoreDataDecisionCenter * decisionCenter ;
 
 
+
+
+
+#pragma mark - Custom blocks to test similarity
+/// @name Custom blocks to test similarity
+
+// jojo
+//TODO(add the possibility to have several blocks)
+/**
+ Add a block to test similarity.
+ 
+ If you add a block, to your mechanism, it can improve the speed a lot!
+ 
+ You can add several blocks.
+ 
+ @warning The usual mechanism (checking attributes and relationships) WILL NOT be used. Only the block will.
+ */
+- (void)      addForEntity:(NSEntityDescription *)entity
+     blockToTestSimilarity:(BOOL(^)(NSManagedObject * sourceObject, NSManagedObject *targetObject))blockToTestSimilarity ;
+
+
+/**
+ @return The block which is used (if any, otherwise `nil`) for testing similarity.
+ */
+- (BOOL(^)(NSManagedObject *, NSManagedObject *)) blockForEntity:(NSEntityDescription *)entity ;
+
+
+/**
+ Removes all the blocks for this entity.
+ */
+- (void) clearAllBlocksForEntity:(NSEntityDescription *)entity ;
 
 
 
@@ -81,6 +108,7 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
  Show the cache
  */
 - (void)logTheCache ;
+
 
 
 
@@ -153,10 +181,19 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
  - `CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC`: the object with `objectID` the key. It is the object in `MOCWhereWeAreWorking`.
  - `CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC`: the object in `referenceMOC` which is similar to the other object.
  */
-- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
-             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
-                                ofEntities:(NSArray *)namesOfEntities ;
+- (NSDictionary *) infosOnObjectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+                alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
+                                   ofEntities:(NSArray *)namesOfEntities ;
 
+
+/**
+ Find the duplicates of objects of referenceMOC in MOCWhereWeAreWorking of the specified entities.
+ 
+ @return The set of duplicate (the objects in `MOCWhereWeAreWorking`)
+ */
+- (NSSet *)      objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+       alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC
+                          ofEntities:(NSArray *)namesOfEntities ;
 
 
 
@@ -168,8 +205,17 @@ NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
  - `CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC`: the object with `objectID` the key. It is the object in `MOCWhereWeAreWorking`.
  - `CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC`: the object in `referenceMOC` which is similar to the other object.
  */
-- (NSDictionary *)     objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
-             alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC;
+- (NSDictionary *)     infosOnObjectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+                    alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC;
+
+
+/**
+ Find the duplicates of objects of referenceMOC in MOCWhereWeAreWorking of all the entities.
+ 
+ @return The set of duplicate (the objects in `MOCWhereWeAreWorking`)
+ */
+- (NSSet *)      objectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking
+       alreadyExistingInReferenceMOC:(NSManagedObjectContext *)referenceMOC  ;
 
 
 #pragma mark - Managing the log

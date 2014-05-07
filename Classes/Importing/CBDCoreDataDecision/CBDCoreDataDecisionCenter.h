@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, CBDCoreDataDecisionType)
  
  It is also designed to manage the case of parent/child entities having DecisionUnits on their own.
  */
-@interface CBDCoreDataDecisionCenter : NSObject
+@interface CBDCoreDataDecisionCenter : NSObject<NSCopying>
 //
 
 
@@ -119,11 +119,6 @@ This option is convenient but in some case, it could be too demanding, for insta
  */
 - (id)initWithType:(CBDCoreDataDecisionType)decisionType ;
 
-
-/**
- Copy method
- */
-- (id)copy ;
 
 
 

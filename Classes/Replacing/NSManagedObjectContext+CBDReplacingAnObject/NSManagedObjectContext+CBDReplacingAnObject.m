@@ -7,6 +7,7 @@
 //
 
 #import "NSManagedObjectContext+CBDReplacingAnObject.h"
+#import "NSManagedObject+CBDMiscMethods.h"
 
 @implementation NSManagedObjectContext (CBDReplacingAnObject)
 
@@ -19,9 +20,9 @@
     if (![theNewObject.entity isKindOfEntity:theOldObject.entity])
     {
         [NSException raise:NSInvalidArgumentException
-                    format:@"Beware, you tried to replace anobject by an object of a different entity"] ;
+                    format:@"Beware, you tried to replace an object by an object of a different entity"] ;
         
-        NSLog(@"Attention, vous avez essayé de remplacer un objet par un objet d'entité différente.\nOpération annulée") ;
+        NSLog(@"Beware, you tried to replace an object by an object of a different entity.\n Operation cancelled") ;
     }
     
     NSEntityDescription * theEntity = theOldObject.entity ;
@@ -93,7 +94,7 @@
                 }
                 
                 /*
-                 On ajoute les connectedObjects aux objets déjà connecté à theNewObject
+                 On ajoute les connectedObjects aux objets déjà connectés à theNewObject
                  */
                 
                 if (theCurrentRelationship.isOrdered)
@@ -161,8 +162,10 @@ byInverseRelationship_cbd_:(NSRelationshipDescription *)theRelationship
             /*
              On remplace l'ancien par le nouveau
              */
-            [theConnectedBackObjects removeObject:theOldObject] ;
-            [theConnectedBackObjects addObject:theNewObject] ;
+            NSUInteger index = [theConnectedBackObjects indexOfObject:theOldObject] ;
+            
+            [theConnectedBackObjects replaceObjectAtIndex:index
+                                               withObject:theNewObject] ;
             
             /*
              On sette
@@ -179,6 +182,7 @@ byInverseRelationship_cbd_:(NSRelationshipDescription *)theRelationship
              */
             [theConnectedBackObjects removeObject:theOldObject] ;
             [theConnectedBackObjects addObject:theNewObject] ;
+
             
             /*
              On sette

@@ -118,9 +118,9 @@
 #pragma mark - Copying
 /**************************************/
 
-- (id)copy
+- (id)copyWithZone:(NSZone *)zone
 {
-    CBDCoreDataDiscriminatorHintCatalog * newCatalog = [[CBDCoreDataDiscriminatorHintCatalog alloc] init] ;
+    CBDCoreDataDiscriminatorHintCatalog * newCatalog = [[CBDCoreDataDiscriminatorHintCatalog allocWithZone:zone] init] ;
     
     [newCatalog addHintsFromCatalog:self] ;
     
