@@ -8,24 +8,41 @@
 
 #import <CoreData/CoreData.h>
 
-// Cloning
+/* 
+ Cloning
+ */
 #import "NSManagedObjectContext+CBDClone.h"
 #import "NSManagedObject+CBDClone.h"
+#import "CBDEnhancedCloner.h"
 
-// Replacing
+
+/* 
+ Replacing
+ */
 #import "NSManagedObjectContext+CBDReplacingAnObject.h"
 
-// Importing
+
+
+/*
+ Importing
+*/
+//
 //      DecisionCenter+Unit
 #import "CBDCoreDataDecisionCenter.h"
 #import "CBDCoreDataDecisionUnit.h"
+//
 //      Discriminator
 #import "CBDCoreDataDiscriminator.h"
 #import "CBDCoreDataDiscriminator+UsingPredicateAndFetching.h"
+//
 //      Importer
 #import "CBDCoreDataImporter.h"
 
-// Active Record
+
+
+/* 
+ Active Record
+ */
 #import "NSManagedObjectContext+CBDActiveRecord.h"
 #import "NSManagedObject+CBDActiveRecord.h"
 #import "NSEntityDescription+CBDActiveRecord.h"

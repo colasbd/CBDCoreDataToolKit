@@ -46,7 +46,6 @@ const BOOL ignoreWinsOverNotIgnore = YES;
 @property (nonatomic, strong, readwrite)NSMutableSet* mutableNameIgnoredAttributes ;
 @property (nonatomic, strong, readwrite)NSMutableSet* mutableIgnoredRelationshipDescriptions ;
 
-
 @property (nonatomic, strong, readwrite)NSMutableSet* mutableNameOtherKeys ;
 
 

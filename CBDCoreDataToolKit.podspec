@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "CBDCoreDataToolKit"
-  s.version      = "3.0.0"
+  s.version      = "3.1.0"
   s.summary      = "Cloning, replacing, importing with CoreData"
 
   s.description  = <<-DESC
@@ -71,7 +71,16 @@ Pod::Spec.new do |s|
 
 
   s.subspec 'Cloning' do |ss|
-    ss.source_files = 'Classes/Cloning/**/*.{h,m}' 
+
+    ss.subspec 'Classical cloning' do |sss|
+      sss.source_files = 'Classes/Cloning/**/*.{h,m}' 
+    end
+
+    ss.subspec 'Enhanced Cloning' do |sss|
+      sss.source_files = 'Classes/Enhanced Cloning/**/*.{h,m}'
+      sss.dependency 'CBDCoreDataToolKit/Importing/CBDCoreDataDecision'
+    end
+
   end
 
 

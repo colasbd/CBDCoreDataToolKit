@@ -6,22 +6,34 @@
 
 #define COMMENTS_ON 0
 
-TODO(a faire)
 int numberOfEntitiesCopied = 0 ;
+
+
+//
+//
+/**************************************/
+#pragma mark - Core methods
+/**************************************/
+
+
 
 
 - (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)context
                     withCopiedCache:(NSMutableDictionary *)alreadyCopied
                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
-             excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
+                  excludeAttributes:(NSArray *)namesOfAttributesToExclude
+          excludeRelationships_cbd_:(NSArray *)namesOfRelationshipsToExclude
 {
     numberOfEntitiesCopied = numberOfEntitiesCopied + 1 ;
     
     if (numberOfEntitiesCopied >= 10)
     {
-        TODO(a faire)
-        NSError * error ;
-        [context save:&error] ;
+        [context performBlock:
+         ^{
+             NSError * error;
+             [context save:&error] ;
+         }] ;
+        
         numberOfEntitiesCopied = 0 ;
     }
     
@@ -45,7 +57,7 @@ int numberOfEntitiesCopied = 0 ;
         return nil;
     }
     
-    NSManagedObject *cloned = [alreadyCopied objectForKey:[self objectID]];
+    __block NSManagedObject *cloned = [alreadyCopied objectForKey:[self objectID]];
     if (cloned != nil)
     {
         
@@ -60,10 +72,14 @@ int numberOfEntitiesCopied = 0 ;
     
     
     //create new object in data store
-    cloned = [NSEntityDescription insertNewObjectForEntityForName:entityName
-                                           inManagedObjectContext:context];
-    [alreadyCopied setObject:cloned
-                      forKey:[self objectID]];
+    [context performBlockAndWait:
+     ^{
+         cloned = [NSEntityDescription insertNewObjectForEntityForName:entityName
+                                                inManagedObjectContext:context];
+         [alreadyCopied setObject:cloned
+                           forKey:[self objectID]];
+     }];
+    
     
     
     
@@ -79,8 +95,10 @@ int numberOfEntitiesCopied = 0 ;
     {
         if (![namesOfAttributesToExclude containsObject:attr])
         {
-            [cloned setValue:[self valueForKey:attr] forKey:attr];
-            
+            [context performBlockAndWait:
+             ^{
+                 [cloned setValue:[self valueForKey:attr] forKey:attr];
+             }] ;
 #if (COMMENTS_ON)
             NSLog(@"  | the attribute %@ gets the value %@ ", attr, [self valueForKey:attr]) ;
 #endif
@@ -106,57 +124,62 @@ int numberOfEntitiesCopied = 0 ;
         NSLog(@"  | Relationships '%@'", keyName) ;
 #endif
         
-        
-        if ([rel isToMany])
+        if (![namesOfRelationshipsToExclude containsObject:relName])
         {
-            id sourceSet ;
-            id clonedSet ;
-            
-            /*
-             On gère selon que la relation est ordonnée ou non
-             */
-            if (![rel isOrdered])
-            {
-                //get a set of all objects in the relationship
-                sourceSet = [self mutableSetValueForKey:keyName];
-                clonedSet = [cloned mutableSetValueForKey:keyName];
-            }
-            else
-            {
-                sourceSet = [self mutableOrderedSetValueForKey:keyName];
-                clonedSet = [cloned mutableOrderedSetValueForKey:keyName];
-            }
-            
-            NSEnumerator *e = [sourceSet objectEnumerator];
-            NSManagedObject *relatedObject;
-            
-            while (relatedObject = [e nextObject])
-            {
-                //Clone it, and add clone to set
-                NSManagedObject *clonedRelatedObject = [relatedObject cloneInContext:context
-                                                                     withCopiedCache:alreadyCopied
-                                                                      exludeEntities:namesOfEntitiesToExclude
-                                                              excludeAttributes_cbd_:namesOfAttributesToExclude];
-                if (clonedRelatedObject)
-                {
-                    [clonedSet addObject:clonedRelatedObject];
-                }
-            }
-        }
-        else
-        {
-            NSManagedObject *relatedObject = [self valueForKey:keyName];
-            if (relatedObject != nil)
-            {
-                NSManagedObject *clonedRelatedObject = [relatedObject cloneInContext:context
-                                                                     withCopiedCache:alreadyCopied
-                                                                      exludeEntities:namesOfEntitiesToExclude
-                                                              excludeAttributes_cbd_:namesOfAttributesToExclude];
-                if (clonedRelatedObject)
-                {
-                    [cloned setValue:clonedRelatedObject forKey:keyName];
-                }
-            }
+            [context performBlockAndWait:
+             ^{
+                 if ([rel isToMany])
+                 {
+                     id sourceSet ;
+                     id clonedSet ;
+                     
+                     /*
+                      On gère selon que la relation est ordonnée ou non
+                      */
+                     if (![rel isOrdered])
+                     {
+                         //get a set of all objects in the relationship
+                         sourceSet = [self mutableSetValueForKey:keyName];
+                         clonedSet = [cloned mutableSetValueForKey:keyName];
+                     }
+                     else
+                     {
+                         sourceSet = [self mutableOrderedSetValueForKey:keyName];
+                         clonedSet = [cloned mutableOrderedSetValueForKey:keyName];
+                     }
+                     
+                     NSEnumerator *e = [sourceSet objectEnumerator];
+                     NSManagedObject *relatedObject;
+                     
+                     while (relatedObject = [e nextObject])
+                     {
+                         //Clone it, and add clone to set
+                         NSManagedObject *clonedRelatedObject = [relatedObject cloneInContext:context
+                                                                              withCopiedCache:alreadyCopied
+                                                                               exludeEntities:namesOfEntitiesToExclude
+                                                                       excludeAttributes_cbd_:namesOfAttributesToExclude];
+                         if (clonedRelatedObject)
+                         {
+                             [clonedSet addObject:clonedRelatedObject];
+                         }
+                     }
+                 }
+                 else
+                 {
+                     NSManagedObject *relatedObject = [self valueForKey:keyName];
+                     if (relatedObject != nil)
+                     {
+                         NSManagedObject *clonedRelatedObject = [relatedObject cloneInContext:context
+                                                                              withCopiedCache:alreadyCopied
+                                                                               exludeEntities:namesOfEntitiesToExclude
+                                                                       excludeAttributes_cbd_:namesOfAttributesToExclude];
+                         if (clonedRelatedObject)
+                         {
+                             [cloned setValue:clonedRelatedObject forKey:keyName];
+                         }
+                     }
+                 }
+             }] ;
         }
     }
     
@@ -164,6 +187,29 @@ int numberOfEntitiesCopied = 0 ;
 }
 
 
+
+
+
+
+//
+//
+/**************************************/
+#pragma mark - Convenience methods
+/**************************************/
+
+
+
+- (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)context
+                    withCopiedCache:(NSMutableDictionary *)alreadyCopied
+                     exludeEntities:(NSArray *)namesOfEntitiesToExclude
+             excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
+{
+    return [self cloneInContext:context
+                withCopiedCache:alreadyCopied
+                 exludeEntities:namesOfEntitiesToExclude
+              excludeAttributes:namesOfAttributesToExclude
+      excludeRelationships_cbd_:@[]] ;
+}
 
 
 
@@ -195,7 +241,11 @@ int numberOfEntitiesCopied = 0 ;
 
 
 
-
+//
+//
+/**************************************/
+#pragma mark - Others methods (filling, etc.)
+/**************************************/
 
 
 
@@ -208,6 +258,7 @@ int numberOfEntitiesCopied = 0 ;
     [self fillInAttributesFrom:sourceObject
            onlyAttributes_cbd_:arrayOfAttributesToInclude] ;
 }
+
 
 
 
@@ -229,7 +280,7 @@ int numberOfEntitiesCopied = 0 ;
             [self setValue:[sourceObject valueForKey:attr] forKey:attr];
         }
     }
-
+    
 }
 
 
@@ -241,20 +292,25 @@ int numberOfEntitiesCopied = 0 ;
 {
     NSString *entityName = [[self entity] name];
     
-    NSManagedObject * cloned = [NSEntityDescription insertNewObjectForEntityForName:entityName
-                                                             inManagedObjectContext:context];
+    __block NSManagedObject * cloned ;
     
-    //loop through all attributes and assign then to the clone
-    NSDictionary *attributes = [[NSEntityDescription entityForName:entityName
-                                            inManagedObjectContext:context] attributesByName];
-    
-    for (NSString *attr in attributes)
-    {
-        if (![namesOfAttributesToExclude containsObject:attr])
+    [context performBlockAndWait:^{
+        cloned = [NSEntityDescription insertNewObjectForEntityForName:entityName
+                                                                 inManagedObjectContext:context];
+        
+        //loop through all attributes and assign then to the clone
+        NSDictionary *attributes = [[NSEntityDescription entityForName:entityName
+                                                inManagedObjectContext:context] attributesByName];
+        
+        for (NSString *attr in attributes)
         {
-            [cloned setValue:[self valueForKey:attr] forKey:attr];
+            if (![namesOfAttributesToExclude containsObject:attr])
+            {
+                [cloned setValue:[self valueForKey:attr] forKey:attr];
+            }
         }
-    }
+
+    }];
     
     return cloned ;
 }

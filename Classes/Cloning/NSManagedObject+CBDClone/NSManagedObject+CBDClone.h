@@ -61,6 +61,27 @@
              excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude ;
 
 
+
+/**
+ Copy the given object to another MOC, but with omitting certains objects.
+ 
+ This method is more of an helper method, used bu other ones. Avoid using it.
+ 
+ All the objects in relationships with the given objects will be *copied*, except those in the `NSMutableDictionary *)alreadyCopied` and those belonging to `(NSArray *)namesOfEntitiesToExclude`
+ 
+ @param (NSMutableDictionary *)alreadyCopied The dictionnary is of the form `@{objectID : theObject}`
+ @param (NSArray *)namesOfAttributesToExclude The attributes won't be copied
+ @param (NSArray *)namesOfRelationshipsToExclude The relationships won't be "followed"
+ */
+- (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)context
+                    withCopiedCache:(NSMutableDictionary *)alreadyCopied
+                     exludeEntities:(NSArray *)namesOfEntitiesToExclude
+                  excludeAttributes:(NSArray *)namesOfAttributesToExclude
+          excludeRelationships_cbd_:(NSArray *)namesOfRelationshipsToExclude ;
+
+
+
+
 #pragma mark - Copying the attributes
 /// @name Copying the attributes
 
