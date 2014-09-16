@@ -328,10 +328,10 @@ NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataDiscrimi
     /*
      Merging the info
      */
-    NSMutableSet * resultSetAttributesToInclude = [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetRelationshipsToInclude = [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetAttributesToIgnore = [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetRelationshipsToIgnore = [[NSMutableSet alloc] init] ;
+    NSMutableSet * resultSetAttributesToInclude ;//= [[NSMutableSet alloc] init] ;
+    NSMutableSet * resultSetRelationshipsToInclude ;//= [[NSMutableSet alloc] init] ;
+    NSMutableSet * resultSetAttributesToIgnore ;//= [[NSMutableSet alloc] init] ;
+    NSMutableSet * resultSetRelationshipsToIgnore ;//= [[NSMutableSet alloc] init] ;
     
     
     
