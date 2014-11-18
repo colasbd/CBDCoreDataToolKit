@@ -72,11 +72,11 @@ Pod::Spec.new do |s|
 
   s.subspec 'Cloning' do |ss|
 
-    ss.subspec 'Classical cloning' do |sss|
+    ss.subspec 'Classical_cloning' do |sss|
       sss.source_files = 'Classes/Cloning/**/*.{h,m}' 
     end
 
-    ss.subspec 'Enhanced Cloning' do |sss|
+    ss.subspec 'Enhanced_Cloning' do |sss|
       sss.source_files = 'Classes/Enhanced Cloning/**/*.{h,m}'
       sss.dependency 'CBDCoreDataToolKit/Importing/CBDCoreDataDecision'
     end
