@@ -78,7 +78,9 @@ Pod::Spec.new do |s|
 
     ss.subspec 'Enhanced_Cloning' do |sss|
       sss.source_files = 'Classes/Enhanced Cloning/**/*.{h,m}'
-      sss.dependency 'CBDCoreDataToolKit/Importing/CBDCoreDataDecision'
+      # should fix this (but it is not very important, because I always import ALL the pod)
+      # cf. https://github.com/CocoaPods/CocoaPods/issues/2851
+      # sss.dependency 'CBDCoreDataToolKit/Importing/CBDCoreDataDecision'
     end
 
   end
