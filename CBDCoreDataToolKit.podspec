@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "CBDCoreDataToolKit"
-  s.version      = "3.2.0"
+  s.version      = "3.2.1"
   s.summary      = "Cloning, replacing, importing with CoreData"
 
   s.description  = <<-DESC
@@ -45,121 +45,7 @@ Pod::Spec.new do |s|
 
 
 
-
-  ############################################################
-  # Importing
-  ############################################################
-
-  s.subspec 'Importing' do |ss|
-
-    ss.source_files = 'Classes/Importing/*.{h,m}'
-
-    ss.dependency 'CBDCoreDataToolKit/ActiveRecord'
-    ss.dependency 'CBDCoreDataToolKit/Classical_cloning'
-
-
-    # CBDCoreDataDiscriminator
-    ss.subspec 'CBDCoreDataDiscriminator' do |sss|
-      sss.dependency 'CBDCoreDataToolKit/Misc'
-      sss.dependency 'CBDCoreDataToolKit/Importing/CBDCoreDataDecision'
-
-      sss.source_files = 'Classes/Importing/CBDCoreDataDiscriminator/*.{h,m}'
-
-      sss.subspec 'CBDCoreDataDiscriminatorHint' do |ssss|
-        ssss.source_files = 'Classes/Importing/CBDCoreDataDiscriminator/CBDCoreDataDiscriminatorHint/**/*.{h,m}'
-      end
-    end
-
-
-    # CBDCoreDataDecision
-    ss.subspec 'CBDCoreDataDecision' do |sss|
-      sss.dependency 'CBDCoreDataToolKit/Misc'
-
-      sss.source_files = 'Classes/Importing/CBDCoreDataDecision/**/*.{h,m}'
-    end
-
-  end
-
-
-
-
-
-
-
-  ############################################################
-  # Classical_cloning
-  ############################################################
-
-  s.subspec 'Classical_cloning' do |ss|
-      ss.source_files = 'Classes/Cloning/**/*.{h,m}' 
-  end
-
-
-
-
-
-
-  ############################################################
-  # Enhanced_Cloning
-  ############################################################
-
-  s.subspec 'Enhanced_Cloning' do |ss|
-      ss.dependency 'CBDCoreDataToolKit/Importing/CBDCoreDataDecision'
-
-      ss.source_files = 'Classes/Enhanced Cloning/**/*.{h,m}'
-  end
-
-
-
-
-  ############################################################
-  # Replacing
-  ############################################################
-
-  s.subspec 'Replacing' do |ss|
-    ss.dependency 'CBDCoreDataToolKit/Misc'
-
-    ss.source_files = 'Classes/Replacing/**/*.{h,m}'
-  end
-  
-
-
-
-
-  ############################################################
-  # ActiveRecord
-  ############################################################
-
-  s.subspec 'ActiveRecord' do |ss|
-    ss.source_files = 'Classes/ActiveRecord/**/*.{h,m}'
-  end
-
-
-
-
-
-  ############################################################
-  # ConnectedEntities
-  ############################################################
-
-  s.subspec 'ConnectedEntities' do |ss|
-    ss.source_files = 'Classes/ConnectedEntities/**/*.{h,m}'
-  end
-
-
-
-
-
-  ############################################################
-  # Misc
-  ############################################################
-
-  s.subspec 'Misc' do |ss|
-    ss.source_files = 'Classes/Misc/**/*.{h,m}'
-  end
-
-
-
+  s.source_files = 'Classes/**/*.{h,m}'
 
 
 
