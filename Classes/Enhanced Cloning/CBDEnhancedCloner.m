@@ -180,10 +180,10 @@
 /**************************************/
 
 
-#define COMMENTS_ON 0
+#define CBDCOREDATATOOLKIT_ENHANCED_CLONER_COMMENTS_ON 0
 
 
-#if COMMENTS_ON
+#if CBDCOREDATATOOLKIT_ENHANCED_CLONER_COMMENTS_ON
 #define CBDCloneLog(frmt, ...)   NSLog(frmt, ##__VA_ARGS__)
 #else
 #define CBDCloneLog(frmt, ...)

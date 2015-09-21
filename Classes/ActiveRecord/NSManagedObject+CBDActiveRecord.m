@@ -332,7 +332,7 @@
 
 
 /** Removes the calling object. */
-- (void) remove_cbd_
+- (void)remove_cbd_
 {
     NSManagedObjectContext * theMOC = self.managedObjectContext ;
     
@@ -350,7 +350,7 @@
 
 
 /** Removes all objects from the caller class. */
-+ (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC
++ (void)removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC
 {
     for (NSManagedObject * managedObject in [self allInMOC_cbd_:theMOC])
     {

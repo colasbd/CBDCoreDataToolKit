@@ -252,15 +252,15 @@ const BOOL ignoreWinsOverInclude = YES ;
 /*
  The keys use for the dictionnary
  */
-NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToInclude = @"CBDCoreDataDiscriminatorGetInfoAttributesToInclude" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore" ;
-NSString * const   CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded" ;
+static NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToInclude = @"CBDCoreDataDiscriminatorGetInfoAttributesToInclude" ;
+static NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude" ;
+static NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore" ;
+static NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore" ;
+static NSString * const   CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore" ;
+static NSString * const   CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded" ;
 
-NSString * const   CBDCoreDataDiscriminatorGenericInclude = @"CBDCoreDataDiscriminatorGenericInclude" ;
-NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataDiscriminatorGenericIgnore" ;
+static NSString * const   CBDCoreDataDiscriminatorGenericInclude = @"CBDCoreDataDiscriminatorGenericInclude" ;
+static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataDiscriminatorGenericIgnore" ;
 
 
 

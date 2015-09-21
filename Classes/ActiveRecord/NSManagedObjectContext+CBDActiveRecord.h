@@ -31,7 +31,7 @@
 /**
  Fetches all the NSManagedObject of the entity with the given name in the MOC.
  */
-- (NSArray *) allForEntityWithName_cbd_:(NSString *)nameOfTheEntity ;
+- (NSArray *)allForEntityWithName_cbd_:(NSString *)nameOfTheEntity ;
 
 /*
  *******
@@ -77,14 +77,14 @@
  - `date desc`, `title`, `id asc`
  
  */
-- (NSArray *) allForEntityWithName:(NSString *)nameOfTheEntity
+- (NSArray *)allForEntityWithName:(NSString *)nameOfTheEntity
                     orderedBy_cbd_:(NSString *)orderBy ;
 
 
 /**
  The first instance in the fetch
  */
-- (id) firstForEntityWithName:(NSString *)nameOfTheEntity
+- (id)firstForEntityWithName:(NSString *)nameOfTheEntity
                               orderedBy:(NSString *)orderBy
                      withPredicate_cbd_:(NSPredicate *)predicate ;
 
