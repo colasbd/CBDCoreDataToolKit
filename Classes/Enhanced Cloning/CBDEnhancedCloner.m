@@ -554,13 +554,6 @@ int const limitNumberOfNonSavedObjects = 10 ;
                              {
                                  [clonedSet addObject:clonedRelatedObject];
                              }
-                             
-                             //JOJO à tester !!!
-//                             /*
-//                              We set the set for the relationship
-//                              */
-//                             [cloned setValue:[clonedSet copy]
-//                                       forKey:keyName] ;
                          }
                          
                          /*
