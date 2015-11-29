@@ -9,7 +9,7 @@
 #import "CBDCoreDataDiscriminator.h"
 
 
-const int depthForDefaultMethods_cbd_ ;
+
 
 
 /**

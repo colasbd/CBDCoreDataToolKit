@@ -13,14 +13,6 @@
 
 
 
-/*
- When merging, if YES, ignore wins
- */
-const BOOL ignoreWinsOverNotIgnore ;
-
-
-
-
 /**
  CBDCoreDataDecisionUnit is a helper class for the library CBDCoreDataToolKit.
  

@@ -12,11 +12,8 @@
 @class CBDCoreDataDecisionCenter ;
 
 
-/**
- Keys for the dictionnaries used for duplicate elements between two MOCs.
- */
-NSString * const   CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC ;
-NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC ;
+
+
 
 
 /**

@@ -20,7 +20,7 @@
 /*
  When merging, if YES, ignore wins
  */
-const BOOL ignoreWinsOverNotIgnore = YES;
+static BOOL const ignoreWinsOverNotIgnore = YES;
 
 
 

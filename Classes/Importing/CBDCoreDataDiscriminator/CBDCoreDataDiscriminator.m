@@ -328,8 +328,8 @@ const int depthForCoreDataAcceleration_cbd_=2 ;
 /**************************************/
 
 
-NSString * const   CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC = @"CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC";
-NSString * const   CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC" ;
+static NSString * const CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC = @"CBDCoreDataDiscriminatorKeyForObjectInWorkingMOC";
+static NSString * const CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC = @"CBDCoreDataDiscriminatorKeyForObjectInReferenceMOC" ;
 
 
 - (NSDictionary *) infosOnObjectsInWorkingMOC:(NSManagedObjectContext *)MOCWhereWeAreWorking

@@ -11,7 +11,9 @@
 #import "NSEntityDescription+CBDActiveRecord.h"
 #import "CBDCoreDataDecisionCenter.h"
 
-const int depthForDefaultMethods_cbd_ = 0 ;
+
+
+static int const depthForDefaultMethods_cbd_ = 0 ;
 
 
 
