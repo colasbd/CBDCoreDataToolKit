@@ -409,8 +409,8 @@ int const limitNumberOfNonSavedObjects = 10 ;
     __block NSManagedObject *cloned = [mutableCache objectForKey:[sourceObject objectID]];
     if (cloned != nil)
     {
-        CBDCloneLog(@"  | ¡ objet not copied !") ;
-        CBDCloneLog(@"  | (because it is the cache)") ;
+        CBDCloneLog(@"  | ¡ objet not copied !");
+        CBDCloneLog(@"  | (because it is the cache)");
         
         return cloned;
     }
@@ -420,17 +420,17 @@ int const limitNumberOfNonSavedObjects = 10 ;
     /*
      We save every 10 objects
      */
-    numberOfEntitiesCopied_cbd_ = numberOfEntitiesCopied_cbd_ + 1 ;
+    numberOfEntitiesCopied_cbd_ = numberOfEntitiesCopied_cbd_ + 1;
     
     if (numberOfEntitiesCopied_cbd_ >= limitNumberOfNonSavedObjects)
     {
         [self.targetMOC performBlock:
          ^{
-             NSError * error;
-             [self.targetMOC save:&error] ;
-         }] ;
+             NSError *error;
+             [self.targetMOC save:&error];
+         }];
         
-        numberOfEntitiesCopied_cbd_ = 0 ;
+        numberOfEntitiesCopied_cbd_ = 0;
     }
     
     
