@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "CBDCoreDataToolKit"
-  s.version      = "3.2.2"
+  s.version      = "3.3.0"
   s.summary      = "Cloning, replacing, importing with CoreData"
 
   s.description  = <<-DESC
@@ -15,11 +15,11 @@ Pod::Spec.new do |s|
                    DESC
 
   s.author        = { "Colas" => "colas.bardavid@gmail.com" }
-  s.homepage      = "https://github.com/colasjojo/CBDCoreDataToolKit"
+  s.homepage      = "https://github.com/colasbd/CBDCoreDataToolKit"
 
   s.license = { :type => 'MIT'}
 
-  s.source       = { :git => 'https://github.com/colasjojo/CBDCoreDataToolKit.git', 
+  s.source       = { :git => 'https://github.com/colasbd/CBDCoreDataToolKit.git', 
                      :tag =>  "#{s.version}" }
 
   s.source_files = 'Classes/CBDCoreDataToolKit.h'
