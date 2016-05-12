@@ -27,40 +27,40 @@
 /**
  The entity of the instance
  */
-@property (nonatomic, weak, readonly)NSEntityDescription *entity ;
+@property (nonatomic, weak, readonly)NSEntityDescription *entity;
 
 
 /**
  Should this entity be ignored ?
  */
-@property (nonatomic, readonly)BOOL shouldBeIgnored ;
+@property (nonatomic, readonly)BOOL shouldBeIgnored;
 
 
 /**
  The names of the attributes used for decision for the instance
  */
-@property (nonatomic, readonly)NSSet* nameAttributesToUse ;
+@property (nonatomic, readonly)NSSet *nameAttributesToUse;
 
 
 
 /**
  The NSRelationshipDescription's of the  relationships used for decision for the instance
  */
-@property (nonatomic, readonly)NSSet* relationshipDescriptionsToUse ;
+@property (nonatomic, readonly)NSSet *relationshipDescriptionsToUse;
 
 
 
 /**
  The names of the attributes explicitely ignored for decision for the instance
  */
-@property (nonatomic, readonly)NSSet* nameAttributesToIgnore ;
+@property (nonatomic, readonly)NSSet *nameAttributesToIgnore;
 
 
 
 /**
  The NSRelationshipDescription's of the  relationships explicitely ignored for decision for the instance
  */
-@property (nonatomic, readonly)NSSet* relationshipDescriptionsToIgnore ;
+@property (nonatomic, readonly)NSSet *relationshipDescriptionsToIgnore;
 
 
 
@@ -70,7 +70,7 @@
  If non-empty, it means that the user has given some keys not corresponding to
  attributes nor relationships
  */
-@property (nonatomic, readonly)NSSet* nameOtherKeys ;
+@property (nonatomic, readonly)NSSet *nameOtherKeys;
 
 
 
@@ -90,21 +90,21 @@
  
  If you want, in this case, to have less attributes, you should use a `ignoringAttributes:` initializer.
  */
--  (id)       initForEntity:(NSEntityDescription *)entity
-            usingAttributes:(NSArray *)namesUsedAttributeForDecision
-         usingRelationships:(NSArray *)namesUsedRelationshipsForDecision
-         ignoringAttributes:(NSArray *)namesIgnoredAttributeForDecision
-      ignoringRelationships:(NSArray *)namesIgnoredRelationshipsForDecision
-            shouldBeIgnored:(BOOL)shouldBeIgnored ;
+-  (instancetype)initForEntity:(NSEntityDescription *)entity
+               usingAttributes:(NSArray *)namesUsedAttributeForDecision
+            usingRelationships:(NSArray *)namesUsedRelationshipsForDecision
+            ignoringAttributes:(NSArray *)namesIgnoredAttributeForDecision
+         ignoringRelationships:(NSArray *)namesIgnoredRelationshipsForDecision
+               shouldBeIgnored:(BOOL)shouldBeIgnored;
 
 
 
 /**
  In this `init` method, you give attributes and relationships you want to use to discriminate between objects.
  */
-- (id)     initForEntity:(NSEntityDescription *)entity
-         usingAttributes:(NSArray *)namesAttributeForDecision
-        andRelationships:(NSArray *)namesRelationshipForDecision ;
+- (instancetype)initForEntity:(NSEntityDescription *)entity
+              usingAttributes:(NSArray *)namesAttributeForDecision
+             andRelationships:(NSArray *)namesRelationshipForDecision;
 
 
 /**
@@ -112,33 +112,33 @@
  
  You (implicitely) exclude all the other attributes or relationships
  */
-- (id)     initForEntity:(NSEntityDescription *)entity
-     usingOnlyAttributes:(NSArray *)namesAttributeForDecision
-    andOnlyRelationships:(NSArray *)namesRelationshipForDecision ;
+- (instancetype)initForEntity:(NSEntityDescription *)entity
+          usingOnlyAttributes:(NSArray *)namesAttributeForDecision
+         andOnlyRelationships:(NSArray *)namesRelationshipForDecision;
 
 
 /**
  In this `init` method, you give attributes and relationships you want to use to discriminate between objects.
  */
-- (id)      initForEntity:(NSEntityDescription *)entity
-       ignoringAttributes:(NSArray *)namesIgnoredAttributes
-         andRelationships:(NSArray *)namesIgnoredRelationships;
+- (instancetype)initForEntity:(NSEntityDescription *)entity
+           ignoringAttributes:(NSArray *)namesIgnoredAttributes
+             andRelationships:(NSArray *)namesIgnoredRelationships;
 
 
 /**
  In this `init` method, you ask to ignore all  attributes or relationships.
  */
-- (id)      initForEntity:(NSEntityDescription *)entity
-    ignoringAllAttributes:(BOOL)ignoringAllAttributes
- ignoringAllRelationships:(BOOL)ignoringAllRelationships;
+- (instancetype)initForEntity:(NSEntityDescription *)entity
+        ignoringAllAttributes:(BOOL)ignoringAllAttributes
+     ignoringAllRelationships:(BOOL)ignoringAllRelationships;
 
 
 /**
  In this `init` method, you ask to include all  attributes or relationships.
  */
-- (id)      initForEntity:(NSEntityDescription *)entity
-     includeAllAttributes:(BOOL)includingAllAttributes
-  includeAllRelationships:(BOOL)includingAllRelationships;
+- (instancetype)initForEntity:(NSEntityDescription *)entity
+         includeAllAttributes:(BOOL)includingAllAttributes
+      includeAllRelationships:(BOOL)includingAllRelationships;
 
 
 
@@ -148,7 +148,7 @@
  
  In other words, any two instances of the given entity will be considered as similar.
  */
-- (id)initWithIgnoringEntity:(NSEntityDescription *)entity ;
+- (instancetype)initWithIgnoringEntity:(NSEntityDescription *)entity;
 
 
 
@@ -156,7 +156,7 @@
  Create a CBDCoreDataDecisionUnit instance with all attributes
  for the given NSEntityDescription as criteria for decision.
  */
-- (id)initSemiExhaustiveFor:(NSEntityDescription *)entity ;
+- (instancetype)initSemiExhaustiveFor:(NSEntityDescription *)entity;
 
 
 
@@ -164,7 +164,7 @@
  Create a CBDCoreDataDecisionUnit instance with all attributes and all relationships
  for the given NSEntityDescription as criteria for decision.
  */
-- (id)initExhaustiveFor:(NSEntityDescription *)entity ;
+- (instancetype)initExhaustiveFor:(NSEntityDescription *)entity;
 
 
 
@@ -180,10 +180,10 @@
  
  If one of the unit is of the "ignoring" type, then the resulting constraint will also be.
  
- The ignores wins over the include (as long as the `const` parameter `ignoreWinsOverNotIgnore` is 
+ The ignores wins over the include (as long as the `const` parameter `ignoreWinsOverNotIgnore` is
  set to `YES`, the default value — which is not supposed to be changed)
  */
-- (void)mergeWith:(CBDCoreDataDecisionUnit *)anOtherUnit ;
+- (void)mergeWith:(CBDCoreDataDecisionUnit *)anOtherUnit;
 
 
 
@@ -202,7 +202,7 @@
  
  Two DecisionUnits are equal if they are related to the same entity and operate on the same keys.
  */
-- (BOOL)isEqual:(id)object ;
+- (BOOL)isEqual:(id)object;
 
 
 
