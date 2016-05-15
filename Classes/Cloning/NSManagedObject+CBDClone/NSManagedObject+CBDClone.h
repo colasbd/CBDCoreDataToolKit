@@ -34,7 +34,7 @@
  */
 - (NSManagedObject *)cloneToContext:(NSManagedObjectContext *)context
                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
-             excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude ;
+             excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude;
 
 /**
  Cloning the object, but omitting all the relationships.
@@ -42,7 +42,7 @@
  @param (NSArray *)namesOfAttributesToExclude Some attributes can also be omitted
  */
 - (NSManagedObject *)cloneOnlyAttribuesToContext:(NSManagedObjectContext *)context
-                           exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude ;
+                           exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude;
 
 
 /**
@@ -58,7 +58,7 @@
 - (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)context
                     withCopiedCache:(NSMutableDictionary *)alreadyCopied
                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
-             excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude ;
+             excludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude;
 
 
 
@@ -77,7 +77,7 @@
                     withCopiedCache:(NSMutableDictionary *)alreadyCopied
                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
                   excludeAttributes:(NSArray *)namesOfAttributesToExclude
-          excludeRelationships_cbd_:(NSArray *)namesOfRelationshipsToExclude ;
+          excludeRelationships_cbd_:(NSArray *)namesOfRelationshipsToExclude;
 
 
 
@@ -89,14 +89,14 @@
  Given two existing `NSManagedObject`, you want to copy the attributes of one to another one.
  */
 - (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
-        exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude ;
+        exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude;
 
 
 /**
  Given two existing `NSManagedObject`, you want to copy the attributes of one to another one.
  */
 - (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
-          onlyAttributes_cbd_:(NSArray *)namesOfAttributesToCopy ;
+          onlyAttributes_cbd_:(NSArray *)namesOfAttributesToCopy;
 
 
 
