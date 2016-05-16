@@ -42,7 +42,7 @@
 - (id)createInMOC_cbd_:(NSManagedObjectContext *)aMOC
 {
     return [[NSManagedObject alloc] initWithEntity:self
-                    insertIntoManagedObjectContext:aMOC] ;
+                    insertIntoManagedObjectContext:aMOC];
 }
 
 
@@ -53,7 +53,7 @@
 - (NSArray *)allInMOC_cbd_:(NSManagedObjectContext *)theMOC
 {
     return [self findInMOC:theMOC
-        withPredicate_cbd_:nil] ;
+        withPredicate_cbd_:nil];
 }
 
 - (NSArray *)   allInMOC:(NSManagedObjectContext *)theMOC
@@ -61,7 +61,7 @@
 {
     return [self findInMOC:theMOC
                  orderedBy:orderBy
-        withPredicate_cbd_:nil] ;
+        withPredicate_cbd_:nil];
 }
 
 
@@ -71,15 +71,15 @@
 {
     NSArray * objects = [self findInMOC:theMOC
                               orderedBy:orderBy
-                     withPredicate_cbd_:predicate] ;
+                     withPredicate_cbd_:predicate];
     
     if ([objects count] > 0)
     {
-        return [objects objectAtIndex:0] ;
+        return [objects objectAtIndex:0];
     }
     else
     {
-        return nil ;
+        return nil;
     }
     
 }
@@ -89,18 +89,18 @@
                       orderedBy:(NSString *)orderBy
        withPredicateFormat_cbd_:(NSString *)formatString, ...
 {
-    NSPredicate * myPredicate ;
+    NSPredicate * myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     return [self firstInMOC:theMOC
                   orderedBy:orderBy
-         withPredicate_cbd_:myPredicate] ;
+         withPredicate_cbd_:myPredicate];
 }
 
 
@@ -114,7 +114,7 @@
 {
     return [self findInMOC:theMOC
                  orderedBy:nil
-        withPredicate_cbd_:predicate] ;
+        withPredicate_cbd_:predicate];
 }
 
 
@@ -122,17 +122,17 @@
 - (NSArray *)        findInMOC:(NSManagedObjectContext *)theMOC
       withPredicateFormat_cbd_:(NSString *)formatString, ...
 {
-    NSPredicate * myPredicate ;
+    NSPredicate * myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     return [self findInMOC:theMOC
-        withPredicate_cbd_:myPredicate] ;
+        withPredicate_cbd_:myPredicate];
 }
 
 
@@ -153,7 +153,7 @@
                     orderedBy:orderBy
                        offset:0
                         limit:0
-           withPredicate_cbd_:predicate] ;
+           withPredicate_cbd_:predicate];
 }
 
 
@@ -161,18 +161,18 @@
                    orderedBy:(NSString *)orderBy
     withPredicateFormat_cbd_:(NSString *)formatString, ...
 {
-    NSPredicate * myPredicate ;
+    NSPredicate * myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     return [self findInMOC:theMOC
                  orderedBy:orderBy
-        withPredicate_cbd_:myPredicate] ;
+        withPredicate_cbd_:myPredicate];
 }
 
 
@@ -194,13 +194,13 @@
                        limit:(int)limit
     withPredicateFormat_cbd_:(NSString *)formatString, ...
 {
-    NSPredicate * myPredicate ;
+    NSPredicate * myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     
@@ -208,7 +208,7 @@
                  orderedBy:orderBy
                     offset:offset
                      limit:limit
-        withPredicate_cbd_:myPredicate] ;
+        withPredicate_cbd_:myPredicate];
 }
 
 
@@ -265,7 +265,7 @@
 - (NSUInteger) countInMOC_cbd_:(NSManagedObjectContext *)theMOC
 {
     return [self countInMOC:theMOC
-           forPredicate_cbd_:nil] ;
+           forPredicate_cbd_:nil];
 }
 
 /** Returns the total amount of the objects from the caller class.
@@ -277,17 +277,17 @@
 - (NSUInteger)      countInMOC:(NSManagedObjectContext *)theMOC
         forPredicateFormat_cbd_:(NSString *)formatString, ...
 {
-    NSPredicate * myPredicate ;
+    NSPredicate * myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     return [self countInMOC:theMOC
-           forPredicate_cbd_:myPredicate] ;
+           forPredicate_cbd_:myPredicate];
 }
 
 
@@ -336,7 +336,7 @@
 {
     for (NSManagedObject * managedObject in [self allInMOC_cbd_:theMOC])
     {
-        [managedObject remove_cbd_] ;
+        [managedObject remove_cbd_];
     }
 }
 

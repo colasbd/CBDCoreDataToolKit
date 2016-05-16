@@ -13,19 +13,19 @@
 
 - (NSSet *)connectedEntities
 {
-    NSMutableSet * result = [NSMutableSet setWithObject:self] ;
+    NSMutableSet * result = [NSMutableSet setWithObject:self];
     
     for (NSRelationshipDescription * relationship in [self.relationshipsByName allValues])
     {
-        NSEntityDescription * currentEntity = relationship.entity ;
+        NSEntityDescription * currentEntity = relationship.entity;
         
         if (![result containsObject:currentEntity])
         {
-            [result unionSet:[currentEntity connectedEntities]] ;
+            [result unionSet:[currentEntity connectedEntities]];
         }
     }
              
-    return result ;
+    return result;
 }
 
 @end
