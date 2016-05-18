@@ -43,7 +43,7 @@
  
  Otherwise, it will throw an exception.
  */
-+ (NSEntityDescription *)entityInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
++ (NSEntityDescription *)entityInMOC_cbd_:(NSManagedObjectContext *)theMOC;
 
 
 #pragma mark - Getting
@@ -54,7 +54,7 @@
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (NSArray *)allInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
++ (NSArray *)allInMOC_cbd_:(NSManagedObjectContext *)theMOC;
 
 /*
  *******
@@ -103,7 +103,7 @@
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
 + (NSArray *)allInMOC:(NSManagedObjectContext *)theMOC
-       orderedBy_cbd_:(NSString *)orderBy ;
+       orderedBy_cbd_:(NSString *)orderBy;
 
 
 
@@ -112,9 +112,9 @@
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (instancetype) firstInMOC:(NSManagedObjectContext *)theMOC
++ (instancetype)firstInMOC:(NSManagedObjectContext *)theMOC
                   orderedBy:(NSString *)orderBy
-         withPredicate_cbd_:(NSPredicate *)predicate ;
+         withPredicate_cbd_:(NSPredicate *)predicate;
 
 
 /**
@@ -124,9 +124,9 @@
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (instancetype) firstInMOC:(NSManagedObjectContext *)theMOC
++ (instancetype)firstInMOC:(NSManagedObjectContext *)theMOC
                   orderedBy:(NSString *)orderBy
-   withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4) ;
+   withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4);
 
 
 /**
@@ -134,8 +134,8 @@
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (NSArray *)        findInMOC:(NSManagedObjectContext *)theMOC
-            withPredicate_cbd_:(NSPredicate *)predicate ;
++ (NSArray *)   findInMOC:(NSManagedObjectContext *)theMOC
+            withPredicate_cbd_:(NSPredicate *)predicate;
 
 
 /**
@@ -146,7 +146,7 @@
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
 + (NSArray *)      findInMOC:(NSManagedObjectContext *)theMOC
-    withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3) ;
+    withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
 
 
 
@@ -159,9 +159,9 @@
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (NSArray *) findInMOC:(NSManagedObjectContext *)theMOC
++ (NSArray *)findInMOC:(NSManagedObjectContext *)theMOC
               orderedBy:(NSString *)orderBy
-     withPredicate_cbd_:(NSPredicate *)predicate ;
+     withPredicate_cbd_:(NSPredicate *)predicate;
 
 
 /** Returns objects from the caller class.
@@ -174,7 +174,7 @@
  */
 + (NSArray *)    findInMOC:(NSManagedObjectContext *)theMOC
                  orderedBy:(NSString *)orderBy
-  withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4) ;
+  withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4);
 
 
 
@@ -188,11 +188,11 @@
  
  @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (NSArray *) findInMOC:(NSManagedObjectContext *)theMOC
++ (NSArray *)findInMOC:(NSManagedObjectContext *)theMOC
               orderedBy:(NSString *)orderBy
                  offset:(int)offset
                   limit:(int)limit
-     withPredicate_cbd_:(NSPredicate *)predicate ;
+     withPredicate_cbd_:(NSPredicate *)predicate;
 
 /** Returns objects from the caller class.
  
@@ -204,11 +204,11 @@
 
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (NSArray *)       findInMOC:(NSManagedObjectContext *)theMOC
++ (NSArray *)  findInMOC:(NSManagedObjectContext *)theMOC
                     orderedBy:(NSString *)orderBy
                        offset:(int)offset
                         limit:(int)limit
-     withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(5, 6) ;
+     withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(5, 6);
 
 
 
@@ -224,7 +224,7 @@
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (NSUInteger) countInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
++ (NSUInteger)countInMOC_cbd_:(NSManagedObjectContext *)theMOC;
 ;
 
 /** Returns the total amount of the objects from the caller class.
@@ -232,8 +232,8 @@
  @param predicate the predicate to filter with. 
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied*/
-+ (NSUInteger) countInMOC:(NSManagedObjectContext *)theMOC
-        forPredicate_cbd_:(NSPredicate *)predicate ;
++ (NSUInteger)countInMOC:(NSManagedObjectContext *)theMOC
+        forPredicate_cbd_:(NSPredicate *)predicate;
 
 /** Returns the total amount of the objects from the caller class.
  
@@ -241,8 +241,8 @@
  @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied*/
-+ (NSUInteger)     countInMOC:(NSManagedObjectContext *)theMOC
-      forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3) ;
++ (NSUInteger)  countInMOC:(NSManagedObjectContext *)theMOC
+      forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
 
 
 
@@ -256,14 +256,14 @@
 
 
 /** Removes the calling object. */
-- (void) remove_cbd_ ;
+- (void) remove_cbd_;
 
 
 /** Removes all objects from the caller class. 
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
-+ (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
++ (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC;
 ;
 
 
@@ -274,7 +274,7 @@
 
 
 /** Refetches the object. */
-- (instancetype) refetch_cbd_;
+- (instancetype)refetch_cbd_;
 
 
 
@@ -292,7 +292,7 @@
  ```
  [me findSimilarObjectsForAttributes:@[@"age", @"city"]
                     forRelationships:nil
-       withAttributesOrRelationships:@{@"isMale" : @NO}] ;
+       withAttributesOrRelationships:@{@"isMale" : @NO}];
  ```
  will look for `Person`s who have the same `age` as me, who live in the same `city` and with `isMale` attribute equal to `@NO`.
  
@@ -302,7 +302,7 @@
  */
 - (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
                             forRelationships:(NSArray *)arrayOfNamesOfRelationships
-          withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships ;
+          withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships;
 
 
 /**
@@ -318,7 +318,7 @@
 - (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
           similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
                      forRelationships:(NSArray *)arrayOfNamesOfRelationships
-   withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships ;
+   withAttributesOrRelationships_cbd_:(NSDictionary *)dicoOfFixedAttributesOrRelationships;
 
 /**
  Finds objects similar to self, according to attributes and relationships given in the arguments.
@@ -329,7 +329,7 @@
  ```
  [me findSimilarObjectsForAttributes:@[@"age", @"city"]
  forRelationships:nil
- withAdditionalPredicate_cbd_:[NSPredicate predicateWithFormat:@"isMale == NO"]] ;
+ withAdditionalPredicate_cbd_:[NSPredicate predicateWithFormat:@"isMale == NO"]];
  ```
  will look for `Person`s who have the same `age` as me, who live in the same `city` and with `isMale` attribute equal to `@NO`.
  
@@ -339,7 +339,7 @@
  */
 - (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
                             forRelationships:(NSArray *)arrayOfNamesOfRelationships
-                withAdditionalPredicate_cbd_:(NSPredicate *)additionalPredicate ;
+                withAdditionalPredicate_cbd_:(NSPredicate *)additionalPredicate;
 
 
 /**
@@ -348,7 +348,7 @@
  */
 - (NSArray *)findSimilarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
                             forRelationships:(NSArray *)arrayOfNamesOfRelationships
-          withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4) ;
+          withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4);
 
 /**
  Finds objects similar to self, according to attributes and relationships given in the arguments.
@@ -363,7 +363,7 @@
 - (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
           similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
                      forRelationships:(NSArray *)arrayOfNamesOfRelationships
-         withAdditionalPredicate_cbd_:(NSPredicate *)additionalPredicate ;
+         withAdditionalPredicate_cbd_:(NSPredicate *)additionalPredicate;
 
 /**
  Finds objects similar to self, according to attributes and relationships given in the arguments.
@@ -378,7 +378,7 @@
 - (NSArray *)               findInMOC:(NSManagedObjectContext *)aDifferentMOC
           similarObjectsForAttributes:(NSArray *)arrayOfNamesOfAttributes
                      forRelationships:(NSArray *)arrayOfNamesOfRelationships
-   withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(4, 5) ;
+   withAdditionalPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(4, 5);
 
 
 @end
