@@ -8,19 +8,8 @@
 //
 //
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - IMPORTS
-/**************************************/
+
 #import "CBDEnhancedCloner.h"
-
-
-/*
- Model Classes
- */
 
 
 /*
@@ -28,39 +17,12 @@
  */
 #import "CBDCoreDataDecisionCenter.h"
 
-/*
- Singletons
- */
-
-
-/*
- Assistant classes
- */
-
-
-/*
- Views
- */
-
 
 /*
  Categories
  */
 #import "NSManagedObject+CBDClone.h"
 
-/*
- Global information
- */
-
-
-/*
- Pods
- */
-
-
-/*
- Others
- */
 
 
 
@@ -68,100 +30,14 @@
 
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - INSTANCIATION OF CONSTANTS
-/**************************************/
-//
-//NSString* const <#example of a constant#> = @"Example of a constant";
 
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - ENUMS
-/**************************************/
-//
-//typedef NS_ENUM(NSInteger, <#example of ENUM#>)
-//{
-//    <#example of ENUM#>Item1,
-//    <#example of ENUM#>Item2,
-//    <#example of ENUM#>Item3,
-//    <#example of ENUM#>Count
-//};
-
-
-
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - PRIVATE HEADER
-/**************************************/
 @interface CBDEnhancedCloner ()
-//
-//
-/**************************************/
-#pragma mark Properties used as parameters for the instance
-/**************************************/
 
-
-//
-//
-/**************************************/
-#pragma mark Strong Properties
-/**************************************/
-@property (nonatomic, strong, readwrite) NSManagedObjectContext * sourceMOC ;
-@property (nonatomic, strong, readwrite) NSManagedObjectContext * targetMOC ;
-
-//
-//
-/**************************************/
-#pragma mark Scalar types Properties
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Weak Properties
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Read-only Properties
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark Convenience Properties
-/**************************************/
-
-
-//
-//
-/**************************************/
-#pragma mark IBOutlets
-/**************************************/
-
+/*
+ Components
+ */
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *sourceMOC;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *targetMOC;
 
 
 @end
@@ -193,19 +69,12 @@
 
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - IMPLEMENTATION
-/**************************************/
+
+
 @implementation CBDEnhancedCloner
 
 
 
-//
-//
 /**************************************/
 #pragma mark - Init Methods
 /**************************************/
@@ -214,16 +83,16 @@
                     withTargetMOC:(NSManagedObjectContext *)targetMOC
                withDecisionCenter:(CBDCoreDataDecisionCenter *)decisionCenter
 {
-    self = [super init] ;
+    self = [super init];
     
     if (self)
     {
-        _sourceMOC = sourceMOC ;
-        _targetMOC = targetMOC ;
-        _decisionCenter = decisionCenter ;
+        _sourceMOC = sourceMOC;
+        _targetMOC = targetMOC;
+        _decisionCenter = decisionCenter;
     }
     
-    return self ;
+    return self;
 }
 
 
@@ -240,29 +109,29 @@
 - (void)     cloneObjects:(NSArray *)arrayOfObjects
                 usingCache:(NSDictionary *)cache
            isAsynchronous:(BOOL)isAsynchronous
-    withCompletionHandler:(void (^)(NSDictionary * dictionary))completionBlock
+    withCompletionHandler:(void (^)(NSDictionary *dictionary))completionBlock
 {
-    __block NSMutableDictionary * mutableCache = [cache mutableCopy] ;
-    __block NSMutableDictionary * dicoAttributesToExclude = [[NSMutableDictionary alloc] init] ;
-    __block NSMutableDictionary * dicoRelationshipsToExclude = [[NSMutableDictionary alloc] init] ;
+    __block NSMutableDictionary *mutableCache = [cache mutableCopy];
+    __block NSMutableDictionary *dicoAttributesToExclude = [[NSMutableDictionary alloc] init];
+    __block NSMutableDictionary *dicoRelationshipsToExclude = [[NSMutableDictionary alloc] init];
 
     
     
     /*
      Managing the multithreading
      */
-    void (*dispatchingFunction)(dispatch_queue_t, dispatch_block_t) = dispatch_async ;
+    void (*dispatchingFunction)(dispatch_queue_t, dispatch_block_t) = dispatch_async;
     
     if (isAsynchronous)
     {
-        dispatchingFunction = dispatch_async ;
+        dispatchingFunction = dispatch_async;
     }
     else
     {
-        dispatchingFunction = dispatch_sync ;
+        dispatchingFunction = dispatch_sync;
     }
     
-    dispatch_queue_t myQueue = dispatch_queue_create("Cloning managed objects", DISPATCH_QUEUE_SERIAL) ;
+    dispatch_queue_t myQueue = dispatch_queue_create("Cloning managed objects", DISPATCH_QUEUE_SERIAL);
     
     
     
@@ -272,11 +141,11 @@
      Launching the action !!
      */
     dispatchingFunction(myQueue, ^{
-        for (NSManagedObject * object in arrayOfObjects)
+        for (NSManagedObject *object in arrayOfObjects)
         {
             if (object.managedObjectContext != self.sourceMOC)
             {
-                NSLog(@"Warning : %@ is not in the source MOC.", object) ;
+                NSLog(@"Warning : %@ is not in the source MOC.", object);
             }
             else
             {
@@ -286,7 +155,7 @@
                 }
                 else
                 {
-                    NSString * nameEntity = object.entity.name ;
+                    NSString *nameEntity = object.entity.name;
                     
                     
                     /*
@@ -297,12 +166,12 @@
                         /*
                          Computing the attributes to keep and to remove
                          */
-                        NSArray * attributesToKeep = [[self.decisionCenter attributesFor:object.entity] allObjects] ;
+                        NSArray *attributesToKeep = [[self.decisionCenter attributesFor:object.entity] allObjects];
                         
-                        NSMutableArray * attributesToExclude = [[[object.entity attributesByName] allValues] mutableCopy] ;
-                        [attributesToExclude removeObjectsInArray:attributesToKeep] ;
+                        NSMutableArray *attributesToExclude = [[[object.entity attributesByName] allValues] mutableCopy];
+                        [attributesToExclude removeObjectsInArray:attributesToKeep];
                         
-                        dicoAttributesToExclude[nameEntity] = [attributesToExclude copy] ;
+                        dicoAttributesToExclude[nameEntity] = [attributesToExclude copy];
                     }
                     
                     
@@ -312,16 +181,16 @@
                         /*
                          Computing the attributes to keep and to remove
                          */
-                        NSArray * relationshipsToKeep = [[self.decisionCenter relationshipsFor:object.entity] allObjects] ;
+                        NSArray *relationshipsToKeep = [[self.decisionCenter relationshipsFor:object.entity] allObjects];
                         
-                        NSMutableArray * relationshipsToExclude = [[[object.entity relationshipsByName] allValues] mutableCopy] ;
-                        [relationshipsToExclude removeObjectsInArray:relationshipsToKeep] ;
+                        NSMutableArray *relationshipsToExclude = [[[object.entity relationshipsByName] allValues] mutableCopy];
+                        [relationshipsToExclude removeObjectsInArray:relationshipsToKeep];
                         
-                        dicoRelationshipsToExclude[nameEntity] = [relationshipsToExclude copy] ;
+                        dicoRelationshipsToExclude[nameEntity] = [relationshipsToExclude copy];
                     }
                     
                     [self cloneObject:object
-                           usingCache:mutableCache] ;
+                           usingCache:mutableCache];
                 }
             }
         }
@@ -333,23 +202,23 @@
          */
         if (completionBlock)
         {
-            completionBlock(mutableCache) ;
+            completionBlock(mutableCache);
         }
-    }) ;
+    });
 }
 
 
 
 
-//
-//
+
+
+
 /**************************************/
 #pragma mark - Clone objects
 /**************************************/
 
-
-int numberOfEntitiesCopied_cbd_ = 0 ;
-int const limitNumberOfNonSavedObjects = 10 ;
+int numberOfEntitiesCopied_cbd_ = 0;
+int const limitNumberOfNonSavedObjects = 10;
 
 - (NSManagedObject *)cloneObject:(NSManagedObject *)sourceObject
                       usingCache:(NSMutableDictionary *)mutableCache
@@ -359,7 +228,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
      */
     if (sourceObject.managedObjectContext != self.sourceMOC)
     {
-        NSLog(@"Warning : %@ is not in the source MOC.", sourceObject) ;
+        NSLog(@"Warning : %@ is not in the source MOC.", sourceObject);
     }
 
 
@@ -370,7 +239,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
     if (!mutableCache)
     {
         [NSException raise:NSInvalidArgumentException
-                    format:@"The cache can't be nil"] ;
+                    format:@"The cache can't be nil"];
     }
     
     
@@ -380,23 +249,20 @@ int const limitNumberOfNonSavedObjects = 10 ;
      Go !!
      ********************
      */
-
     
     NSString *entityName = [[sourceObject entity] name];
-    NSEntityDescription * entity = [sourceObject entity] ;
-    
+    NSEntityDescription *entity = [sourceObject entity];
 
     
-    CBDCloneLog(@"Cloning a NSManagedObject of type %@", entityName) ;
-    CBDCloneLog(@"  | size of the cache : %ld", [mutableCache count]) ;
-    
+    CBDCloneLog(@"Cloning a NSManagedObject of type %@", entityName);
+    CBDCloneLog(@"  | size of the cache : %ld", [mutableCache count]);
     
     
     if ([self.decisionCenter shouldIgnore:entity])
     //if ([namesOfEntitiesToExclude containsObject:entityName])
     {
-        CBDCloneLog(@"  | ¡ objet not copied !") ;
-        CBDCloneLog(@"  | (because its entitity is excluded of the copy)") ;
+        CBDCloneLog(@"  | ¡ objet not copied !");
+        CBDCloneLog(@"  | (because its entitity is excluded of the copy)");
         
         return nil;
     }
@@ -454,7 +320,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
     NSDictionary *attributes = [[NSEntityDescription entityForName:entityName
                                             inManagedObjectContext:self.targetMOC] attributesByName];
     
-    CBDCloneLog(@"Copying the attributes : ") ;
+    CBDCloneLog(@"Copying the attributes : ");
     
     for (NSString *attr in attributes)
     {
@@ -464,9 +330,9 @@ int const limitNumberOfNonSavedObjects = 10 ;
              ^{
                  [cloned setValue:[sourceObject valueForKey:attr]
                            forKey:attr];
-             }] ;
+             }];
             
-            CBDCloneLog(@"  | the attribute %@ gets the value %@ ", attr, [sourceObject valueForKey:attr]) ;
+            CBDCloneLog(@"  | the attribute %@ gets the value %@ ", attr, [sourceObject valueForKey:attr]);
         }
     }
     
@@ -478,7 +344,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
     NSDictionary *relationships = [[NSEntityDescription entityForName:entityName
                                                inManagedObjectContext:self.targetMOC] relationshipsByName];
     
-    CBDCloneLog(@"Taking account of the relationships (for %@) : ", entityName) ;
+    CBDCloneLog(@"Taking account of the relationships (for %@) : ", entityName);
     
     for (NSString *relName in [relationships allKeys])
     {
@@ -486,7 +352,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
         
         NSString *keyName = rel.name;
         
-        CBDCloneLog(@"  | Relationships '%@' (for %@)", keyName, entityName) ;
+        CBDCloneLog(@"  | Relationships '%@' (for %@)", keyName, entityName);
         
         if ([[self.decisionCenter relationshipsFor:entity] containsObject:rel])
         {
@@ -494,8 +360,8 @@ int const limitNumberOfNonSavedObjects = 10 ;
              ^{
                  if ([rel isToMany])
                  {
-//                     id sourceSet ;
-//                     id clonedSet ;
+//                     id sourceSet;
+//                     id clonedSet;
                      
                      /*
                       On gère selon que la relation est ordonnée ou non
@@ -505,8 +371,8 @@ int const limitNumberOfNonSavedObjects = 10 ;
                          /*
                           Case of unordered relationships !!!
                           */
-                         NSSet * sourceSet = [sourceObject valueForKey:keyName] ;//[sourceObject mutableSetValueForKey:keyName];
-                         NSMutableSet * clonedSet = [[NSMutableSet alloc] init] ;//[cloned mutableSetValueForKey:keyName];
+                         NSSet *sourceSet = [sourceObject valueForKey:keyName];//[sourceObject mutableSetValueForKey:keyName];
+                         NSMutableSet *clonedSet = [[NSMutableSet alloc] init];//[cloned mutableSetValueForKey:keyName];
                          
                          NSEnumerator *e = [sourceSet objectEnumerator];
                          NSManagedObject *relatedObject;
@@ -517,7 +383,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
                               Clone it, and add clone to set
                               */
                              NSManagedObject *clonedRelatedObject = [self cloneObject:relatedObject
-                                                                           usingCache:mutableCache] ;
+                                                                           usingCache:mutableCache];
                              
                              if (clonedRelatedObject)
                              {
@@ -529,7 +395,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
                           We set the set for the relationship
                           */
                          [cloned setValue:[clonedSet copy]
-                                   forKey:keyName] ;
+                                   forKey:keyName];
                          
                      }
                      else
@@ -538,17 +404,17 @@ int const limitNumberOfNonSavedObjects = 10 ;
                           Case of ordered relationships !!!
                           */
                          
-                         NSOrderedSet * sourceSet = [sourceObject valueForKey:keyName] ;//[sourceObject mutableOrderedSetValueForKey:keyName];
-                         NSMutableOrderedSet * clonedSet = [[NSMutableOrderedSet alloc] init] ;//[cloned mutableOrderedSetValueForKey:keyName];
+                         NSOrderedSet *sourceSet = [sourceObject valueForKey:keyName];//[sourceObject mutableOrderedSetValueForKey:keyName];
+                         NSMutableOrderedSet *clonedSet = [[NSMutableOrderedSet alloc] init];//[cloned mutableOrderedSetValueForKey:keyName];
                          
                          
-                         for (NSManagedObject * relatedObject in sourceSet)
+                         for (NSManagedObject *relatedObject in sourceSet)
                          {
                              /*
                               Clone it, and add clone to set
                               */
                              NSManagedObject *clonedRelatedObject = [self cloneObject:relatedObject
-                                                                           usingCache:mutableCache] ;
+                                                                           usingCache:mutableCache];
                              
                              if (clonedRelatedObject)
                              {
@@ -560,7 +426,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
                           We set the set for the relationship
                           */
                          [cloned setValue:[clonedSet copy]
-                                   forKey:keyName] ;
+                                   forKey:keyName];
 
                          
                      }
@@ -580,7 +446,7 @@ int const limitNumberOfNonSavedObjects = 10 ;
                          }
                      }
                  }
-             }] ;
+             }];
         }
     }
     
