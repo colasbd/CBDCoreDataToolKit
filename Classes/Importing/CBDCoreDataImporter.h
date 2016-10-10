@@ -8,20 +8,9 @@
 
 #import <CoreData/CoreData.h>
 
-@class CBDCoreDataDecisionCenter, CBDCoreDataDiscriminator ;
+@class CBDCoreDataDecisionCenter, CBDCoreDataDiscriminator;
 
 
-
-
-
-
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - DÉCLARATION PUBLIQUE : properties
-/**************************************/
 @interface CBDCoreDataImporter : NSObject
 
 
@@ -45,7 +34,7 @@
 /// @name Initializing and settings
 
 /*
- This is the designated initializer. The importer takes four arguments :
+ This is the designated initializer. The importer takes four arguments:
  
  @argument sourceMOC The MOC where the objects are coming from
  
@@ -56,14 +45,14 @@
  @argument decisionCenterForCopy A CBDCoreDataDecisionCenter to help the importer to decide which attributes and relationships it should consider in the import.
  */
 
-- (id)     initWithDiscriminator:(CBDCoreDataDiscriminator *)discriminator
-        andDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopy
-                   withSourceMOC:(NSManagedObjectContext *)sourceMOC
-                       targetMOC:(NSManagedObjectContext *)targetMOC ;
+- (instancetype)initWithDiscriminator:(CBDCoreDataDiscriminator *)discriminator
+             andDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopy
+                        withSourceMOC:(NSManagedObjectContext *)sourceMOC
+                            targetMOC:(NSManagedObjectContext *)targetMOC;
 
 
 /*
- The importer takes four arguments :
+ The importer takes four arguments:
  
  @argument sourceMOC The MOC where the objects are coming from
  
@@ -75,18 +64,18 @@
  
  @warning It is important to understand that the different roles of `decisionCenterForDescrimination` and `decisionCenterForCopy`. For instance, imagine you have two MOC (of `Person`'s having `Car`s:two entities), exactly identical, except that in the `sourceMOC`, there is one more car `specialCar`, owned by `Joe`. If we put two many constraints on `decisionCenterForDescrimination`, `Joe(sourceMOC)` will not be considered as similar to `Joe(targetMOC)`, and thus, he will be copied, and as a result, we will have two `Joe`s in the `targetMOC`. On the opposite, if the `decisionCenterForCopy` is not strong enough (does not ask for enough `relationships` to be considered), then, when we import `Joe(sourceMOC)` to `targetMOC`, its `cars` won't be taken into account, and the import will not import the new `Car`.
  */
-- (id) initWithDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescrimination
-                     withDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopy
-                                 withSourceMOC:(NSManagedObjectContext *)sourceMOC
-                                     targetMOC:(NSManagedObjectContext *)targetMOC ;
+- (instancetype)initWithDecisionCenterForDiscrimination:(CBDCoreDataDecisionCenter *)decisionCenterForDescrimination
+                              withDecisionCenterForCopy:(CBDCoreDataDecisionCenter *)decisionCenterForCopy
+                                          withSourceMOC:(NSManagedObjectContext *)sourceMOC
+                                              targetMOC:(NSManagedObjectContext *)targetMOC;
 
 
 
 /**
  With this convenience initializer: the object between `sourceMOC` and `targetMOC` will be discriminate only upon their attributes. And, when an object is effectively imported (copied) to `targetMOC`, all its attributes and relationships will also be imported (and copied if necessary).
  */
-- (id) initWithSourceMOC:(NSManagedObjectContext *)sourceMOC
-               targetMOC:(NSManagedObjectContext *)targetMOC ;
+- (instancetype)initWithSourceMOC:(NSManagedObjectContext *)sourceMOC
+                        targetMOC:(NSManagedObjectContext *)targetMOC;
 
 
 
@@ -96,7 +85,7 @@
  
  You have to create a new `CBDCoreDataImporter` if you want to change it.
  */
-@property (nonatomic, strong, readonly)CBDCoreDataDecisionCenter * decisionCenterForDiscrimination ;
+@property (nonatomic, strong, readonly)CBDCoreDataDecisionCenter * decisionCenterForDiscrimination;
 
 
 
@@ -105,13 +94,13 @@
  
  You have to create a new `CBDCoreDataImporter` if you want to change it.
  */
-@property (nonatomic, strong, readonly)CBDCoreDataDecisionCenter * decisionCenterForCopy ;
+@property (nonatomic, strong, readonly)CBDCoreDataDecisionCenter * decisionCenterForCopy;
 
 
 /**
  The discriminator based on `decisionCenterForDescrimination`.
  */
-@property (nonatomic, strong, readonly)CBDCoreDataDiscriminator * discriminator ;
+@property (nonatomic, strong, readonly)CBDCoreDataDiscriminator * discriminator;
 
 
 /**
@@ -119,14 +108,14 @@
  
  Flushing the cache may lead to duplicates!
  */
-- (void)flushTheCache ;
+- (void)flushTheCache;
 
 
 /**
  Logging
  */
 - (void)shouldLog:(BOOL)shouldLog
-          deepLog:(BOOL)deepLog ;
+          deepLog:(BOOL)deepLog;
 
 
 #pragma mark Importing
@@ -139,7 +128,7 @@
  
  @warning If the object exists already (according to the discriminator based on `decisionCenterForDescrimination`) no new object will be created.
  */
-- (NSManagedObject *)import:(NSManagedObject *)objectToImport ;
+- (NSManagedObject *)import:(NSManagedObject *)objectToImport;
 
 
 
