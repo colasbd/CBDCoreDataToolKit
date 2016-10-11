@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "CBDCoreDataToolKit"
-  s.version      = "3.3.0"
+  s.version      = "3.3.1"
   s.summary      = "Cloning, replacing, importing with CoreData"
 
   s.description  = <<-DESC
