@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, CBDCoreDataDecisionType)
 #pragma mark - Used Classes
 /**************************************/
 //
-@class CBDCoreDataDecisionUnit ;
+@class CBDCoreDataDecisionUnit;
 
 
 
@@ -89,7 +89,7 @@ is equivalent to ignoring this entity.
 
 The relationships to objects with this entity will also be ignored.
 */
-- (id)initWithFacilitatingType ;
+- (instancetype)initWithFacilitatingType;
 
 /**
 Chooses the semi-facilitating type. This is the default type. When you change types, the cache is flushed.
@@ -101,7 +101,7 @@ This option is convenient but in some case, it could be too demanding, for insta
  
  This is the default mode.
  */
-- (id)initWithSemiFacilitatingType ;
+- (instancetype)initWithSemiFacilitatingType;
 
 /**
  Chooses the demanding type. This is the default type. When you change types, the cache is flushed.
@@ -111,13 +111,13 @@ This option is convenient but in some case, it could be too demanding, for insta
  we consider both all the attributes and all the relationships.
  
  */
-- (id)initWithDemandingType ;
+- (instancetype)initWithDemandingType;
 
 
 /**
  The designated initializer
  */
-- (id)initWithType:(CBDCoreDataDecisionType)decisionType ;
+- (instancetype)initWithType:(CBDCoreDataDecisionType)decisionType;
 
 
 
@@ -132,13 +132,13 @@ This option is convenient but in some case, it could be too demanding, for insta
 /**
 The DecisionUnits composing the instance
 */
-@property (nonatomic, readonly)NSArray * decisionUnits ;
+@property (nonatomic, readonly)NSArray *decisionUnits;
 
 
 /**
 The entities explicitely registered by the instance for discriminating
  */
-@property (nonatomic, readonly)NSArray * registeredEntities ;
+@property (nonatomic, readonly)NSArray *registeredEntities;
 
 
 /**
@@ -146,21 +146,21 @@ The entities explicitely registered by the instance for discriminating
 
 So, you should DecisionUnits if you want to precise to the engine upon which criteria you want the decision to be done.
  */
-- (void)addDecisionUnit:(CBDCoreDataDecisionUnit *)aDecisionUnit ;
+- (void)addDecisionUnit:(CBDCoreDataDecisionUnit *)aDecisionUnit;
 
 
 
 /**
  Remove all the DecisionUnits.
  */
-- (void)removeAllDecisionUnits ;
+- (void)removeAllDecisionUnits;
 
 
 
 /**
  Remove the DecisionUnit for entity
  */
-- (void)removeDecisionUnitFor:(NSEntityDescription *)entity ;
+- (void)removeDecisionUnitFor:(NSEntityDescription *)entity;
 
 
 
@@ -176,27 +176,29 @@ So, you should DecisionUnits if you want to precise to the engine upon which cri
 
 /**
  Returns the attributes to check for the entity.
+ !!! Returns the names of the attribute.
  
  It uses the entity but also the parent entity (the superentity).
  @warning If there is a conflict, it the entity wins over the superentity
  @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
  */
-- (NSSet *)attributesFor:(NSEntityDescription *)entity ;
+- (NSSet *)attributesFor:(NSEntityDescription *)entity;
 
 /**
  Returns the attributes to check for the entity.
+ !!! Returns the names of the relationship.
  
  It uses the entity but also the parent entity (the superentity).
  @warning If there is a conflict, it the entity wins over the superentity
  @warning If there is a conflict, "ignore" wins over "include", depending on the value of the BOOL ignoreWinsOverInclude
  */
-- (NSSet *)relationshipsFor:(NSEntityDescription *)entity ;
+- (NSSet *)relationshipsFor:(NSEntityDescription *)entity;
 
 
 /**
  Reply YES if the entity should be ignored in the decision
  */
-- (BOOL)shouldIgnore:(NSEntityDescription *)entity ;
+- (BOOL)shouldIgnore:(NSEntityDescription *)entity;
 
 
 

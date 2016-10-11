@@ -112,8 +112,11 @@
     withCompletionHandler:(void (^)(NSDictionary *dictionary))completionBlock
 {
     __block NSMutableDictionary *mutableCache = [cache mutableCopy];
-    __block NSMutableDictionary *dicoAttributesToExclude = [[NSMutableDictionary alloc] init];
-    __block NSMutableDictionary *dicoRelationshipsToExclude = [[NSMutableDictionary alloc] init];
+    
+    
+// jojo check
+//    __block NSMutableDictionary *dicoAttributesToExclude = [[NSMutableDictionary alloc] init];
+//    __block NSMutableDictionary *dicoRelationshipsToExclude = [[NSMutableDictionary alloc] init];
 
     
     
@@ -156,38 +159,41 @@
                 else
                 {
                     NSString *nameEntity = object.entity.name;
+
                     
                     
-                    /*
-                     First, we deal with computing the attributes and relationships to remove
-                     */
-                    if (!dicoAttributesToExclude[nameEntity])
-                    {
-                        /*
-                         Computing the attributes to keep and to remove
-                         */
-                        NSArray *attributesToKeep = [[self.decisionCenter attributesFor:object.entity] allObjects];
-                        
-                        NSMutableArray *attributesToExclude = [[[object.entity attributesByName] allValues] mutableCopy];
-                        [attributesToExclude removeObjectsInArray:attributesToKeep];
-                        
-                        dicoAttributesToExclude[nameEntity] = [attributesToExclude copy];
-                    }
-                    
-                    
-                    
-                    if (!dicoRelationshipsToExclude[nameEntity])
-                    {
-                        /*
-                         Computing the attributes to keep and to remove
-                         */
-                        NSArray *relationshipsToKeep = [[self.decisionCenter relationshipsFor:object.entity] allObjects];
-                        
-                        NSMutableArray *relationshipsToExclude = [[[object.entity relationshipsByName] allValues] mutableCopy];
-                        [relationshipsToExclude removeObjectsInArray:relationshipsToKeep];
-                        
-                        dicoRelationshipsToExclude[nameEntity] = [relationshipsToExclude copy];
-                    }
+//                    jojo check
+//
+//                    /*
+//                     First, we deal with computing the attributes and relationships to remove
+//                     */
+//                    if (!dicoAttributesToExclude[nameEntity])
+//                    {
+//                        /*
+//                         Computing the attributes to keep and to remove
+//                         */
+//                        NSArray *attributesToKeep = [[self.decisionCenter attributesFor:object.entity] allObjects];
+//                        
+//                        NSMutableArray *attributesToExclude = [[[object.entity attributesByName] allKeys] mutableCopy];
+//                        [attributesToExclude removeObjectsInArray:attributesToKeep];
+//                        
+//                        dicoAttributesToExclude[nameEntity] = [attributesToExclude copy];
+//                    }
+//                    
+//                    
+//                    
+//                    if (!dicoRelationshipsToExclude[nameEntity])
+//                    {
+//                        /*
+//                         Computing the attributes to keep and to remove
+//                         */
+//                        NSArray *relationshipsToKeep = [[self.decisionCenter relationshipsFor:object.entity] allObjects];
+//                        
+//                        NSMutableArray *relationshipsToExclude = [[[object.entity relationshipsByName] allValues] mutableCopy];
+//                        [relationshipsToExclude removeObjectsInArray:relationshipsToKeep];
+//                        
+//                        dicoRelationshipsToExclude[nameEntity] = [relationshipsToExclude copy];
+//                    }
                     
                     [self cloneObject:object
                            usingCache:mutableCache];
@@ -217,8 +223,8 @@
 #pragma mark - Clone objects
 /**************************************/
 
-int numberOfEntitiesCopied_cbd_ = 0;
-int const limitNumberOfNonSavedObjects = 10;
+static int numberOfEntitiesCopied_cbd_ = 0;
+static int const limitNumberOfNonSavedObjects = 10;
 
 - (NSManagedObject *)cloneObject:(NSManagedObject *)sourceObject
                       usingCache:(NSMutableDictionary *)mutableCache
@@ -250,8 +256,8 @@ int const limitNumberOfNonSavedObjects = 10;
      ********************
      */
     
-    NSString *entityName = [[sourceObject entity] name];
     NSEntityDescription *entity = [sourceObject entity];
+    NSString *entityName = [entity name];
 
     
     CBDCloneLog(@"Cloning a NSManagedObject of type %@", entityName);
@@ -320,11 +326,13 @@ int const limitNumberOfNonSavedObjects = 10;
     NSDictionary *attributes = [[NSEntityDescription entityForName:entityName
                                             inManagedObjectContext:self.targetMOC] attributesByName];
     
-    CBDCloneLog(@"Copying the attributes : ");
+    CBDCloneLog(@"Copying the attributes :");
     
-    for (NSString *attr in attributes)
+    NSSet *acceptedAttributes = [self.decisionCenter attributesFor:entity];
+    
+    for (NSString *attr in [attributes allKeys])
     {
-        if ([[self.decisionCenter attributesFor:entity] containsObject:attr])
+        if ([acceptedAttributes containsObject:attr])
         {
             [self.targetMOC performBlockAndWait:
              ^{
@@ -346,6 +354,8 @@ int const limitNumberOfNonSavedObjects = 10;
     
     CBDCloneLog(@"Taking account of the relationships (for %@) : ", entityName);
     
+    NSSet *acceptedRelationships = [self.decisionCenter relationshipsFor:entity];
+    
     for (NSString *relName in [relationships allKeys])
     {
         NSRelationshipDescription *rel = [relationships objectForKey:relName];
@@ -354,7 +364,7 @@ int const limitNumberOfNonSavedObjects = 10;
         
         CBDCloneLog(@"  | Relationships '%@' (for %@)", keyName, entityName);
         
-        if ([[self.decisionCenter relationshipsFor:entity] containsObject:rel])
+        if ([acceptedRelationships containsObject:rel])
         {
             [self.targetMOC performBlockAndWait:
              ^{

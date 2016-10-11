@@ -8,13 +8,9 @@
 //
 //
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - IMPORTS
-/**************************************/
+
+
+
 #import "CBDCoreDataDecisionCenter.h"
 #import "CBDCoreDataDecisionUnit.h"
 
@@ -32,13 +28,10 @@
  **********************************************************************
  **********************************************************************/
 
-
 /*
  If there is a conflict (a key is asked to be included and ignored), ignore wins if this BOOL is YES
  */
-const BOOL ignoreWinsOverInclude = YES ;
-
-
+const BOOL ignoreWinsOverInclude = YES;
 
 /**********************************************************************
  **********************************************************************/
@@ -51,24 +44,17 @@ const BOOL ignoreWinsOverInclude = YES ;
 
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
+
+
 /**************************************/
-#pragma mark - PRIVATE HEADER
+#pragma mark - Private interface
 /**************************************/
+
 @interface CBDCoreDataDecisionCenter ()
 
+@property (nonatomic, strong, readwrite)NSMutableDictionary *decisionUnitsByEntity;
 
-
-
-
-@property (nonatomic, strong, readwrite)NSMutableDictionary * decisionUnitsByEntity ;
-
-@property (nonatomic, readwrite) CBDCoreDataDecisionType decisionType ;
-
-
+@property (nonatomic, readwrite) CBDCoreDataDecisionType decisionType;
 
 @end
 
@@ -83,94 +69,84 @@ const BOOL ignoreWinsOverInclude = YES ;
 
 
 
-//
-//
-/****************************************************************************/
-/****************************************************************************/
-/**************************************/
-#pragma mark - IMPLEMENTATION
-/**************************************/
 @implementation CBDCoreDataDecisionCenter
 
 
-
-//
-//
 /**************************************/
 #pragma mark - Init Methods
 /**************************************/
 
 
-- (id)initWithType:(CBDCoreDataDecisionType)decisionType
+- (instancetype)initWithType:(CBDCoreDataDecisionType)decisionType
 {
-    self = [super init] ;
+    self = [super init];
     
     if (self)
     {
-        _decisionUnitsByEntity = [[NSMutableDictionary alloc] init] ;
-        _decisionType = decisionType ;
+        _decisionUnitsByEntity = [[NSMutableDictionary alloc] init];
+        _decisionType = decisionType;
     }
     
-    return self ;
+    return self;
 }
 
-
-- (id)initWithSemiFacilitatingType
+- (instancetype)initWithSemiFacilitatingType
 {
-    return [self initWithType:CBDCoreDataDecisionTypeSemiFacilitating] ;
+    return [self initWithType:CBDCoreDataDecisionTypeSemiFacilitating];
 }
 
-- (id)initWithDemandingType
+- (instancetype)initWithDemandingType
 {
-    return [self initWithType:CBDCoreDataDecisionTypeDemanding] ;
+    return [self initWithType:CBDCoreDataDecisionTypeDemanding];
 }
 
-- (id)initWithFacilitatingType
+- (instancetype)initWithFacilitatingType
 {
-    return [self initWithType:CBDCoreDataDecisionTypeFacilitating] ;
+    return [self initWithType:CBDCoreDataDecisionTypeFacilitating];
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (instancetype)copyWithZone:(NSZone *)zone
 {
-    CBDCoreDataDecisionCenter * newCenter = [[CBDCoreDataDecisionCenter allocWithZone:zone] initWithType:self.decisionType] ;
+    CBDCoreDataDecisionCenter *newCenter = [[CBDCoreDataDecisionCenter allocWithZone:zone] initWithType:self.decisionType];
     
-    newCenter.decisionUnitsByEntity = self.decisionUnitsByEntity ;
+    newCenter.decisionUnitsByEntity = self.decisionUnitsByEntity;
     
-    return newCenter ;
+    return newCenter;
 }
 
-//
-//
+
+
+
+
+
+
 /**************************************/
 #pragma mark - Managing DecisionUnits and entities
 /**************************************/
 
-
 - (NSArray *)decisionUnits
 {
-    return [self.decisionUnitsByEntity allValues] ;
+    return [self.decisionUnitsByEntity allValues];
 }
-
 
 - (NSArray *)registeredEntities
 {
-    return [self.decisionUnits valueForKey:@"entity"] ;
+    return [self.decisionUnits valueForKey:@"entity"];
 }
-
 
 - (void)addDecisionUnit:(CBDCoreDataDecisionUnit *)aDecisionUnit
 {
-    NSEntityDescription * entity = aDecisionUnit.entity ;
+    NSEntityDescription *entity = aDecisionUnit.entity;
     
     if (![[self.decisionUnitsByEntity allKeys] containsObject:entity.name])
     {
-        self.decisionUnitsByEntity[entity.name] = aDecisionUnit ;
+        self.decisionUnitsByEntity[entity.name] = aDecisionUnit;
     }
     else
     {
-        CBDCoreDataDecisionUnit * theExistingUnit = self.decisionUnitsByEntity[entity.name] ;
+        CBDCoreDataDecisionUnit *theExistingUnit = self.decisionUnitsByEntity[entity.name];
         
-        [theExistingUnit mergeWith:aDecisionUnit] ;
+        [theExistingUnit mergeWith:aDecisionUnit];
     }
 }
 
@@ -184,24 +160,24 @@ const BOOL ignoreWinsOverInclude = YES ;
     {
         case CBDCoreDataDecisionTypeFacilitating:
         {
-            return [[CBDCoreDataDecisionUnit alloc] initWithIgnoringEntity:entity] ;
+            return [[CBDCoreDataDecisionUnit alloc] initWithIgnoringEntity:entity];
             break;
         }
             
         case CBDCoreDataDecisionTypeSemiFacilitating:
         {
-            return [[CBDCoreDataDecisionUnit alloc] initSemiExhaustiveFor:entity] ;
+            return [[CBDCoreDataDecisionUnit alloc] initSemiExhaustiveFor:entity];
             break;
         }
             
         case CBDCoreDataDecisionTypeDemanding:
         {
-            return [[CBDCoreDataDecisionUnit alloc] initExhaustiveFor:entity] ;
+            return [[CBDCoreDataDecisionUnit alloc] initExhaustiveFor:entity];
             break;
         }
             
         default:
-            return nil ;
+            return nil;
             break;
     }
 }
@@ -215,14 +191,14 @@ const BOOL ignoreWinsOverInclude = YES ;
 
 - (void)removeAllDecisionUnits
 {
-    self.decisionUnitsByEntity = [[NSMutableDictionary alloc] init] ;
+    self.decisionUnitsByEntity = [[NSMutableDictionary alloc] init];
 }
 
 
 
 - (void)removeDecisionUnitFor:(NSEntityDescription *)entity
 {
-    [self.decisionUnitsByEntity removeObjectForKey:entity.name] ;
+    [self.decisionUnitsByEntity removeObjectForKey:entity.name];
 }
 
 
@@ -243,7 +219,7 @@ const BOOL ignoreWinsOverInclude = YES ;
 
 - (BOOL)shouldIgnore:(NSEntityDescription *)entity
 {
-    return [[self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue] ;
+    return [[self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue];
 }
 
 
@@ -252,15 +228,15 @@ const BOOL ignoreWinsOverInclude = YES ;
 /*
  The keys use for the dictionnary
  */
-static NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToInclude = @"CBDCoreDataDiscriminatorGetInfoAttributesToInclude" ;
-static NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude" ;
-static NSString * const   CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore" ;
-static NSString * const   CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore" ;
-static NSString * const   CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore" ;
-static NSString * const   CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded" ;
+static NSString * const CBDCoreDataDiscriminatorGetInfoAttributesToInclude = @"CBDCoreDataDiscriminatorGetInfoAttributesToInclude";
+static NSString * const CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude";
+static NSString * const CBDCoreDataDiscriminatorGetInfoAttributesToIgnore = @"CBDCoreDataDiscriminatorGetInfoAttributesToIgnore";
+static NSString * const CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore = @"CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore";
+static NSString * const CBDCoreDataDiscriminatorGetInfoShouldIgnore = @"CBDCoreDataDiscriminatorGetInfoShouldIgnore";
+static NSString * const CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded = @"CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded";
 
-static NSString * const   CBDCoreDataDiscriminatorGenericInclude = @"CBDCoreDataDiscriminatorGenericInclude" ;
-static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataDiscriminatorGenericIgnore" ;
+static NSString * const CBDCoreDataDiscriminatorGenericInclude = @"CBDCoreDataDiscriminatorGenericInclude";
+static NSString * const CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataDiscriminatorGenericIgnore";
 
 
 
@@ -274,7 +250,7 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
      */
     if (!entity)
     {
-        return nil ;
+        return nil;
     }
     
     
@@ -282,22 +258,22 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
     /*
      The getInfos dico for the registered decisionUnit of the current entity
      */
-    NSDictionary * getInfosForTheRegisteredDecisionUnit ;
+    NSDictionary *getInfosForTheRegisteredDecisionUnit;
     getInfosForTheRegisteredDecisionUnit = [self dicoGetInfoFrom:self.decisionUnitsByEntity[entity.name]
-                                             explicitelyIncluded:YES] ;
+                                             explicitelyIncluded:YES];
     
     /*
      The getInfos dico for the default decisionUnit of the current entity
      */
-    NSDictionary * getInfosForTheDefaultDecisionUnit ;
+    NSDictionary *getInfosForTheDefaultDecisionUnit;
     getInfosForTheDefaultDecisionUnit = [self dicoGetInfoFrom:[self defaultDecisionUnitFor:entity]
-                                          explicitelyIncluded:NO] ;
+                                          explicitelyIncluded:NO];
     
     /*
      The getInfos of the parent
      */
-    NSDictionary * getInfosForSuperentity ;
-    getInfosForSuperentity = [self getInfosFor:entity.superentity] ;
+    NSDictionary *getInfosForSuperentity;
+    getInfosForSuperentity = [self getInfosFor:entity.superentity];
    
     
     
@@ -306,20 +282,20 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
     /*
      We sort the getInfos dicos by importance
      */
-    NSMutableArray * infosInImportanceOrder = [[NSMutableArray alloc] init] ;
+    NSMutableArray *infosInImportanceOrder = [[NSMutableArray alloc] init];
     
     
-    infosInImportanceOrder[0] = getInfosForTheRegisteredDecisionUnit?:[NSNull null] ;
+    infosInImportanceOrder[0] = getInfosForTheRegisteredDecisionUnit?:[NSNull null];
     
     if ([getInfosForSuperentity[CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded] boolValue])
     {
-        infosInImportanceOrder[1] = getInfosForSuperentity?:[NSNull null] ;
-        infosInImportanceOrder[2] = getInfosForTheDefaultDecisionUnit?:[NSNull null] ;
+        infosInImportanceOrder[1] = getInfosForSuperentity?:[NSNull null];
+        infosInImportanceOrder[2] = getInfosForTheDefaultDecisionUnit?:[NSNull null];
     }
     else
     {
-        infosInImportanceOrder[1] = getInfosForTheDefaultDecisionUnit?:[NSNull null] ;
-        infosInImportanceOrder[2] = getInfosForSuperentity?:[NSNull null] ;
+        infosInImportanceOrder[1] = getInfosForTheDefaultDecisionUnit?:[NSNull null];
+        infosInImportanceOrder[2] = getInfosForSuperentity?:[NSNull null];
     }
     
     
@@ -328,49 +304,49 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
     /*
      Merging the info
      */
-    NSMutableSet * resultSetAttributesToInclude ;//= [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetRelationshipsToInclude ;//= [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetAttributesToIgnore ;//= [[NSMutableSet alloc] init] ;
-    NSMutableSet * resultSetRelationshipsToIgnore ;//= [[NSMutableSet alloc] init] ;
+    NSMutableSet *resultSetAttributesToInclude;//= [[NSMutableSet alloc] init];
+    NSMutableSet *resultSetRelationshipsToInclude;//= [[NSMutableSet alloc] init];
+    NSMutableSet *resultSetAttributesToIgnore;//= [[NSMutableSet alloc] init];
+    NSMutableSet *resultSetRelationshipsToIgnore;//= [[NSMutableSet alloc] init];
     
     
     
     /*
      Attributes and relationships
      */
-    NSDictionary * result ;
-    result = [self mergeArrayOfDicos:infosInImportanceOrder] ;
+    NSDictionary *result;
+    result = [self mergeArrayOfDicos:infosInImportanceOrder];
   
-    resultSetAttributesToInclude = result[CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
-    resultSetAttributesToIgnore = result[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore] ;
+    resultSetAttributesToInclude = result[CBDCoreDataDiscriminatorGetInfoAttributesToInclude];
+    resultSetAttributesToIgnore = result[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore];
     
-    resultSetRelationshipsToInclude = result[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] ;
-    resultSetRelationshipsToIgnore = result[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore] ;
+    resultSetRelationshipsToInclude = result[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude];
+    resultSetRelationshipsToIgnore = result[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore];
     
     
     
     // Removing duplicates : elements that are both in ToInclude and ToIgnore
     if (ignoreWinsOverInclude)
     {
-        [resultSetAttributesToInclude minusSet:resultSetAttributesToIgnore] ;
-        [resultSetRelationshipsToInclude minusSet:resultSetRelationshipsToIgnore] ;
+        [resultSetAttributesToInclude minusSet:resultSetAttributesToIgnore];
+        [resultSetRelationshipsToInclude minusSet:resultSetRelationshipsToIgnore];
     }
     else
     {
-        [resultSetAttributesToIgnore minusSet:resultSetAttributesToInclude] ;
-        [resultSetRelationshipsToIgnore minusSet:resultSetRelationshipsToInclude] ;
+        [resultSetAttributesToIgnore minusSet:resultSetAttributesToInclude];
+        [resultSetRelationshipsToIgnore minusSet:resultSetRelationshipsToInclude];
     }
     
     
     /*
      Should ignore and explicitely included
      */
-    BOOL explicitelyIncluded = [[self registeredEntities] containsObject:entity] ;
+    BOOL explicitelyIncluded = [[self registeredEntities] containsObject:entity];
     BOOL shouldIgnore = ([getInfosForTheRegisteredDecisionUnit[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue]
                          ||
                          [getInfosForTheDefaultDecisionUnit[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue]
                          ||
-                         [getInfosForSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue]) ;
+                         [getInfosForSuperentity[CBDCoreDataDiscriminatorGetInfoShouldIgnore] boolValue]);
 
     
     return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : resultSetAttributesToInclude,
@@ -379,7 +355,7 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
              CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : resultSetRelationshipsToIgnore,
              CBDCoreDataDiscriminatorGetInfoShouldIgnore : @(shouldIgnore),
              CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded : @(explicitelyIncluded)
-             } ;
+             };
     
 }
 
@@ -392,7 +368,7 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
 {
     if (!aDecisionUnit)
     {
-        return nil ;
+        return nil;
     }
     
     return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : aDecisionUnit.nameAttributesToUse,
@@ -401,7 +377,7 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
              CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : aDecisionUnit.relationshipDescriptionsToIgnore,
              CBDCoreDataDiscriminatorGetInfoShouldIgnore : @(aDecisionUnit.shouldBeIgnored),
              CBDCoreDataDiscriminatorGetInfoExplicitelyIncluded : @(explicitelyIncluded)
-             } ;
+             };
 }
 
 
@@ -410,11 +386,11 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
 {
     if (!theGetInfoDictionnary)
     {
-        return nil ;
+        return nil;
     }
     
     return @{CBDCoreDataDiscriminatorGenericInclude : theGetInfoDictionnary[CBDCoreDataDiscriminatorGetInfoAttributesToInclude],
-             CBDCoreDataDiscriminatorGenericIgnore : theGetInfoDictionnary[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore]} ;
+             CBDCoreDataDiscriminatorGenericIgnore : theGetInfoDictionnary[CBDCoreDataDiscriminatorGetInfoAttributesToIgnore]};
 }
 
 
@@ -423,11 +399,11 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
 {
     if (!theGetInfoDictionnary)
     {
-        return nil ;
+        return nil;
     }
     
     return @{CBDCoreDataDiscriminatorGenericInclude : theGetInfoDictionnary[CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude],
-             CBDCoreDataDiscriminatorGenericIgnore : theGetInfoDictionnary[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore]} ;
+             CBDCoreDataDiscriminatorGenericIgnore : theGetInfoDictionnary[CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore]};
 }
 
 
@@ -435,16 +411,16 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
 - (NSDictionary *)mergeAttributesAndRelationshipsFromMaster:(NSDictionary *)masterInfo
                                                    andSlave:(NSDictionary *)slaveInfo
 {
-    NSDictionary * mergingAttributes = [self mergeTheIncludeVSIgnoreFromMaster:[self dicoIncludeVSIgnoreForAttributesFrom:masterInfo]
-                                                                      andSlave:[self dicoIncludeVSIgnoreForAttributesFrom:slaveInfo]] ;
+    NSDictionary *mergingAttributes = [self mergeTheIncludeVSIgnoreFromMaster:[self dicoIncludeVSIgnoreForAttributesFrom:masterInfo]
+                                                                      andSlave:[self dicoIncludeVSIgnoreForAttributesFrom:slaveInfo]];
     
-    NSDictionary * mergingRelationships = [self mergeTheIncludeVSIgnoreFromMaster:[self dicoIncludeVSIgnoreForRelationshipsFrom:masterInfo]
-                                                                      andSlave:[self dicoIncludeVSIgnoreForRelationshipsFrom:slaveInfo]] ;
+    NSDictionary *mergingRelationships = [self mergeTheIncludeVSIgnoreFromMaster:[self dicoIncludeVSIgnoreForRelationshipsFrom:masterInfo]
+                                                                      andSlave:[self dicoIncludeVSIgnoreForRelationshipsFrom:slaveInfo]];
     
     return @{CBDCoreDataDiscriminatorGetInfoAttributesToInclude : mergingAttributes[CBDCoreDataDiscriminatorGenericInclude],
              CBDCoreDataDiscriminatorGetInfoAttributesToIgnore : mergingAttributes[CBDCoreDataDiscriminatorGenericIgnore],
              CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude : mergingRelationships[CBDCoreDataDiscriminatorGenericInclude],
-             CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : mergingRelationships[CBDCoreDataDiscriminatorGenericIgnore]} ;
+             CBDCoreDataDiscriminatorGetInfoRelationshipsToIgnore : mergingRelationships[CBDCoreDataDiscriminatorGenericIgnore]};
 }
 
 
@@ -453,29 +429,29 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
 - (NSDictionary *)mergeTheIncludeVSIgnoreFromMaster:(NSDictionary *)masterInfo
                                            andSlave:(NSDictionary *)slaveInfo
 {
-    NSSet * masterInclude = [NSSet setWithSet:masterInfo[CBDCoreDataDiscriminatorGenericInclude]] ;
-    NSSet * masterIgnore = [NSSet setWithSet:masterInfo[CBDCoreDataDiscriminatorGenericIgnore]] ;
+    NSSet *masterInclude = [NSSet setWithSet:masterInfo[CBDCoreDataDiscriminatorGenericInclude]];
+    NSSet *masterIgnore = [NSSet setWithSet:masterInfo[CBDCoreDataDiscriminatorGenericIgnore]];
 
-    NSSet * slaveInclude = [NSSet setWithSet:slaveInfo[CBDCoreDataDiscriminatorGenericInclude]] ;
-    NSSet * slaveIgnore = [NSSet setWithSet:slaveInfo[CBDCoreDataDiscriminatorGenericIgnore]] ;
+    NSSet *slaveInclude = [NSSet setWithSet:slaveInfo[CBDCoreDataDiscriminatorGenericInclude]];
+    NSSet *slaveIgnore = [NSSet setWithSet:slaveInfo[CBDCoreDataDiscriminatorGenericIgnore]];
     
-    NSMutableSet * resultInclude  ;
-    NSMutableSet * resultIgnore ;
+    NSMutableSet *resultInclude;
+    NSMutableSet *resultIgnore;
     
-    NSMutableSet * auxSet ;
+    NSMutableSet *auxSet;
     
-    resultInclude = [NSMutableSet setWithSet:masterInclude] ;
-    auxSet = [NSMutableSet setWithSet:slaveInclude] ;
-    [auxSet minusSet:masterIgnore] ;
-    [resultInclude unionSet:auxSet] ;
+    resultInclude = [NSMutableSet setWithSet:masterInclude];
+    auxSet = [NSMutableSet setWithSet:slaveInclude];
+    [auxSet minusSet:masterIgnore];
+    [resultInclude unionSet:auxSet];
     
-    resultIgnore = [NSMutableSet setWithSet:masterIgnore] ;
-    auxSet = [NSMutableSet setWithSet:slaveIgnore] ;
-    [auxSet minusSet:masterInclude] ;
-    [resultIgnore unionSet:auxSet] ;
+    resultIgnore = [NSMutableSet setWithSet:masterIgnore];
+    auxSet = [NSMutableSet setWithSet:slaveIgnore];
+    [auxSet minusSet:masterInclude];
+    [resultIgnore unionSet:auxSet];
     
     return @{CBDCoreDataDiscriminatorGenericInclude : resultInclude,
-             CBDCoreDataDiscriminatorGenericIgnore : resultIgnore} ;
+             CBDCoreDataDiscriminatorGenericIgnore : resultIgnore};
 }
 
 
@@ -484,27 +460,27 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
 
 - (NSDictionary *)mergeArrayOfDicos:(NSArray *)arrayOfDicos
 {
-    NSDictionary * result ;
+    NSDictionary *result;
     
-    NSUInteger nb = [arrayOfDicos count] ;
+    NSUInteger nb = [arrayOfDicos count];
     
     if (nb == 0)
     {
-        return nil ;
+        return nil;
     }
     
-    result = (arrayOfDicos[0] != [NSNull null])?arrayOfDicos[0]:nil ;
+    result = (arrayOfDicos[0] != [NSNull null])?arrayOfDicos[0]:nil;
     
     if (nb > 0)
     {
-        for (int i = 1 ; i < nb ; i++)
+        for (int i = 1; i < nb; i++)
         {
             result = [self mergeAttributesAndRelationshipsFromMaster:result
-                                                            andSlave:(arrayOfDicos[i] != [NSNull null])?arrayOfDicos[i]:nil] ;
+                                                            andSlave:(arrayOfDicos[i] != [NSNull null])?arrayOfDicos[i]:nil];
         }
     }
     
-    return result ;
+    return result;
 }
 
 
@@ -512,13 +488,17 @@ static NSString * const   CBDCoreDataDiscriminatorGenericIgnore = @"CBDCoreDataD
 
 - (NSSet *)attributesFor:(NSEntityDescription *)entity
 {
-    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude] ;
+    NSSet *result = [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoAttributesToInclude];
+    
+    return result;
 }
 
 
-- (NSSet *)relationshipsFor:(NSEntityDescription *)entity ;
+- (NSSet *)relationshipsFor:(NSEntityDescription *)entity;
 {
-    return [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude] ;
+    NSSet *result = [self getInfosFor:entity][CBDCoreDataDiscriminatorGetInfoRelationshipsToInclude];
+    
+    return result;
 }
 
 
