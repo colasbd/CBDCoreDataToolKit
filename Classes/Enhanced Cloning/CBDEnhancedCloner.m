@@ -107,18 +107,12 @@
 
 
 - (void)     cloneObjects:(NSArray *)arrayOfObjects
-                usingCache:(NSDictionary *)cache
+               usingCache:(NSDictionary *)cache
            isAsynchronous:(BOOL)isAsynchronous
     withCompletionHandler:(void (^)(NSDictionary *dictionary))completionBlock
 {
     __block NSMutableDictionary *mutableCache = [cache mutableCopy];
-    
-    
-// jojo check
-//    __block NSMutableDictionary *dicoAttributesToExclude = [[NSMutableDictionary alloc] init];
-//    __block NSMutableDictionary *dicoRelationshipsToExclude = [[NSMutableDictionary alloc] init];
 
-    
     
     /*
      Managing the multithreading
@@ -158,43 +152,6 @@
                 }
                 else
                 {
-                    NSString *nameEntity = object.entity.name;
-
-                    
-                    
-//                    jojo check
-//
-//                    /*
-//                     First, we deal with computing the attributes and relationships to remove
-//                     */
-//                    if (!dicoAttributesToExclude[nameEntity])
-//                    {
-//                        /*
-//                         Computing the attributes to keep and to remove
-//                         */
-//                        NSArray *attributesToKeep = [[self.decisionCenter attributesFor:object.entity] allObjects];
-//                        
-//                        NSMutableArray *attributesToExclude = [[[object.entity attributesByName] allKeys] mutableCopy];
-//                        [attributesToExclude removeObjectsInArray:attributesToKeep];
-//                        
-//                        dicoAttributesToExclude[nameEntity] = [attributesToExclude copy];
-//                    }
-//                    
-//                    
-//                    
-//                    if (!dicoRelationshipsToExclude[nameEntity])
-//                    {
-//                        /*
-//                         Computing the attributes to keep and to remove
-//                         */
-//                        NSArray *relationshipsToKeep = [[self.decisionCenter relationshipsFor:object.entity] allObjects];
-//                        
-//                        NSMutableArray *relationshipsToExclude = [[[object.entity relationshipsByName] allValues] mutableCopy];
-//                        [relationshipsToExclude removeObjectsInArray:relationshipsToKeep];
-//                        
-//                        dicoRelationshipsToExclude[nameEntity] = [relationshipsToExclude copy];
-//                    }
-                    
                     [self cloneObject:object
                            usingCache:mutableCache];
                 }
