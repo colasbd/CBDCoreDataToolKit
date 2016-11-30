@@ -162,9 +162,7 @@ Also available:
  [me findSimilarObjectsForAttributes:@[@"age", @"city"]
  		   			forRelationships:nil
   withAdditionalPredicateFormat_cbd_:@"isMale == NO"];
- ```-->
- 
- <!--
+ ```
 ### 5. Misc methods
  
   TODO
@@ -208,7 +206,7 @@ it simply add the following line to your Podfile:
 
 ## Author
 
-Colas, colas.bardavid@gmail.com
+Colas Bardavid
 
 ### Special thanks
 
@@ -218,6 +216,9 @@ Colas, colas.bardavid@gmail.com
 
 ## Changelog
 
+- 2016/11/30 (v3.3.1): 
+	- Making the `.podspec` compatible with the version 1.0 of Cocoapods
+	- Cleaning up the code
 - 2014/05/06 (v3.0.0): 
   - New `@return` for the `-clone...` method for arrays of objects: it returns now a dictionary mapping the old objects to the new ones
   - New convenience initializers for `CBDCoreDataDecisionUnit`
@@ -236,7 +237,7 @@ Colas, colas.bardavid@gmail.com
 
 ## License 
 
-Copyright (c) 2014 Colas Bardavid
+Copyright (c) 2014-2016 Colas Bardavid
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
