@@ -1,4 +1,5 @@
 # CBDCoreDataToolKit
+## A graph-oriented library for Core Data
 
 <p align="center" transform="scale(0.8)">
   <img 	src="https://raw.github.com/colasbd/CBDCoreDataToolKit/master/image.png" 
@@ -9,16 +10,16 @@
 
 
 
-## CBDCoreDataToolKit: cloning, replacing, importing  easily in CoreData (and nice misc methods)
+## Cloning, replacing, importing  made easy for CoreData 
 
 
-With **CBDCoreDataToolKit**, you can clone, replace or import your NSManagedObject. Cloning is useful when you want to transfer new data from a NSManagedObjectContext (a `MOC`) to another one. Importing is when you want to "integrate" some data to one `MOC` to another one. By integrating, I mean that the data to import _is not_ entirely new. Maybe there are just new links between entities, or maybe there is just a new instance of some entity with plenty of relationships with _already existing_ objects.
+With **CBDCoreDataToolKit**, you can clone, replace or import your `NSManagedObject`s. Cloning is useful when you want to transfer new data from a `NSManagedObjectContext` (a `MOC`) to another one. Importing is when you want to "integrate" some data to one `MOC` to another one. By integrating, I mean that the data to import _is not_ entirely new. Maybe there are just new links between entities, or maybe there is just a new instance of some entity with plenty of relationships with _already existing_ objects.
 
 One has to understand that in such a case:
 
  - cloning will "pull" the entire graph connected to this new object, and we will have plenty of duplicates.
  
- - importing is much more clever (and difficult) and will "pull" the entire graph connected to this new object **and** will merge it with the already existing graph. **Super great !!**
+ - importing is much more clever (and difficult) and will "pull" the entire graph connected to this new object **and** will merge it with the already existing graph. **This is great!**
 
 ### 1. Cloning objects
 
@@ -37,8 +38,7 @@ To import some data, it's easy!
 First, you have to create an instance of `CBDCoreDataImporter`. You do:
 
 ```
-CBDCoreDataImporter * myImporter;
-
+CBDCoreDataImporter *myImporter;
 myImporter = [CBDCoreDataImporter alloc] initWithSourceMOC:sourceMOC
               						             targetMOC:targetMOC];
 ```
@@ -57,19 +57,18 @@ An instance of `CBDCoreDataDiscriminator` aims at comparing objects of a given e
 Some code:
 
 ```
-CBDCoreDataDiscriminator * myDiscriminator ;
-
-myDiscriminator = [CBDCoreDataDiscriminator alloc] initWithDefaultType] ;
+CBDCoreDataDiscriminator *myDiscriminator;
+myDiscriminator = [CBDCoreDataDiscriminator alloc] initWithDefaultType];
 
 [myDiscriminator    isSourceObject:firstObject
-     		 similarToTargetObject:secondObject] ;
+     		 similarToTargetObject:secondObject];
 
 
-NSArray * similarObjects = [myDiscriminator similarObjectTo:refObject
-                      							      inMOC:myMOC] ;
+NSArray *similarObjects = [myDiscriminator similarObjectTo:refObject
+                      							      inMOC:myMOC];
 
-NSManagedObject * similarObject = [myDiscriminator firstSimilarObjectTo:refObject
-                                  				                  inMOC:myMOC] ;
+NSManagedObject *similarObject = [myDiscriminator firstSimilarObjectTo:refObject
+                                  				                  inMOC:myMOC];
 										 								 
 ```
 
@@ -77,7 +76,7 @@ You can also do this kind of actions:
 
 ```
 [myDiscriminator    objectsInWorkingMOC:MOCWhereWeAreWorking
-          alreadyExistingInReferenceMOC:referenceMOC] ;
+          alreadyExistingInReferenceMOC:referenceMOC];
 ```
 
 But, you may want to define very precisely upon which attributes and relationships you want to do all that: discriminating as well as importing. It is possible and it uses `CBDCoreDataDecisionCenter` and `CBDCoreDataDecisionUnit`.
@@ -109,18 +108,18 @@ You can use one the three global settings: `initWithFacilitatingType`, `initWith
 Here is some code:
 
 ```
-CBDCoreDataDecisionCenter * myDecisionCenter ;
-myDecisionCenter = [CBDCoreDataDecisionCenter alloc] initWithSemiFacilitatingType] ;
+CBDCoreDataDecisionCenter *myDecisionCenter;
+myDecisionCenter = [CBDCoreDataDecisionCenter alloc] initWithSemiFacilitatingType];
 
-CBDCoreDataDecisionUnit *myUnit1 ;
+CBDCoreDataDecisionUnit *myUnit1;
 myUnit1 = [[CBDCoreDataDecisionUnit alloc] initForEntity:personEntity
         				                 usingAttributes:nil
-                                        andRelationships:@[@"friends"]] ;
+                                        andRelationships:@[@"friends"]];
 
-CBDCoreDataDecisionUnit *myUnit2 ;
+CBDCoreDataDecisionUnit *myUnit2;
 myUnit2 = [[CBDCoreDataDecisionUnit alloc] initForEntity:employeeEntity
         				                 usingAttributes:nil
-                                        andRelationships:@[@"employees"]] ;
+                                        andRelationships:@[@"employees"]];
 
 [myDecisionCenter addDecisionUnit:myUnit1];
 [myDecisionCenter addDecisionUnit:myUnit2];
@@ -150,7 +149,7 @@ You will able to do, for example
 ```
 			[Person findInMOC:self.myMOC
       		        orderedBy:@"name, age"
-     withPredicateFormat_cbd_:@"city == %@", theCity] ;
+     withPredicateFormat_cbd_:@"city == %@", theCity];
 ```
 
 <!--
@@ -162,10 +161,10 @@ Also available:
  ```
  [me findSimilarObjectsForAttributes:@[@"age", @"city"]
  		   			forRelationships:nil
-  withAdditionalPredicateFormat_cbd_:@"isMale == NO"] ;
+  withAdditionalPredicateFormat_cbd_:@"isMale == NO"];
  ```-->
  
- 
+ <!--
 ### 5. Misc methods
  
   TODO
@@ -177,6 +176,7 @@ Also available:
  TODO
 
 ## Requirements
+-->
 
 Some of the methods in the categories over `NSManagedObject+CBDActiveRecord` require one or the other of the following conditions:
 
