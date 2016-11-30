@@ -1,6 +1,6 @@
 # CBDCoreDataToolKit
 
-<p align="center" width="50%">
+<p align="center" transform="scale(0.8)">
   <img 	src="https://raw.github.com/colasbd/CBDCoreDataToolKit/master/image.png" 
   		alt="Graphs"/>
 </p>
