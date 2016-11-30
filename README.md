@@ -1,5 +1,7 @@
 # CBDCoreDataToolKit
 
+![Graphs](http://url/to/img.png)
+
 
 
 ## CBDCoreDataToolKit: cloning, replacing, importing  easily in CoreData (and nice misc methods)
