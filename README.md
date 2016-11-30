@@ -1,7 +1,7 @@
 # CBDCoreDataToolKit
 
 <p align="center" width="50%">
-  <img 	src="https://github.com/colasbd/CBDCoreDataToolKit/raw/master/image.png" 
+  <img 	src="https://raw.github.com/colasbd/CBDCoreDataToolKit/master/image.png" 
   		alt="Graphs"/>
 </p>
 
