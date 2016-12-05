@@ -6,7 +6,7 @@
 
 #define COMMENTS_ON 0
 
-int numberOfEntitiesCopied = 0 ;
+int numberOfEntitiesCopied = 0;
 
 
 //
@@ -24,34 +24,34 @@ int numberOfEntitiesCopied = 0 ;
                   excludeAttributes:(NSArray *)namesOfAttributesToExclude
           excludeRelationships_cbd_:(NSArray *)namesOfRelationshipsToExclude
 {
-    numberOfEntitiesCopied = numberOfEntitiesCopied + 1 ;
+    numberOfEntitiesCopied = numberOfEntitiesCopied + 1;
     
     if (numberOfEntitiesCopied >= 10)
     {
         [context performBlock:
          ^{
-             NSError * error;
-             [context save:&error] ;
-         }] ;
+             NSError *error;
+             [context save:&error];
+         }];
         
-        numberOfEntitiesCopied = 0 ;
+        numberOfEntitiesCopied = 0;
     }
     
     NSString *entityName = [[self entity] name];
     
 #if (COMMENTS_ON)
-    NSLog(@"Cloning a NSManagedObject of type %@", entityName) ;
-    NSLog(@"  | entitities excluded from cloning : %@", namesOfEntitiesToExclude) ;
-    NSLog(@"  | attributes excluded from cloning : %@", namesOfAttributesToExclude) ;
-    NSLog(@"  | size of the cache : %ld", [alreadyCopied count]) ;
+    NSLog(@"Cloning a NSManagedObject of type %@", entityName);
+    NSLog(@"  | entitities excluded from cloning : %@", namesOfEntitiesToExclude);
+    NSLog(@"  | attributes excluded from cloning : %@", namesOfAttributesToExclude);
+    NSLog(@"  | size of the cache : %ld", [alreadyCopied count]);
 #endif
     
     if ([namesOfEntitiesToExclude containsObject:entityName])
     {
         
 #if (COMMENTS_ON)
-        NSLog(@"  | ¡ objet not copied !") ;
-        NSLog(@"  | (because its entitity is excluded of the copy)") ;
+        NSLog(@"  | ¡ objet not copied !");
+        NSLog(@"  | (because its entitity is excluded of the copy)");
 #endif
         
         return nil;
@@ -62,8 +62,8 @@ int numberOfEntitiesCopied = 0 ;
     {
         
 #if (COMMENTS_ON)
-        NSLog(@"  | ¡ objet not copied !") ;
-        NSLog(@"  | (because it is the cache)") ;
+        NSLog(@"  | ¡ objet not copied !");
+        NSLog(@"  | (because it is the cache)");
 #endif
         
         return cloned;
@@ -88,7 +88,7 @@ int numberOfEntitiesCopied = 0 ;
                                             inManagedObjectContext:context] attributesByName];
     
 #if (COMMENTS_ON)
-    NSLog(@"Copying the attributes : ") ;
+    NSLog(@"Copying the attributes : ");
 #endif
     
     for (NSString *attr in attributes)
@@ -98,9 +98,9 @@ int numberOfEntitiesCopied = 0 ;
             [context performBlockAndWait:
              ^{
                  [cloned setValue:[self valueForKey:attr] forKey:attr];
-             }] ;
+             }];
 #if (COMMENTS_ON)
-            NSLog(@"  | the attribute %@ gets the value %@ ", attr, [self valueForKey:attr]) ;
+            NSLog(@"  | the attribute %@ gets the value %@ ", attr, [self valueForKey:attr]);
 #endif
             
         }
@@ -111,7 +111,7 @@ int numberOfEntitiesCopied = 0 ;
                                                inManagedObjectContext:context] relationshipsByName];
     
 #if (COMMENTS_ON)
-    NSLog(@"Taking account of the relationships : ") ;
+    NSLog(@"Taking account of the relationships : ");
 #endif
     
     for (NSString *relName in [relationships allKeys])
@@ -121,7 +121,7 @@ int numberOfEntitiesCopied = 0 ;
         NSString *keyName = rel.name;
         
 #if (COMMENTS_ON)
-        NSLog(@"  | Relationships '%@'", keyName) ;
+        NSLog(@"  | Relationships '%@'", keyName);
 #endif
         
         if (![namesOfRelationshipsToExclude containsObject:relName])
@@ -130,8 +130,8 @@ int numberOfEntitiesCopied = 0 ;
              ^{
                  if ([rel isToMany])
                  {
-                     id sourceSet ;
-                     id clonedSet ;
+                     id sourceSet;
+                     id clonedSet;
                      
                      /*
                       On gère selon que la relation est ordonnée ou non
@@ -179,7 +179,7 @@ int numberOfEntitiesCopied = 0 ;
                          }
                      }
                  }
-             }] ;
+             }];
         }
     }
     
@@ -208,7 +208,7 @@ int numberOfEntitiesCopied = 0 ;
                 withCopiedCache:alreadyCopied
                  exludeEntities:namesOfEntitiesToExclude
               excludeAttributes:namesOfAttributesToExclude
-      excludeRelationships_cbd_:@[]] ;
+      excludeRelationships_cbd_:@[]];
 }
 
 
@@ -252,11 +252,11 @@ int numberOfEntitiesCopied = 0 ;
 - (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
         exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude
 {
-    NSMutableArray * arrayOfAttributesToInclude = [[sourceObject.entity.attributesByName allKeys] mutableCopy] ;
-    [arrayOfAttributesToInclude removeObjectsInArray:namesOfAttributesToExclude] ;
+    NSMutableArray *arrayOfAttributesToInclude = [[sourceObject.entity.attributesByName allKeys] mutableCopy];
+    [arrayOfAttributesToInclude removeObjectsInArray:namesOfAttributesToExclude];
     
     [self fillInAttributesFrom:sourceObject
-           onlyAttributes_cbd_:arrayOfAttributesToInclude] ;
+           onlyAttributes_cbd_:arrayOfAttributesToInclude];
 }
 
 
@@ -265,7 +265,7 @@ int numberOfEntitiesCopied = 0 ;
 - (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
           onlyAttributes_cbd_:(NSArray *)namesOfAttributesToCopy
 {
-    NSManagedObjectContext * contextSource = [sourceObject managedObjectContext] ;
+    NSManagedObjectContext *contextSource = [sourceObject managedObjectContext];
     NSString *sourceEntityName = [[sourceObject entity] name];
     
     
@@ -292,7 +292,7 @@ int numberOfEntitiesCopied = 0 ;
 {
     NSString *entityName = [[self entity] name];
     
-    __block NSManagedObject * cloned ;
+    __block NSManagedObject *cloned;
     
     [context performBlockAndWait:^{
         cloned = [NSEntityDescription insertNewObjectForEntityForName:entityName
@@ -312,7 +312,7 @@ int numberOfEntitiesCopied = 0 ;
 
     }];
     
-    return cloned ;
+    return cloned;
 }
 
 

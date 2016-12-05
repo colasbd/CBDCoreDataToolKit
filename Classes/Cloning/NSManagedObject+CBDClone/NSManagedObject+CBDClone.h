@@ -88,15 +88,15 @@
 /**
  Given two existing `NSManagedObject`, you want to copy the attributes of one to another one.
  */
-- (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
-        exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude;
+- (void)fillInAttributesFrom:(NSManagedObject *)sourceObject
+       exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude;
 
 
 /**
  Given two existing `NSManagedObject`, you want to copy the attributes of one to another one.
  */
-- (void) fillInAttributesFrom:(NSManagedObject *)sourceObject
-          onlyAttributes_cbd_:(NSArray *)namesOfAttributesToCopy;
+- (void)fillInAttributesFrom:(NSManagedObject *)sourceObject
+         onlyAttributes_cbd_:(NSArray *)namesOfAttributesToCopy;
 
 
 
