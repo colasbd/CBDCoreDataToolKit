@@ -58,7 +58,7 @@
 /**
  Fetches all the NSManagedObject of the entity with the given name in the MOC, ordered.
  
- @param (NSString *)orderBy A SQL-like string
+ @param orderBy A SQL-like string
  
  Example of orderBy :
  `person.name asc`, `person.age desc`
@@ -91,7 +91,7 @@
 /**
  The first instance in the fetch
  
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
 - (id)firstForEntityWithName:(NSString *)nameOfTheEntity
                    orderedBy:(NSString *)orderBy
@@ -108,7 +108,7 @@
 /**
  Does a fetch.
  
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
 - (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
           withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
@@ -129,9 +129,8 @@
 
 /** Returns objects from the entity with the given name.
  
- @param predicate the predicate to filter with.
  @param orderBy an SQL-like order by clause.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
 
 - (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
@@ -157,11 +156,10 @@
 
 /** Returns objects from the entity with the given name.
  
- @param predicate the predicate to filter with.
  @param orderBy an SQL-like order by clause.
  @param offset the index of the first element to retrieve.
  @param limit the maximum amount of objects to retrieve.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  
  */
 - (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
@@ -195,8 +193,7 @@
 
 /** Returns the total amount of the objects from the entity with the given name.
  
- @param predicate the predicate to filter with.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
 - (NSUInteger)countForEntityWithName:(NSString *)nameOfTheEntity
               forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
 

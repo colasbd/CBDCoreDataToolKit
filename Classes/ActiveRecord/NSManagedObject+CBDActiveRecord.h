@@ -82,7 +82,7 @@
 /**
  Fetches all the NSManagedObject of a given caller class in the MOC, ordered.
  
- @param (NSString *)orderBy A SQL-like string
+ @param orderBy A SQL-like string
  
  Example of orderBy :
  `person.name asc`, `person.age desc`
@@ -120,7 +120,7 @@
 /**
  The first instance in the fetch
  
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
@@ -141,7 +141,7 @@
 /**
  Does a fetch.
  
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
@@ -166,9 +166,8 @@
 
 /** Returns objects from the caller class.
  
- @param predicate the predicate to filter with.
  @param orderBy an SQL-like order by clause.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
@@ -196,11 +195,10 @@
 
 /** Returns objects from the caller class.
  
- @param predicate the predicate to filter with.
  @param orderBy an SQL-like order by clause.
  @param offset the index of the first element to retrieve.
  @param limit the maximum amount of objects to retrieve.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
 
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
@@ -225,24 +223,23 @@
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
 + (NSUInteger)countInMOC_cbd_:(NSManagedObjectContext *)theMOC;
-;
 
-/** Returns the total amount of the objects from the caller class.
- 
- @param predicate the predicate to filter with. 
- 
-  @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied*/
-+ (NSUInteger)countInMOC:(NSManagedObjectContext *)theMOC
-        forPredicate_cbd_:(NSPredicate *)predicate;
 
 /** Returns the total amount of the objects from the caller class.
  
  @param predicate the predicate to filter with.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  
-  @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied*/
+ @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied*/
++ (NSUInteger)countInMOC:(NSManagedObjectContext *)theMOC
+       forPredicate_cbd_:(NSPredicate *)predicate;
+
+/** Returns the total amount of the objects from the caller class.
+ 
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ 
+ @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied*/
 + (NSUInteger)  countInMOC:(NSManagedObjectContext *)theMOC
-      forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
+   forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
 
 
 
@@ -264,7 +261,7 @@
   @warning This method works only if condition "`name(Class)=name(Entity)` or `mogenerator`" is satisfied
  */
 + (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC;
-;
+
 
 
 

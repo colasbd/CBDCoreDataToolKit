@@ -30,7 +30,7 @@
  
  All the objects in relationships with the given objects will be *copied*, except those belonging to `(NSArray *)namesOfEntitiesToExclude`
  
- @param (NSArray *)namesOfAttributesToExclude The attributes won't be copied
+ @param namesOfAttributesToExclude The attributes won't be copied
  */
 - (NSManagedObject *)cloneToContext:(NSManagedObjectContext *)context
                      exludeEntities:(NSArray *)namesOfEntitiesToExclude
@@ -39,7 +39,7 @@
 /**
  Cloning the object, but omitting all the relationships.
  
- @param (NSArray *)namesOfAttributesToExclude Some attributes can also be omitted
+ @param namesOfAttributesToExclude Some attributes can also be omitted
  */
 - (NSManagedObject *)cloneOnlyAttribuesToContext:(NSManagedObjectContext *)context
                            exludeAttributes_cbd_:(NSArray *)namesOfAttributesToExclude;
@@ -52,8 +52,8 @@
  
  All the objects in relationships with the given objects will be *copied*, except those in the `NSMutableDictionary *)alreadyCopied` and those belonging to `(NSArray *)namesOfEntitiesToExclude`
  
- @param (NSMutableDictionary *)alreadyCopied The dictionnary is of the form `@{objectID : theObject}`
- @param (NSArray *)namesOfAttributesToExclude The attributes won't be copied
+ @param alreadyCopied The dictionnary is of the form `@{objectID : theObject}`
+ @param namesOfAttributesToExclude The attributes won't be copied
  */
 - (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)context
                     withCopiedCache:(NSMutableDictionary *)alreadyCopied
@@ -69,9 +69,9 @@
  
  All the objects in relationships with the given objects will be *copied*, except those in the `NSMutableDictionary *)alreadyCopied` and those belonging to `(NSArray *)namesOfEntitiesToExclude`
  
- @param (NSMutableDictionary *)alreadyCopied The dictionnary is of the form `@{objectID : theObject}`
- @param (NSArray *)namesOfAttributesToExclude The attributes won't be copied
- @param (NSArray *)namesOfRelationshipsToExclude The relationships won't be "followed"
+ @param alreadyCopied The dictionnary is of the form `@{objectID : theObject}`
+ @param namesOfAttributesToExclude The attributes won't be copied
+ @param namesOfRelationshipsToExclude The relationships won't be "followed"
  */
 - (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)context
                     withCopiedCache:(NSMutableDictionary *)alreadyCopied

@@ -34,7 +34,7 @@
 /**
 Creates an NSManagedObject belonging to the current entity.
 */
-- (id)createInMOC_cbd_:(NSManagedObjectContext *)aMOC ;
+- (id)createInMOC_cbd_:(NSManagedObjectContext *)aMOC;
 
 
 
@@ -46,7 +46,7 @@ Creates an NSManagedObject belonging to the current entity.
 /**
  Fetches all the NSManagedObject of a given entity in the MOC.
  */
-- (NSArray *)allInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
+- (NSArray *)allInMOC_cbd_:(NSManagedObjectContext *)theMOC;
 
 /*
  *******
@@ -73,7 +73,7 @@ Creates an NSManagedObject belonging to the current entity.
 /**
  Fetches all the NSManagedObject of a given entity in the MOC, ordered.
  
- @param (NSString *)orderBy A SQL-like string
+ @param orderBy A SQL-like string
  
  Example of orderBy :
  `person.name asc`, `person.age desc`
@@ -93,7 +93,7 @@ Creates an NSManagedObject belonging to the current entity.
 
  */
 - (NSArray *)   allInMOC:(NSManagedObjectContext *)theMOC
-          orderedBy_cbd_:(NSString *)orderBy ;
+          orderedBy_cbd_:(NSString *)orderBy;
 
 
 /**
@@ -101,32 +101,32 @@ Creates an NSManagedObject belonging to the current entity.
  */
 - (id) firstInMOC:(NSManagedObjectContext *)theMOC
                        orderedBy:(NSString *)orderBy
-              withPredicate_cbd_:(NSPredicate *)predicate ;
+              withPredicate_cbd_:(NSPredicate *)predicate;
 
 /**
  The first instance in the fetch
 
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
 - (id) firstInMOC:(NSManagedObjectContext *)theMOC
                        orderedBy:(NSString *)orderBy
-        withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4) ;
+        withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4);
 
 
 /**
  Does a fetch.
  */
 - (NSArray *)        findInMOC:(NSManagedObjectContext *)theMOC
-            withPredicate_cbd_:(NSPredicate *)predicate ;
+            withPredicate_cbd_:(NSPredicate *)predicate;
 
 
 /**
  Does a fetch.
 
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
 - (NSArray *)      findInMOC:(NSManagedObjectContext *)theMOC
-    withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3) ;
+    withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
 
 
 
@@ -140,18 +140,18 @@ Creates an NSManagedObject belonging to the current entity.
 
 - (NSArray *) findInMOC:(NSManagedObjectContext *)theMOC
               orderedBy:(NSString *)orderBy
-     withPredicate_cbd_:(NSPredicate *)predicate ;
+     withPredicate_cbd_:(NSPredicate *)predicate;
 
 /** Returns objects from the entity.
  
  @param predicate the predicate to filter with.
  @param orderBy an SQL-like order by clause.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
 
 - (NSArray *)    findInMOC:(NSManagedObjectContext *)theMOC
                  orderedBy:(NSString *)orderBy
-  withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4) ;
+  withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4);
 
 
 
@@ -167,23 +167,22 @@ Creates an NSManagedObject belonging to the current entity.
               orderedBy:(NSString *)orderBy
                  offset:(int)offset
                   limit:(int)limit
-     withPredicate_cbd_:(NSPredicate *)predicate ;
+     withPredicate_cbd_:(NSPredicate *)predicate;
 
 
 /** Returns objects from the entity.
  
- @param predicate the predicate to filter with.
  @param orderBy an SQL-like order by clause.
  @param offset the index of the first element to retrieve.
  @param limit the maximum amount of objects to retrieve.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
 
  */
 - (NSArray *)       findInMOC:(NSManagedObjectContext *)theMOC
                     orderedBy:(NSString *)orderBy
                        offset:(int)offset
                         limit:(int)limit
-     withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(5, 6) ;
+     withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(5, 6);
 
 
 
@@ -196,7 +195,7 @@ Creates an NSManagedObject belonging to the current entity.
 
 
 /** Returns the total amount of the objects from the entity. */
-- (NSUInteger) countInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
+- (NSUInteger) countInMOC_cbd_:(NSManagedObjectContext *)theMOC;
 
 
 
@@ -204,15 +203,14 @@ Creates an NSManagedObject belonging to the current entity.
  
  @param predicate the predicate to filter with. */
 - (NSUInteger) countInMOC:(NSManagedObjectContext *)theMOC
-         forPredicate_cbd_:(NSPredicate *)predicate ;
+         forPredicate_cbd_:(NSPredicate *)predicate;
 
 
 /** Returns the total amount of the objects from the entity.
  
- @param predicate the predicate to filter with. 
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
 - (NSUInteger)     countInMOC:(NSManagedObjectContext *)theMOC
-       forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3) ;
+       forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3);
 
 
 
@@ -225,8 +223,8 @@ Creates an NSManagedObject belonging to the current entity.
 
 
 /** Removes all objects from the entity. */
-- (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC ;
-;
+- (void) removeAllInMOC_cbd_:(NSManagedObjectContext *)theMOC;
+
 
 
 

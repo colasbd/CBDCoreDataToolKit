@@ -29,20 +29,20 @@
 
 - (NSArray *)allObjects_cbd_
 {
-    NSMutableSet * result = [[NSMutableSet alloc] init] ;
+    NSMutableSet *result = [[NSMutableSet alloc] init];
     
-    for (NSEntityDescription * entity in [self allEntities_cbd_])
+    for (NSEntityDescription *entity in [self allEntities_cbd_])
     {
-        [result addObjectsFromArray:[entity allInMOC_cbd_:self]] ;
+        [result addObjectsFromArray:[entity allInMOC_cbd_:self]];
     }
     
-    return [result allObjects] ;
+    return [result allObjects];
 }
 
 
 - (NSArray *)allEntities_cbd_
 {
-    return self.persistentStoreCoordinator.managedObjectModel.entities ;
+    return self.persistentStoreCoordinator.managedObjectModel.entities;
 }
 
 
@@ -55,7 +55,7 @@
 {
     for (NSManagedObject* managedObject in [self allObjects_cbd_])
     {
-        [managedObject remove_cbd_] ;
+        [managedObject remove_cbd_];
     }
 }
 
@@ -64,23 +64,23 @@
 
 
 TODO(This method can be accelerated)
-/** Returns the total amount of the objects from the caller class. 
+/** Returns the total amount of the objects from the caller class.
  
  Beware of not counting two time objects belonging to several entities.
  */
 - (NSUInteger)countAllObjects_cbd_
 {
-    return [[self allObjects_cbd_] count] ;
-// What follows does not work !!
-//
-//    NSUInteger result = 0 ;
-//    
-//    for (NSEntityDescription * entity in [self allEntities_cbd_])
-//    {
-//        result = result + [entity countInMOC_cbd_:self] ;
-//    }
-//    
-//    return result ;
+    return [[self allObjects_cbd_] count];
+    // What follows does not work !!
+    //
+    //    NSUInteger result = 0;
+    //
+    //    for (NSEntityDescription *entity in [self allEntities_cbd_])
+    //    {
+    //        result = result + [entity countInMOC_cbd_:self];
+    //    }
+    //
+    //    return result;
 }
 
 
@@ -92,79 +92,79 @@ TODO(This method can be accelerated)
 /**
  Fetches all the NSManagedObject of the entity with the given name in the MOC.
  */
-- (NSArray *) allForEntityWithName_cbd_:(NSString *)nameOfTheEntity
+- (NSArray *)allForEntityWithName_cbd_:(NSString *)nameOfTheEntity
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
-    return [entity allInMOC_cbd_:self] ;
+    return [entity allInMOC_cbd_:self];
 }
 
 
 
 
-- (NSArray *) allForEntityWithName:(NSString *)nameOfTheEntity
-                    orderedBy_cbd_:(NSString *)orderBy
+- (NSArray *)allForEntityWithName:(NSString *)nameOfTheEntity
+                   orderedBy_cbd_:(NSString *)orderBy
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
     return [entity allInMOC:self
-             orderedBy_cbd_:orderBy] ;
+             orderedBy_cbd_:orderBy];
 }
 
 
 /**
  The first instance in the fetch
  */
-- (id) firstForEntityWithName:(NSString *)nameOfTheEntity
-                    orderedBy:(NSString *)orderBy
-           withPredicate_cbd_:(NSPredicate *)predicate
+- (id)firstForEntityWithName:(NSString *)nameOfTheEntity
+                   orderedBy:(NSString *)orderBy
+          withPredicate_cbd_:(NSPredicate *)predicate
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
     return [entity firstInMOC:self
                     orderedBy:orderBy
-           withPredicate_cbd_:predicate] ;
+           withPredicate_cbd_:predicate];
     
 }
 
 /**
  The first instance in the fetch
  
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
-- (id) firstForEntityWithName:(NSString *)nameOfTheEntity
-                    orderedBy:(NSString *)orderBy
-     withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4)
+- (id)firstForEntityWithName:(NSString *)nameOfTheEntity
+                   orderedBy:(NSString *)orderBy
+    withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4)
 {
-    NSPredicate * myPredicate ;
+    NSPredicate *myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     
     return [self firstForEntityWithName:nameOfTheEntity
                               orderedBy:orderBy
-                     withPredicate_cbd_:myPredicate] ;
+                     withPredicate_cbd_:myPredicate];
 }
 
 /**
  Does a fetch.
  */
-- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
-                 withPredicate_cbd_:(NSPredicate *)predicate
+- (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
+                withPredicate_cbd_:(NSPredicate *)predicate
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
     return [entity findInMOC:self
-          withPredicate_cbd_:predicate] ;
+          withPredicate_cbd_:predicate];
     
 }
 
@@ -174,21 +174,21 @@ TODO(This method can be accelerated)
  
  @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
-- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
-           withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3)
+- (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
+          withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3)
 {
-    NSPredicate * myPredicate ;
+    NSPredicate *myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     
     return [self findForEntityWithName:nameOfTheEntity
-                    withPredicate_cbd_:myPredicate] ;
+                    withPredicate_cbd_:myPredicate];
 }
 
 
@@ -201,16 +201,16 @@ TODO(This method can be accelerated)
  @param orderBy an SQL-like order by clause.
  */
 
-- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
-                          orderedBy:(NSString *)orderBy
-                 withPredicate_cbd_:(NSPredicate *)predicate
+- (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
+                         orderedBy:(NSString *)orderBy
+                withPredicate_cbd_:(NSPredicate *)predicate
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
     return [entity findInMOC:self
                    orderedBy:orderBy
-          withPredicate_cbd_:predicate] ;
+          withPredicate_cbd_:predicate];
     
 }
 
@@ -221,23 +221,23 @@ TODO(This method can be accelerated)
  @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  */
 
-- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
-                          orderedBy:(NSString *)orderBy
-           withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4)
+- (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
+                         orderedBy:(NSString *)orderBy
+          withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(3, 4)
 {
-    NSPredicate * myPredicate ;
+    NSPredicate *myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     
     return [self findForEntityWithName:nameOfTheEntity
                              orderedBy:orderBy
-                    withPredicate_cbd_:myPredicate] ;
+                    withPredicate_cbd_:myPredicate];
 }
 
 
@@ -250,20 +250,20 @@ TODO(This method can be accelerated)
  @param offset the index of the first element to retrieve.
  @param limit the maximum amount of objects to retrieve.
  */
-- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
-                          orderedBy:(NSString *)orderBy
-                             offset:(int)offset
-                              limit:(int)limit
-                 withPredicate_cbd_:(NSPredicate *)predicate
+- (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
+                         orderedBy:(NSString *)orderBy
+                            offset:(int)offset
+                             limit:(int)limit
+                withPredicate_cbd_:(NSPredicate *)predicate
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
     return [entity findInMOC:self
                    orderedBy:orderBy
                       offset:offset
                        limit:limit
-          withPredicate_cbd_:predicate] ;
+          withPredicate_cbd_:predicate];
     
 }
 
@@ -277,19 +277,19 @@ TODO(This method can be accelerated)
  @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.
  
  */
-- (NSArray *) findForEntityWithName:(NSString *)nameOfTheEntity
-                          orderedBy:(NSString *)orderBy
-                             offset:(int)offset
-                              limit:(int)limit
-           withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(5, 6)
+- (NSArray *)findForEntityWithName:(NSString *)nameOfTheEntity
+                         orderedBy:(NSString *)orderBy
+                            offset:(int)offset
+                             limit:(int)limit
+          withPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(5, 6)
 {
-    NSPredicate * myPredicate ;
+    NSPredicate *myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
     
     
@@ -297,7 +297,7 @@ TODO(This method can be accelerated)
                              orderedBy:orderBy
                                 offset:offset
                                  limit:limit
-                    withPredicate_cbd_:myPredicate] ;
+                    withPredicate_cbd_:myPredicate];
 }
 
 
@@ -311,12 +311,12 @@ TODO(This method can be accelerated)
 
 
 /** Returns the total amount of the objects from the entity with the given name. */
-- (NSUInteger) countAllForEntityWithName_cbd_:(NSString *)nameOfTheEntity
+- (NSUInteger)countAllForEntityWithName_cbd_:(NSString *)nameOfTheEntity
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
-    return [entity countInMOC_cbd_:self] ;
+    return [entity countInMOC_cbd_:self];
     
 }
 
@@ -326,13 +326,13 @@ TODO(This method can be accelerated)
 /** Returns the total amount of the objects from the entity with the given name.
  
  @param predicate the predicate to filter with. */
-- (NSUInteger) countForEntityWithName:(NSString *)nameOfTheEntity
-                    forPredicate_cbd_:(NSPredicate *)predicate
+- (NSUInteger)countForEntityWithName:(NSString *)nameOfTheEntity
+                   forPredicate_cbd_:(NSPredicate *)predicate
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
-    return [entity countInMOC:self forPredicate_cbd_:predicate] ;
+    return [entity countInMOC:self forPredicate_cbd_:predicate];
     
 }
 
@@ -340,22 +340,22 @@ TODO(This method can be accelerated)
 /** Returns the total amount of the objects from the entity with the given name.
  
  @param predicate the predicate to filter with.
- @param (NSString *)formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
-- (NSUInteger) countForEntityWithName:(NSString *)nameOfTheEntity
-              forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3)
+ @param formatString Instead of building an `NSPredicate` with `[NSPredicate predicateWithFormat:...`, you can pass the format string directly here.*/
+- (NSUInteger)countForEntityWithName:(NSString *)nameOfTheEntity
+             forPredicateFormat_cbd_:(NSString *)formatString, ... NS_FORMAT_FUNCTION(2, 3)
 {
-    NSPredicate * myPredicate ;
+    NSPredicate *myPredicate;
     
     va_list ap;
     va_start(ap, formatString);
     
     myPredicate = [NSPredicate predicateWithFormat:formatString
-                                         arguments:ap] ;
+                                         arguments:ap];
     va_end(ap);
-
+    
     
     return [self countForEntityWithName:nameOfTheEntity
-                      forPredicate_cbd_:myPredicate] ;
+                      forPredicate_cbd_:myPredicate];
 }
 
 
@@ -369,12 +369,12 @@ TODO(This method can be accelerated)
 
 
 /** Removes all objects from the entity with the given name. */
-- (void) removeAllForEntityWithName:(NSString *)nameOfTheEntity
+- (void)removeAllForEntityWithName:(NSString *)nameOfTheEntity
 {
-    NSEntityDescription * entity = [NSEntityDescription entityForName:nameOfTheEntity
-                                               inManagedObjectContext:self] ;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:nameOfTheEntity
+                                              inManagedObjectContext:self];
     
-    return [entity removeAllInMOC_cbd_:self] ;
+    return [entity removeAllInMOC_cbd_:self];
     
 }
 
@@ -387,10 +387,10 @@ TODO(This method can be accelerated)
 
 
 /** Get the entity with the given name. */
-- (NSEntityDescription*) entityWithName_cbd_:(NSString *)nameOfTheEntity
+- (NSEntityDescription *)entityWithName_cbd_:(NSString *)nameOfTheEntity
 {
     return [NSEntityDescription entityForName:nameOfTheEntity
-                       inManagedObjectContext:self] ;
+                       inManagedObjectContext:self];
 }
 
 
